@@ -5,7 +5,7 @@
 - [x] Task 3: Core context providers and custom hooks
 - [x] Task 4: Reusable UI component library
 - [x] Task 5: Modal and Toast notification systems
-- [ ] Task 6: App shell with sidebar and header navigation
+- [x] Task 6: App shell with sidebar and header navigation
 - [ ] Task 7: Dark/light theme toggle with full application theming
 - [ ] Task 8: Dashboard page with stats cards and activity feed
 - [ ] Task 9: Dashboard charts with Recharts integration
@@ -23,3 +23,4 @@
 - [x] Task 5.1: Fix Modal backdrop click not closing modal
 - [x] Task 5.2: Fix Modal backdrop click not closing modal (still broken after 5.1)
 - [x] Task 6.1: Fix tablet viewport sidebar to show icons-only by default
+- [ ] Task 7.1: Fix dark mode background color and add system theme selector

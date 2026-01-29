@@ -1,7 +1,7 @@
 {
   "version": "1.0",
   "phase": "EXECUTING",
-  "currentTaskId": "7",
+  "currentTaskId": "7.1",
   "tasks": [
     {
       "id": "1",
@@ -211,8 +211,10 @@
       ],
       "estimatedComplexity": "medium",
       "testingApproach": "Toggle theme and verify all visible elements change colors. Refresh page and verify theme persists. Set to system and change OS preference to verify it follows. Check no console errors during toggle.",
-      "status": "in_progress",
-      "subtasks": [],
+      "status": "needs_subtask",
+      "subtasks": [
+        "7.1"
+      ],
       "parentId": null
     },
     {
@@ -657,10 +659,31 @@
       ],
       "parentId": "6",
       "status": "complete"
+    },
+    {
+      "id": "7.1",
+      "title": "Fix dark mode background color and add system theme selector",
+      "description": "Task 7 validation failed due to two issues:\n1. Dark mode background color uses gray-950 instead of specified gray-900\n2. No UI exists in Settings page to select \"system\" theme option",
+      "acceptanceCriteria": [
+        "AppShell background in dark mode is `dark:bg-gray-900` (not gray-950)",
+        "Settings page has theme preference selector UI",
+        "Theme selector offers three options: Light, Dark, System",
+        "Selecting \"System\" theme follows OS prefers-color-scheme",
+        "Theme preference is saved to localStorage",
+        "Current theme selection is visually indicated in Settings",
+        "All original Task 7 acceptance criteria still pass",
+        "Build completes without errors",
+        "No console errors when switching themes"
+      ],
+      "dependencies": [
+        "6"
+      ],
+      "parentId": "7",
+      "status": "in_progress"
     }
   ],
   "completedCount": 10,
-  "failedCount": 0,
+  "failedCount": 1,
   "pauseReason": null,
   "resumeContext": [
     {
@@ -691,5 +714,5 @@
     "rationale": "Foundation task that establishes the entire project architecture, folder structure, tooling configuration, and dependency baseline. All 18 subsequent tasks depend on this scaffolding. Creates 40+ files across multiple directories."
   },
   "startedAt": "2026-01-29T00:42:04.759Z",
-  "updatedAt": "2026-01-29T02:58:10.981Z"
+  "updatedAt": "2026-01-29T03:11:57.021Z"
 }

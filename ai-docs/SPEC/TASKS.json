@@ -182,7 +182,7 @@
       ],
       "estimatedComplexity": "large",
       "testingApproach": "Navigate to each page via sidebar and verify URL changes. Toggle sidebar collapse and refresh to verify persistence. Resize to mobile and verify hamburger menu. Open user dropdown and click outside to close.",
-      "status": "needs_subtask",
+      "status": "complete",
       "subtasks": [
         "6.1"
       ],
@@ -211,8 +211,10 @@
       ],
       "estimatedComplexity": "medium",
       "testingApproach": "Toggle theme and verify all visible elements change colors. Refresh page and verify theme persists. Set to system and change OS preference to verify it follows. Check no console errors during toggle.",
-      "status": "pending",
-      "subtasks": [],
+      "status": "needs_subtask",
+      "subtasks": [
+        "7.1"
+      ],
       "parentId": null
     },
     {
@@ -657,6 +659,27 @@
       ],
       "parentId": "6",
       "status": "complete"
+    },
+    {
+      "id": "7.1",
+      "title": "Fix dark mode background color and add system theme selector",
+      "description": "Task 7 validation failed due to two issues:\n1. Dark mode background color uses gray-950 instead of specified gray-900\n2. No UI exists in Settings page to select \"system\" theme option",
+      "acceptanceCriteria": [
+        "AppShell background in dark mode is `dark:bg-gray-900` (not gray-950)",
+        "Settings page has theme preference selector UI",
+        "Theme selector offers three options: Light, Dark, System",
+        "Selecting \"System\" theme follows OS prefers-color-scheme",
+        "Theme preference is saved to localStorage",
+        "Current theme selection is visually indicated in Settings",
+        "All original Task 7 acceptance criteria still pass",
+        "Build completes without errors",
+        "No console errors when switching themes"
+      ],
+      "dependencies": [
+        "6"
+      ],
+      "parentId": "7",
+      "status": "pending"
     }
   ]
 }
