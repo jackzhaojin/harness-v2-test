@@ -211,7 +211,7 @@
       ],
       "estimatedComplexity": "medium",
       "testingApproach": "Toggle theme and verify all visible elements change colors. Refresh page and verify theme persists. Set to system and change OS preference to verify it follows. Check no console errors during toggle.",
-      "status": "needs_subtask",
+      "status": "complete",
       "subtasks": [
         "7.1"
       ],
@@ -679,7 +679,7 @@
         "6"
       ],
       "parentId": "7",
-      "status": "pending"
+      "status": "complete"
     }
   ]
 }
