@@ -1,4 +1,4 @@
-import { ArrowUp, ArrowDown, MoreVertical, Eye, Pencil, Trash2 } from 'lucide-react';
+import { ArrowUp, ArrowDown, MoreVertical, Pencil, Trash2, Archive } from 'lucide-react';
 import type { Project, ProjectStatus, TeamMember } from '../../types';
 import type { SortKey, SortDirection } from '../../hooks/useProjectTable';
 import { Badge } from '../ui/Badge';
@@ -13,6 +13,7 @@ interface ProjectsTableProps {
   sortKey: SortKey;
   sortDir: SortDirection;
   onToggleSort: (key: SortKey) => void;
+  onAction?: (project: Project, action: string) => void;
 }
 
 // --- Constants ---
@@ -46,8 +47,8 @@ const COLUMNS: ColumnDef[] = [
 ];
 
 const ACTION_ITEMS = [
-  { label: 'View', value: 'view', icon: <Eye className="h-4 w-4" /> },
   { label: 'Edit', value: 'edit', icon: <Pencil className="h-4 w-4" /> },
+  { label: 'Archive', value: 'archive', icon: <Archive className="h-4 w-4" /> },
   { label: 'Delete', value: 'delete', icon: <Trash2 className="h-4 w-4" /> },
 ];
 
@@ -76,11 +77,8 @@ export function ProjectsTable({
   sortKey,
   sortDir,
   onToggleSort,
+  onAction,
 }: ProjectsTableProps): JSX.Element {
-  const handleActionSelect = (_value: string): void => {
-    // Placeholder — functional action handling deferred to Task 11
-  };
-
   return (
     <div className="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700">
       <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
@@ -188,7 +186,7 @@ export function ProjectsTable({
                   <td className="px-4 py-3 text-sm whitespace-nowrap">
                     <Dropdown
                       items={ACTION_ITEMS}
-                      onSelect={handleActionSelect}
+                      onSelect={(value) => onAction?.(project, value)}
                       align="right"
                       trigger={
                         <button

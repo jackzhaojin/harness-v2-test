@@ -79,13 +79,21 @@ function Modal({ isOpen, onClose, children }: ModalProps): JSX.Element | null {
   const [isAnimatingOut, setIsAnimatingOut] = useState(false);
   const focusTrapRef = useFocusTrap(isOpen);
 
-  // Handle open
+  // Handle open / external close
   useEffect(() => {
     if (isOpen) {
       setIsVisible(true);
       setIsAnimatingOut(false);
+    } else if (isVisible) {
+      // Parent set isOpen to false externally — animate out
+      setIsAnimatingOut(true);
+      const timer = setTimeout(() => {
+        setIsVisible(false);
+        setIsAnimatingOut(false);
+      }, 200);
+      return () => clearTimeout(timer);
     }
-  }, [isOpen]);
+  }, [isOpen]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Handle close with animation
   const handleClose = useCallback((): void => {
