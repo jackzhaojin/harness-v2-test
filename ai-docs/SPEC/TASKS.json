@@ -182,8 +182,12 @@
       ],
       "estimatedComplexity": "large",
       "testingApproach": "Navigate to each page via sidebar and verify URL changes. Toggle sidebar collapse and refresh to verify persistence. Resize to mobile and verify hamburger menu. Open user dropdown and click outside to close.",
-      "status": "pending",
-      "subtasks": [],
+      "status": "needs_subtask",
+      "subtasks": [
+        "6.3",
+        "6.1",
+        "6.2"
+      ],
       "parentId": null
     },
     {
@@ -637,6 +641,55 @@
       ],
       "parentId": "5",
       "status": "complete"
+    },
+    {
+      "id": "6.3",
+      "title": "Fix: Tablet sidebar not icons-only by default",
+      "description": "Sidebar auto-collapsed to w-16 with icons only at 768-1024px viewports",
+      "acceptanceCriteria": [
+        "Tablet (768-1024px): sidebar shows icons only by default"
+      ],
+      "dependencies": [
+        "3",
+        "4"
+      ],
+      "parentId": "6",
+      "status": "pending"
+    },
+    {
+      "id": "6.1",
+      "title": "Fix tablet viewport sidebar to show icons-only by default",
+      "description": "The acceptance criterion \"Tablet (768-1024px): sidebar shows icons only by default\" is NOT met. At tablet viewports (768px-1024px), the sidebar displays in fully expanded mode (w-60) with text labels visible instead of icons-only collapsed mode (w-16).",
+      "acceptanceCriteria": [
+        "At tablet viewports (768px-1024px), sidebar shows icons only (collapsed/w-16) by default",
+        "At desktop viewports (>1024px), sidebar remains expanded (w-60) by default (existing behavior)",
+        "User can still manually toggle sidebar collapse/expand at any viewport",
+        "The manual toggle state should take precedence over the responsive default when user explicitly toggles",
+        "All original parent task criteria still pass (14 existing E2E tests)"
+      ],
+      "dependencies": [
+        "3",
+        "4"
+      ],
+      "parentId": "6",
+      "status": "pending"
+    },
+    {
+      "id": "6.2",
+      "title": "Fix tablet viewport sidebar to auto-collapse to icons-only mode",
+      "description": "The acceptance criterion \"Tablet (768-1024px): sidebar shows icons only by default\" is NOT met. At tablet viewports (768px-1024px), the sidebar displays in fully expanded mode (`w-60`) with text labels visible instead of icons-only collapsed mode (`w-16`). Task 6.1 was created for this same issue but was never built/executed.",
+      "acceptanceCriteria": [
+        "At tablet viewports (768px-1024px), sidebar shows icons only (collapsed/w-16) by default",
+        "At desktop viewports (>1024px), sidebar remains expanded (w-60) by default (existing behavior)",
+        "User can still manually toggle sidebar collapse/expand at any viewport",
+        "All original parent task criteria still pass"
+      ],
+      "dependencies": [
+        "3",
+        "4"
+      ],
+      "parentId": "6",
+      "status": "pending"
     }
   ]
 }

@@ -1,0 +1,71 @@
+## Validation Report: Task 6 (Attempt 1)
+
+### Summary
+**Result: FAIL** — 16/17 acceptance criteria pass, 1 fails.
+
+### Passing Criteria (16/17)
+All core functionality is solid:
+- ✅ AppShell wraps all pages with sidebar and header
+- ✅ Sidebar displays 5 nav items (Dashboard, Projects, Tasks, Team, Settings) with Lucide icons
+- ✅ NavLink routing to all 5 routes works correctly
+- ✅ Active page highlighted with blue background/text color
+- ✅ Sidebar collapse toggle shrinks to icons-only mode
+- ✅ Collapsed/expanded state persists via SidebarContext → localStorage
+- ✅ Semantic `<nav>` and `<aside>` elements
+- ✅ Header sticky at top, spans content area width
+- ✅ Search input with search icon and "Search..." placeholder
+- ✅ Notifications bell icon with red unread dot indicator
+- ✅ User avatar opens dropdown menu on click
+- ✅ Dropdown has Profile, Settings, Logout options
+- ✅ Clicking outside dropdown closes it (useClickOutside)
+- ✅ Mobile (<768px): sidebar hidden, hamburger icon in header
+- ✅ Mobile overlay with backdrop, close (X) button, closes on nav click
+- ✅ Smoke: App loads without errors
+
+### Failing Criterion (1/17)
+- ❌ **Tablet (768-1024px): sidebar shows icons only by default** — At 900px viewport the sidebar is fully expanded (`w-60`) with text labels visible. No responsive logic auto-collapses the sidebar at tablet viewports.
+
+### Defect Subtask Created
+**Task 6.1** created at `ai-docs/TASKS/6.1/packet.md` to fix the tablet sidebar behavior.
+
+---
+
+```json
+{
+  "task": "6",
+  "role": "validate",
+  "attempt": 1,
+  "result": "fail",
+  "defectCreated": "6.1",
+  "criteriaResults": [
+    {"criterion": "AppShell component wraps all pages with sidebar and header", "status": "pass", "evidence": "App.tsx wraps all Routes inside AppShell. AppShell renders Sidebar, Header, main, MobileNav. Verified via code review and Playwright smoke test."},
+    {"criterion": "Sidebar displays nav items: Dashboard, Projects, Tasks, Team, Settings with Lucide icons", "status": "pass", "evidence": "navItems.ts defines 5 items with Lucide icons. Playwright test confirms 5 links with correct labels and SVG icons."},
+    {"criterion": "Each nav item links to corresponding route via React Router NavLink", "status": "pass", "evidence": "Sidebar.tsx uses NavLink. Deep validation confirms hrefs: /, /projects, /tasks, /team, /settings. Navigation test passes."},
+    {"criterion": "Active page highlighted with distinct background/text color", "status": "pass", "evidence": "NavLink applies bg-blue-50 text-blue-700 when active. Playwright test confirms class on Dashboard link at /."},
+    {"criterion": "Sidebar collapse toggle button shrinks to icons-only mode", "status": "pass", "evidence": "Toggle changes w-60 to w-16, hides text labels, keeps SVG icons visible. Two Playwright tests pass."},
+    {"criterion": "Collapsed/expanded state persists via SidebarContext to localStorage", "status": "pass", "evidence": "SidebarContext uses useLocalStorage('sidebar-collapsed'). After collapse and reload, sidebar remains collapsed (w-16). localStorage value is 'true'."},
+    {"criterion": "Sidebar uses semantic <nav> and <aside> elements", "status": "pass", "evidence": "Sidebar renders <aside> with <nav aria-label='Main navigation'>. Playwright test verifies both elements."},
+    {"criterion": "Header fixed at top, spans content area width", "status": "pass", "evidence": "Header has sticky top-0 z-30. Computed style: position=sticky, top=0px. Spans content area as flex child."},
+    {"criterion": "Header contains search input with search icon and placeholder text", "status": "pass", "evidence": "Search Lucide icon and input[type=search] with placeholder='Search...' present. Both visible in Playwright tests."},
+    {"criterion": "Header contains notifications bell icon with unread dot indicator", "status": "pass", "evidence": "Bell icon button with red dot span (bg-red-500 rounded-full) visible. Playwright test confirms both elements."},
+    {"criterion": "Header contains user avatar that opens dropdown menu on click", "status": "pass", "evidence": "Avatar button toggles dropdown with role='menu'. Playwright test confirms click opens dropdown."},
+    {"criterion": "Dropdown contains Profile, Settings, Logout options", "status": "pass", "evidence": "Three menuitem buttons with correct labels visible in dropdown. Playwright test confirms."},
+    {"criterion": "Clicking outside dropdown closes it (useClickOutside)", "status": "pass", "evidence": "useClickOutside hook on userMenuRef. Clicking main closes dropdown. Playwright test passes."},
+    {"criterion": "Below 768px: sidebar hidden, hamburger icon in header", "status": "pass", "evidence": "Sidebar hidden md:flex, hamburger md:hidden. At 375px: sidebar hidden, hamburger visible. Playwright test passes."},
+    {"criterion": "Mobile: hamburger opens full-screen overlay with backdrop", "status": "pass", "evidence": "MobileNav renders fixed inset-0 overlay with bg-black/50 backdrop and role=dialog. Playwright test confirms at 375px."},
+    {"criterion": "Mobile overlay has close (X) button and closes on nav item click", "status": "pass", "evidence": "X button with aria-label='Close navigation menu' and NavLink onClick={onClose}. Two Playwright tests pass."},
+    {"criterion": "Tablet (768-1024px): sidebar shows icons only by default", "status": "fail", "evidence": "At 900px viewport, sidebar class is w-60 (expanded) with Dashboard text label visible. No responsive auto-collapse logic exists for tablet viewports."},
+    {"criterion": "Smoke: App loads without errors", "status": "pass", "evidence": "7 smoke tests pass. No console errors. Build and TypeScript compilation succeed."}
+  ],
+  "issues": [
+    {
+      "title": "Tablet sidebar not icons-only by default",
+      "criterion": "Tablet (768-1024px): sidebar shows icons only by default",
+      "expected": "Sidebar auto-collapsed to w-16 with icons only at 768-1024px viewports",
+      "actual": "Sidebar fully expanded (w-60) with text labels at all viewports >= 768px",
+      "evidence": "Playwright test at 900px shows w-60 class and visible Dashboard text label"
+    }
+  ],
+  "handoffNotes": "Created defect subtask 6.1 to fix tablet viewport sidebar auto-collapse. 16/17 criteria pass. The missing feature requires responsive logic to detect tablet viewport (768-1024px) and default sidebar to collapsed/icons-only mode."
+}
+```
