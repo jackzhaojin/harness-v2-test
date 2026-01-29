@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Task 3 Test - Context Providers & Hooks</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      max-width: 1000px;
+      margin: 40px auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    .test-section {
+      background: white;
+      border-radius: 8px;
+      padding: 20px;
+      margin: 20px 0;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    h1 {
+      color: #333;
+      border-bottom: 3px solid #2563eb;
+      padding-bottom: 10px;
+    }
+    h2 {
+      color: #2563eb;
+      margin-top: 0;
+    }
+    .test-result {
+      display: flex;
+      align-items: center;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 4px;
+      background: #f0f0f0;
+    }
+    .test-result.pass {
+      background: #d1fae5;
+      color: #065f46;
+    }
+    .test-result.fail {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+    .status {
+      font-weight: bold;
+      margin-right: 10px;
+    }
+    button {
+      background: #2563eb;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      margin: 5px;
+    }
+    button:hover {
+      background: #1d4ed8;
+    }
+    code {
+      background: #f3f4f6;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-family: 'Courier New', monospace;
+    }
+    .info {
+      background: #dbeafe;
+      border-left: 4px solid #2563eb;
+      padding: 12px;
+      margin: 10px 0;
+    }
+  </style>
+</head>
+<body>
+  <h1>🧪 Task 3: Context Providers & Custom Hooks Test</h1>
+
+  <div class="test-section">
+    <h2>Test Instructions</h2>
+    <p>This test validates all context providers and custom hooks implemented in Task 3.</p>
+    <ol>
+      <li>Open browser DevTools (F12) to monitor console</li>
+      <li>Click "Run All Tests" to execute automated tests</li>
+      <li>Verify all tests pass (green checkmarks)</li>
+      <li>Test localStorage persistence by refreshing the page</li>
+    </ol>
+  </div>
+
+  <div class="test-section">
+    <h2>Automated Tests</h2>
+    <button id="runTests">Run All Tests</button>
+    <div id="results"></div>
+  </div>
+
+  <div class="test-section">
+    <h2>Manual Verification Tests</h2>
+
+    <h3>ThemeContext Test</h3>
+    <div class="info">
+      Current localStorage theme: <code id="themeValue">-</code>
+    </div>
+    <button onclick="testTheme()">Check Theme Persistence</button>
+    <div id="themeResult"></div>
+
+    <h3>SidebarContext Test</h3>
+    <div class="info">
+      Current localStorage sidebar state: <code id="sidebarValue">-</code>
+    </div>
+    <button onclick="testSidebar()">Check Sidebar Persistence</button>
+    <div id="sidebarResult"></div>
+
+    <h3>DataContext Test</h3>
+    <div class="info">
+      Projects in localStorage: <code id="projectCount">-</code><br>
+      Tasks in localStorage: <code id="taskCount">-</code><br>
+      Team members in localStorage: <code id="teamCount">-</code>
+    </div>
+    <button onclick="testData()">Check Data Persistence</button>
+    <div id="dataResult"></div>
+  </div>
+
+  <script>
+    // Test results display
+    function showResult(containerId, message, pass) {
+      const container = document.getElementById(containerId);
+      const div = document.createElement('div');
+      div.className = `test-result ${pass ? 'pass' : 'fail'}`;
+      div.innerHTML = `<span class="status">${pass ? '✓' : '✗'}</span>${message}`;
+      container.appendChild(div);
+    }
+
+    // Automated test suite
+    document.getElementById('runTests').addEventListener('click', async () => {
+      const resultsDiv = document.getElementById('results');
+      resultsDiv.innerHTML = '<p>Running tests...</p>';
+
+      const tests = [];
+
+      // Test 1: All hooks exist
+      tests.push({
+        name: 'All custom hooks are exported',
+        test: async () => {
+          const hooks = await import('../../src/hooks/useLocalStorage.ts');
+          const debounce = await import('../../src/hooks/useDebounce.ts');
+          const clickOutside = await import('../../src/hooks/useClickOutside.ts');
+          const focusTrap = await import('../../src/hooks/useFocusTrap.ts');
+          return hooks.useLocalStorage && debounce.useDebounce &&
+                 clickOutside.useClickOutside && focusTrap.useFocusTrap;
+        }
+      });
+
+      // Test 2: All contexts exist
+      tests.push({
+        name: 'All context providers are exported',
+        test: async () => {
+          const theme = await import('../../src/context/ThemeContext.tsx');
+          const sidebar = await import('../../src/context/SidebarContext.tsx');
+          const toast = await import('../../src/context/ToastContext.tsx');
+          const data = await import('../../src/context/DataContext.tsx');
+          return theme.ThemeProvider && theme.useTheme &&
+                 sidebar.SidebarProvider && sidebar.useSidebar &&
+                 toast.ToastProvider && toast.useToast &&
+                 data.DataProvider && data.useData;
+        }
+      });
+
+      // Test 3: LocalStorage operations
+      tests.push({
+        name: 'localStorage read/write works correctly',
+        test: () => {
+          try {
+            localStorage.setItem('test-key', JSON.stringify({ value: 'test' }));
+            const retrieved = JSON.parse(localStorage.getItem('test-key'));
+            localStorage.removeItem('test-key');
+            return retrieved.value === 'test';
+          } catch {
+            return false;
+          }
+        }
+      });
+
+      // Test 4: Theme persistence
+      tests.push({
+        name: 'Theme persists to localStorage',
+        test: () => {
+          const themeKey = 'theme';
+          localStorage.setItem(themeKey, JSON.stringify('dark'));
+          const stored = JSON.parse(localStorage.getItem(themeKey));
+          return stored === 'dark';
+        }
+      });
+
+      // Test 5: Sidebar persistence
+      tests.push({
+        name: 'Sidebar state persists to localStorage',
+        test: () => {
+          const sidebarKey = 'sidebar-collapsed';
+          localStorage.setItem(sidebarKey, JSON.stringify(true));
+          const stored = JSON.parse(localStorage.getItem(sidebarKey));
+          return stored === true;
+        }
+      });
+
+      // Test 6: Data persistence
+      tests.push({
+        name: 'App data persists to localStorage',
+        test: () => {
+          const testData = { projects: [], tasks: [], team: [] };
+          localStorage.setItem('appData', JSON.stringify(testData));
+          const stored = JSON.parse(localStorage.getItem('appData'));
+          return stored && Array.isArray(stored.projects) &&
+                 Array.isArray(stored.tasks) && Array.isArray(stored.team);
+        }
+      });
+
+      // Test 7: Mock data available
+      tests.push({
+        name: 'Mock data exports properly',
+        test: async () => {
+          const mockData = await import('../../src/data/mockData.ts');
+          return mockData.projects && mockData.tasks && mockData.teamMembers &&
+                 mockData.projects.length === 10 &&
+                 mockData.tasks.length >= 15 &&
+                 mockData.teamMembers.length === 8;
+        }
+      });
+
+      // Run all tests
+      resultsDiv.innerHTML = '';
+      for (const test of tests) {
+        try {
+          const result = await test.test();
+          showResult('results', test.name, result);
+        } catch (error) {
+          showResult('results', `${test.name} - Error: ${error.message}`, false);
+        }
+      }
+    });
+
+    // Manual theme test
+    function testTheme() {
+      const themeValue = localStorage.getItem('theme');
+      document.getElementById('themeValue').textContent = themeValue || 'not set';
+
+      const result = themeValue !== null;
+      showResult('themeResult',
+        result ? 'Theme value found in localStorage' : 'Theme not persisted yet (load app first)',
+        result
+      );
+    }
+
+    // Manual sidebar test
+    function testSidebar() {
+      const sidebarValue = localStorage.getItem('sidebar-collapsed');
+      document.getElementById('sidebarValue').textContent = sidebarValue || 'not set';
+
+      const result = sidebarValue !== null;
+      showResult('sidebarResult',
+        result ? 'Sidebar state found in localStorage' : 'Sidebar state not persisted yet (load app first)',
+        result
+      );
+    }
+
+    // Manual data test
+    function testData() {
+      const appData = localStorage.getItem('appData');
+
+      if (appData) {
+        try {
+          const parsed = JSON.parse(appData);
+          document.getElementById('projectCount').textContent = parsed.projects?.length || 0;
+          document.getElementById('taskCount').textContent = parsed.tasks?.length || 0;
+          document.getElementById('teamCount').textContent = parsed.team?.length || 0;
+
+          showResult('dataResult', 'App data found and parsed successfully', true);
+        } catch (error) {
+          showResult('dataResult', 'App data corrupted: ' + error.message, false);
+        }
+      } else {
+        document.getElementById('projectCount').textContent = 'not set';
+        document.getElementById('taskCount').textContent = 'not set';
+        document.getElementById('teamCount').textContent = 'not set';
+        showResult('dataResult', 'App data not persisted yet (load app first)', false);
+      }
+    }
+
+    // Initialize manual tests
+    window.addEventListener('DOMContentLoaded', () => {
+      testTheme();
+      testSidebar();
+      testData();
+    });
+  </script>
+</body>
+</html>

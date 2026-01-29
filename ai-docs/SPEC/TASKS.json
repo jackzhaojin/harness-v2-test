@@ -1,0 +1,592 @@
+{
+  "version": "1.0",
+  "generatedBy": "spec-when",
+  "generatedAt": "2026-01-28T12:00:00Z",
+  "tasks": [
+    {
+      "id": "1",
+      "title": "Project scaffolding with Vite, React, TypeScript, and Tailwind",
+      "description": "Initialize the complete project foundation including Vite setup, React 18 with TypeScript strict mode, Tailwind CSS configuration, and all required dependencies. Establish the base file structure and configuration files as defined in the architecture.",
+      "acceptanceCriteria": [
+        "Vite project initialized with React TypeScript template",
+        "TypeScript strict mode enabled in tsconfig.json with no implicit any",
+        "Tailwind CSS installed and configured with dark mode class strategy",
+        "postcss.config.js configured for Tailwind",
+        "index.css imports Tailwind base, components, and utilities",
+        "React Router v6 installed and basic BrowserRouter configured in App.tsx",
+        "Lucide React icons package installed",
+        "Recharts library installed for data visualization",
+        "Playwright installed for E2E testing with basic config",
+        "npm run dev starts development server without errors",
+        "npm run build succeeds without errors",
+        "Base folder structure created: src/types, src/data, src/context, src/hooks, src/components, src/pages",
+        "Empty placeholder files created for main architectural pieces"
+      ],
+      "dependencies": [],
+      "estimatedComplexity": "medium",
+      "testingApproach": "Run npm run dev and verify app loads in browser. Run npm run build and verify no errors. Verify TypeScript compilation with npx tsc --noEmit.",
+      "status": "complete",
+      "subtasks": [],
+      "parentId": null
+    },
+    {
+      "id": "2",
+      "title": "Type definitions and mock data setup",
+      "description": "Create all TypeScript interfaces and types for the application data model, plus comprehensive mock data for projects, tasks, team members, and activities. This establishes the data foundation that all features will build upon.",
+      "acceptanceCriteria": [
+        "types/index.ts exports Project interface with id, name, status, progress, teamLead, dueDate, createdAt",
+        "types/index.ts exports Task interface with id, title, description, status, priority, assignee, dueDate, projectId",
+        "types/index.ts exports TeamMember interface with id, name, email, role, avatar, isOnline",
+        "types/index.ts exports Activity interface with id, userId, action, target, timestamp",
+        "TaskStatus type defined as union: 'todo' | 'in-progress' | 'done'",
+        "ProjectStatus type defined as union: 'active' | 'on-hold' | 'completed' | 'archived'",
+        "Priority type defined as union: 'low' | 'medium' | 'high'",
+        "TeamRole type defined as union: 'developer' | 'designer' | 'manager'",
+        "mockData.ts exports 10 project items with varied statuses and progress values",
+        "mockData.ts exports 15+ task items distributed across all three statuses",
+        "mockData.ts exports 8 team members with varied roles and online states",
+        "mockData.ts exports 10 activity items covering different action types",
+        "All mock data uses consistent IDs and valid cross-references between entities",
+        "TypeScript compiles without errors (npx tsc --noEmit passes)"
+      ],
+      "dependencies": [
+        "1"
+      ],
+      "estimatedComplexity": "medium",
+      "testingApproach": "Run npx tsc --noEmit to verify all types are valid. Import mock data in a test component and console.log to verify data structure. Verify cross-references (e.g., task assignees match team member IDs).",
+      "status": "complete",
+      "subtasks": [],
+      "parentId": null
+    },
+    {
+      "id": "3",
+      "title": "Core context providers and custom hooks",
+      "description": "Implement all React Context providers for global state management (theme, sidebar, toast notifications, app data) plus essential custom hooks (useLocalStorage, useClickOutside, useFocusTrap, useDebounce). These provide the state management foundation for the entire application.",
+      "acceptanceCriteria": [
+        "ThemeContext provides theme state (light/dark/system) with toggle function",
+        "Theme persists to localStorage and loads on app initialization",
+        "System theme option respects OS prefers-color-scheme preference",
+        "SidebarContext provides collapsed state with toggle function",
+        "Sidebar collapsed state persists to localStorage",
+        "ToastContext provides showToast function accepting message, type (success/error/info)",
+        "ToastContext manages toast queue with auto-dismiss after 3 seconds",
+        "DataContext provides projects, tasks, team data with useReducer",
+        "DataContext actions: ADD_PROJECT, UPDATE_PROJECT, DELETE_PROJECT, ADD_TASK, UPDATE_TASK, DELETE_TASK, MOVE_TASK",
+        "DataContext syncs state to localStorage on every change",
+        "useLocalStorage hook provides useState-like API with localStorage sync",
+        "useClickOutside hook detects clicks outside a ref element",
+        "useFocusTrap hook traps focus within modal/panel when active",
+        "useDebounce hook returns debounced value with configurable delay",
+        "All contexts wrapped in App.tsx providers hierarchy"
+      ],
+      "dependencies": [
+        "2"
+      ],
+      "estimatedComplexity": "large",
+      "testingApproach": "Create test component that uses each context. Toggle theme and verify dark class on html element. Add/remove items via DataContext and refresh to verify persistence. Test useDebounce with input field.",
+      "status": "pending",
+      "subtasks": [],
+      "parentId": null
+    },
+    {
+      "id": "4",
+      "title": "Reusable UI component library",
+      "description": "Build the complete set of reusable UI components including Button, Card, Badge, Input, Select, Toggle, Avatar, ProgressBar, and Dropdown. All components support variants, sizes, dark mode, and accessibility requirements.",
+      "acceptanceCriteria": [
+        "Button component with variants: primary, secondary, outline, ghost",
+        "Button component with sizes: sm, md, lg and loading state with spinner",
+        "Button has visible focus ring and disabled state styling",
+        "Card component with configurable padding and shadow variants",
+        "Badge component with color variants for status (green, yellow, blue, red, gray)",
+        "Input component with label, placeholder, error state, and dark mode support",
+        "Select component with options array, placeholder, and controlled value",
+        "Toggle component (switch) with on/off states and accessible labeling",
+        "Avatar component displaying image or initials fallback with size variants",
+        "ProgressBar component showing percentage with visual bar fill",
+        "Dropdown component with trigger button and menu items, closes on click outside",
+        "All components have TypeScript props interfaces",
+        "All components support dark mode via dark: Tailwind classes",
+        "All interactive components have focus:ring-2 focus states",
+        "Components are keyboard accessible (Tab navigation, Enter/Space activation)"
+      ],
+      "dependencies": [
+        "1"
+      ],
+      "estimatedComplexity": "large",
+      "testingApproach": "Create a test page displaying all component variants. Verify each variant renders correctly. Toggle dark mode and verify all components adapt. Test keyboard navigation through all interactive components.",
+      "status": "pending",
+      "subtasks": [],
+      "parentId": null
+    },
+    {
+      "id": "5",
+      "title": "Modal and Toast notification systems",
+      "description": "Implement the Modal dialog component with compound pattern (Header, Body, Footer) and the Toast notification system with stacking, auto-dismiss, and animations. These are critical shared components used throughout the application.",
+      "acceptanceCriteria": [
+        "Modal renders centered with semi-transparent backdrop overlay",
+        "Modal has compound components: Modal.Header, Modal.Body, Modal.Footer",
+        "Modal.Header includes close button (X) in corner",
+        "Clicking backdrop closes modal (unless prevented)",
+        "Pressing Escape key closes modal",
+        "Focus is trapped inside modal when open (Tab cycles through modal elements)",
+        "Modal has smooth fade-in/out animation (200-300ms)",
+        "Modal body scrolls if content overflows viewport",
+        "Toast component appears in bottom-right corner of viewport",
+        "Toast shows message, type icon (success=green, error=red, info=blue)",
+        "Toast has close button (X) for manual dismiss",
+        "Toast auto-dismisses after 3 seconds",
+        "Multiple toasts stack vertically with newest at bottom",
+        "Toast has enter animation (slide up) and exit animation (fade out)",
+        "Both components render via React Portal to document.body"
+      ],
+      "dependencies": [
+        "3",
+        "4"
+      ],
+      "estimatedComplexity": "medium",
+      "testingApproach": "Open modal and verify focus trap by tabbing. Press Escape to close. Click backdrop to close. Trigger multiple toasts and verify stacking. Wait 3 seconds and verify auto-dismiss.",
+      "status": "pending",
+      "subtasks": [],
+      "parentId": null
+    },
+    {
+      "id": "6",
+      "title": "App shell with sidebar and header navigation",
+      "description": "Build the main application layout including the collapsible sidebar with navigation items, top header with search and user menu, and mobile responsive hamburger menu overlay. Implements Stories 1, 2, and 4.",
+      "acceptanceCriteria": [
+        "AppShell component wraps all pages with sidebar and header",
+        "Sidebar displays nav items: Dashboard, Projects, Tasks, Team, Settings with Lucide icons",
+        "Each nav item links to corresponding route via React Router NavLink",
+        "Active page highlighted with distinct background/text color",
+        "Sidebar collapse toggle button shrinks to icons-only mode",
+        "Collapsed/expanded state persists via SidebarContext to localStorage",
+        "Sidebar uses semantic <nav> and <aside> elements",
+        "Header fixed at top, spans content area width",
+        "Header contains search input with search icon and placeholder text",
+        "Header contains notifications bell icon with unread dot indicator",
+        "Header contains user avatar that opens dropdown menu on click",
+        "Dropdown contains Profile, Settings, Logout options",
+        "Clicking outside dropdown closes it (useClickOutside)",
+        "Below 768px: sidebar hidden, hamburger icon in header",
+        "Mobile: hamburger opens full-screen overlay with backdrop",
+        "Mobile overlay has close (X) button and closes on nav item click",
+        "Tablet (768-1024px): sidebar shows icons only by default"
+      ],
+      "dependencies": [
+        "3",
+        "4"
+      ],
+      "estimatedComplexity": "large",
+      "testingApproach": "Navigate to each page via sidebar and verify URL changes. Toggle sidebar collapse and refresh to verify persistence. Resize to mobile and verify hamburger menu. Open user dropdown and click outside to close.",
+      "status": "pending",
+      "subtasks": [],
+      "parentId": null
+    },
+    {
+      "id": "7",
+      "title": "Dark/light theme toggle with full application theming",
+      "description": "Implement the theme toggle functionality in the header and apply dark mode styling throughout the entire application. Theme selection (light/dark/system) persists to localStorage and respects OS preferences when set to system.",
+      "acceptanceCriteria": [
+        "Theme toggle button visible in header with sun/moon icon",
+        "Clicking toggle cycles between light and dark modes",
+        "Light mode: gray-50 background, white cards, gray-900 text",
+        "Dark mode: gray-900 background, gray-800 cards, gray-100 text",
+        "Theme applies to all existing components (sidebar, header, cards, inputs)",
+        "Selected theme persists to localStorage",
+        "On initial load, theme reads from localStorage (defaults to light)",
+        "System option in Settings follows OS prefers-color-scheme",
+        "Theme changes apply immediately without page refresh",
+        "All text maintains readable contrast in both themes",
+        "Borders, shadows, and dividers adapt to theme",
+        "Charts will adapt colors when implemented (foundation ready)"
+      ],
+      "dependencies": [
+        "6"
+      ],
+      "estimatedComplexity": "medium",
+      "testingApproach": "Toggle theme and verify all visible elements change colors. Refresh page and verify theme persists. Set to system and change OS preference to verify it follows. Check no console errors during toggle.",
+      "status": "pending",
+      "subtasks": [],
+      "parentId": null
+    },
+    {
+      "id": "8",
+      "title": "Dashboard page with stats cards and activity feed",
+      "description": "Build the Dashboard page with four clickable stat cards (Total Projects, Active Tasks, Team Members, Completed This Week), the Recent Activity feed, and responsive grid layout. Implements Stories 5 and 7.",
+      "acceptanceCriteria": [
+        "Dashboard page renders at / route",
+        "Four stat cards in responsive grid: 1 col mobile, 2 col tablet, 4 col desktop",
+        "Card 1: Total Projects with count from DataContext",
+        "Card 2: Active Tasks showing count of non-done tasks",
+        "Card 3: Team Members with count from DataContext",
+        "Card 4: Completed This Week showing done tasks count",
+        "Each card displays icon, label text, and large number",
+        "Cards have hover effect (shadow/scale transition)",
+        "Clicking stat card navigates to relevant page (Projects, Tasks, Team)",
+        "Activity feed section with Recent Activity header",
+        "Displays last 5 activities from mock data",
+        "Each activity shows: user avatar, formatted action text, relative timestamp",
+        "Action format: [User] [action] [target] (e.g., Alice completed Homepage design)",
+        "Timestamps show relative time (e.g., 2 hours ago, yesterday)",
+        "Feed items have subtle dividers between them",
+        "View all link at bottom navigates to Tasks page"
+      ],
+      "dependencies": [
+        "6",
+        "7"
+      ],
+      "estimatedComplexity": "medium",
+      "testingApproach": "Load dashboard and verify all 4 stat cards show correct counts. Click each card and verify navigation. Check activity feed shows 5 items with proper formatting. Resize window to verify responsive grid.",
+      "status": "pending",
+      "subtasks": [],
+      "parentId": null
+    },
+    {
+      "id": "9",
+      "title": "Dashboard charts with Recharts integration",
+      "description": "Add the line chart showing task completions over the past 7 days and the pie/donut chart showing tasks by status distribution. Both charts are responsive and adapt to the current theme.",
+      "acceptanceCriteria": [
+        "Line chart section below stat cards showing Task Completions",
+        "Line chart X-axis shows day labels (Mon, Tue, Wed, etc.)",
+        "Line chart Y-axis shows count of completed tasks",
+        "Line chart data derived from mock activities/tasks",
+        "Pie/donut chart showing Tasks by Status distribution",
+        "Pie chart segments: To Do, In Progress, Done with distinct colors",
+        "Pie chart includes legend with labels and counts",
+        "Both charts have tooltips on hover showing exact values",
+        "Charts are responsive (resize with container)",
+        "Chart colors adapt to current theme (lighter in dark mode)",
+        "Charts render without console errors",
+        "Charts section has proper heading/labels"
+      ],
+      "dependencies": [
+        "8"
+      ],
+      "estimatedComplexity": "medium",
+      "testingApproach": "Load dashboard and verify both charts render. Hover over data points and verify tooltips appear. Resize browser and verify charts remain visible. Toggle theme and verify colors adapt appropriately.",
+      "status": "pending",
+      "subtasks": [],
+      "parentId": null
+    },
+    {
+      "id": "10",
+      "title": "Projects table with display, filtering, sorting, and pagination",
+      "description": "Build the Projects page with a full-featured data table including columns display, search filtering (debounced), column sorting with indicators, and pagination. Implements Stories 8, 9, and 10.",
+      "acceptanceCriteria": [
+        "Projects page renders at /projects route",
+        "Table displays columns: Name, Status, Progress, Team Lead, Due Date, Actions",
+        "Status shows as colored badge (Active=green, On Hold=yellow, Completed=blue)",
+        "Progress column shows percentage with visual ProgressBar component",
+        "Due Date formatted as readable date (e.g., Feb 15, 2026)",
+        "Actions column has dropdown menu icon (kebab/three dots)",
+        "Table has alternating row backgrounds for readability",
+        "Table is horizontally scrollable on mobile viewports",
+        "Search input above table filters projects by name (case-insensitive)",
+        "Search is debounced (300ms delay before filtering)",
+        "Clicking column header sorts by that column",
+        "Sort indicator arrow shows current sort column and direction",
+        "Clicking same header toggles ascending/descending",
+        "Default sort by name ascending",
+        "Empty state message when search returns no results",
+        "Pagination: 5 projects per page",
+        "Pagination controls: Previous, page numbers, Next",
+        "Current page number highlighted",
+        "Previous disabled on first page, Next disabled on last",
+        "Page info text shows Showing X-Y of Z projects",
+        "Changing search resets to page 1"
+      ],
+      "dependencies": [
+        "6",
+        "7"
+      ],
+      "estimatedComplexity": "large",
+      "testingApproach": "Load projects page and verify table displays all columns. Type in search and verify filtering after 300ms delay. Click column headers and verify sorting with indicator. Navigate through pages and verify controls.",
+      "status": "pending",
+      "subtasks": [],
+      "parentId": null
+    },
+    {
+      "id": "11",
+      "title": "Project CRUD operations with modals",
+      "description": "Implement Create, Edit, and Delete functionality for projects including the New Project modal form, Edit modal with pre-filled data, and Delete confirmation modal. Implements Stories 11 and 12.",
+      "acceptanceCriteria": [
+        "New Project button visible above projects table",
+        "Clicking New Project opens modal with form",
+        "Form fields: Name (required), Status dropdown, Team Lead dropdown, Due Date picker",
+        "Status options: Active, On Hold, Completed",
+        "Team Lead options populated from team members data",
+        "Submit button disabled until Name field is filled",
+        "Submitting adds project to DataContext and closes modal",
+        "New project appears in table after creation",
+        "Cancel button closes modal without saving",
+        "Actions dropdown contains: Edit, Archive, Delete options",
+        "Clicking Edit opens modal pre-filled with project data",
+        "Saving Edit updates project in DataContext",
+        "Clicking Archive updates project status to Archived",
+        "Clicking Delete opens confirmation modal",
+        "Confirmation shows project name and permanent warning",
+        "Confirming delete removes project from DataContext",
+        "Cancel in confirmation returns without deleting",
+        "Toast notifications show on successful create/edit/delete"
+      ],
+      "dependencies": [
+        "5",
+        "10"
+      ],
+      "estimatedComplexity": "medium",
+      "testingApproach": "Click New Project, fill form, submit and verify project appears in table. Edit a project and verify changes persist. Delete a project with confirmation and verify removal. Check toasts appear for all actions.",
+      "status": "pending",
+      "subtasks": [],
+      "parentId": null
+    },
+    {
+      "id": "12",
+      "title": "Kanban board layout and task card display",
+      "description": "Build the Tasks page with three-column Kanban layout (To Do, In Progress, Done) and task cards displaying title, assignee avatar, priority badge, and due date. Implements Stories 13 and 14.",
+      "acceptanceCriteria": [
+        "Tasks page renders at /tasks route",
+        "Three columns displayed: To Do, In Progress, Done",
+        "Column headers show column name and task count badge",
+        "Columns are equal width on desktop (>1024px)",
+        "Columns stack vertically on mobile (<768px)",
+        "Each column has scrollable content area for many tasks",
+        "Empty columns show No tasks placeholder text",
+        "Columns have subtle background color differentiation",
+        "Task cards show: title, assignee avatar, priority badge, due date",
+        "Priority badges: Low (gray), Medium (yellow), High (red)",
+        "Assignee shown as small circular avatar with tooltip for name",
+        "Due date formatted as short date (e.g., Jan 28)",
+        "Overdue tasks show due date in red text",
+        "Cards have white (light) / gray-800 (dark) background with shadow",
+        "Cards have hover state with elevated shadow",
+        "Tasks correctly sorted into columns based on status from DataContext"
+      ],
+      "dependencies": [
+        "6",
+        "7"
+      ],
+      "estimatedComplexity": "medium",
+      "testingApproach": "Load tasks page and verify three columns with correct headers. Verify tasks appear in correct columns based on status. Check card displays all required info. Resize to mobile and verify stacking.",
+      "status": "pending",
+      "subtasks": [],
+      "parentId": null
+    },
+    {
+      "id": "13",
+      "title": "Kanban drag-and-drop with persistence",
+      "description": "Implement HTML5 native drag-and-drop for moving task cards between columns, including visual feedback during drag, drop zone highlighting, and localStorage persistence of task positions.",
+      "acceptanceCriteria": [
+        "Task cards show grab cursor on hover",
+        "Dragging task shows visual feedback (reduced opacity on source card)",
+        "Drag ghost/preview visible while dragging",
+        "Drop zones highlight when dragging task over valid column",
+        "Dropping task moves it to new column immediately",
+        "Task appears at bottom of target column after drop",
+        "Column task counts update after move",
+        "Task status in DataContext updates to match column (todo/in-progress/done)",
+        "Moved task position persists after page refresh",
+        "Invalid drop (outside columns) returns card to original position",
+        "Drag works correctly in both light and dark modes",
+        "Touch devices: basic touch support (if feasible with HTML5 API)"
+      ],
+      "dependencies": [
+        "12"
+      ],
+      "estimatedComplexity": "medium",
+      "testingApproach": "Drag task from To Do to In Progress, verify move and count update. Drag to Done, verify. Refresh page and verify tasks remain in new positions. Test dropping outside column area.",
+      "status": "pending",
+      "subtasks": [],
+      "parentId": null
+    },
+    {
+      "id": "14",
+      "title": "Task CRUD with forms and detail panel",
+      "description": "Implement Add Task functionality per column, task editing via slide-over detail panel, and task deletion. Includes form validation and persistence. Implements Stories 16 and 17.",
+      "acceptanceCriteria": [
+        "Add Task button visible at bottom of each column",
+        "Clicking Add Task opens inline form or modal for new task",
+        "Form fields: Title (required), Priority dropdown, Assignee dropdown, Due Date picker",
+        "Default priority is Medium",
+        "Submitting adds task to that column via DataContext",
+        "New task appears at bottom of column immediately",
+        "Cancel closes form without adding task",
+        "New tasks persist to localStorage",
+        "Clicking task card opens SlideOver panel from right side",
+        "Panel shows full task details: title, description, priority, assignee, due date, status",
+        "Panel has edit mode toggle button",
+        "In edit mode, fields become editable form inputs",
+        "Save button in edit mode persists changes to DataContext",
+        "Delete button in panel removes task with confirmation",
+        "Close button (X) or clicking outside closes panel",
+        "Panel has smooth slide animation (300ms)",
+        "Pressing Escape closes panel"
+      ],
+      "dependencies": [
+        "5",
+        "13"
+      ],
+      "estimatedComplexity": "large",
+      "testingApproach": "Add new task to each column and verify they appear. Click task to open panel, toggle edit mode, make changes and save. Verify changes persist after refresh. Delete task and verify removal.",
+      "status": "pending",
+      "subtasks": [],
+      "parentId": null
+    },
+    {
+      "id": "15",
+      "title": "Team members page with grid and filtering",
+      "description": "Build the Team page with responsive card grid layout, member cards showing details and online status, and filtering by search and role dropdown. Implements Stories 18 and 19.",
+      "acceptanceCriteria": [
+        "Team page renders at /team route",
+        "Members displayed in responsive card grid layout",
+        "Grid: 1 column mobile, 2 columns tablet, 3 columns desktop",
+        "Each card shows: large avatar, name, role, email, online status indicator",
+        "Online status: green dot for online, gray dot for offline",
+        "Email is clickable mailto link",
+        "Cards have consistent height regardless of content",
+        "Cards have hover effect (shadow or border change)",
+        "Search input filters members by name (case-insensitive, real-time)",
+        "Role dropdown filter with options: All, Developer, Designer, Manager",
+        "Filters can be combined (search + role together)",
+        "Empty state message when no members match filters",
+        "Filter state resets on page navigation",
+        "Result count shown (e.g., Showing 3 of 8 members)",
+        "All cards adapt properly to dark mode"
+      ],
+      "dependencies": [
+        "6",
+        "7"
+      ],
+      "estimatedComplexity": "medium",
+      "testingApproach": "Load team page and verify grid displays all members. Type in search to filter by name. Select role from dropdown and verify filter combines with search. Check empty state appears when no matches.",
+      "status": "pending",
+      "subtasks": [],
+      "parentId": null
+    },
+    {
+      "id": "16",
+      "title": "Team member invite modal",
+      "description": "Add the Invite Member button and modal with email validation. This is a UI demonstration only (no actual member creation). Implements Story 20.",
+      "acceptanceCriteria": [
+        "Invite Member button visible above team grid",
+        "Clicking button opens modal with email input field",
+        "Email field has placeholder text",
+        "Basic email format validation (contains @ and .)",
+        "Invalid email shows error styling on input",
+        "Submit button disabled for invalid or empty email",
+        "Submitting valid email shows success toast: Invite sent to [email]!",
+        "Modal closes after successful submission",
+        "Cancel button closes modal without action",
+        "No actual member is added (UI demonstration only)",
+        "Form resets when modal reopens"
+      ],
+      "dependencies": [
+        "5",
+        "15"
+      ],
+      "estimatedComplexity": "small",
+      "testingApproach": "Open invite modal, try submitting empty/invalid email and verify button disabled. Enter valid email, submit and verify toast appears. Reopen modal and verify form is reset.",
+      "status": "pending",
+      "subtasks": [],
+      "parentId": null
+    },
+    {
+      "id": "17",
+      "title": "Settings page with profile, notifications, and appearance sections",
+      "description": "Build the complete Settings page including Profile section (name, email, avatar), Notifications section (three toggles), and Appearance section (theme selector, accent colors). All settings persist to localStorage. Implements Stories 21, 22, 23, and 24.",
+      "acceptanceCriteria": [
+        "Settings page renders at /settings route",
+        "Profile section with heading and current avatar display",
+        "Name input field (editable) with current value",
+        "Email input field (read-only/disabled)",
+        "Change Avatar button shows Coming soon! toast on click",
+        "Notifications section with heading",
+        "Three toggle switches: Email, Push, Slack notifications",
+        "Toggles show current on/off state visually",
+        "Default: Email on, Push on, Slack off",
+        "Appearance section with heading",
+        "Theme selector: Light, Dark, System options (radio or segmented)",
+        "System option follows OS prefers-color-scheme",
+        "Accent color picker with 5 swatches: blue, purple, green, orange, pink",
+        "Selected accent color applies to primary buttons and accents app-wide",
+        "Save Changes button at bottom of page",
+        "Save button shows brief loading state on click",
+        "Success toast appears: Settings saved!",
+        "All settings sections save together on Save click",
+        "Settings persist to localStorage and survive page refresh/browser restart",
+        "Initial values load from localStorage or use defaults"
+      ],
+      "dependencies": [
+        "5",
+        "6",
+        "7"
+      ],
+      "estimatedComplexity": "large",
+      "testingApproach": "Load settings, change name, toggle notifications, select theme/accent color. Click Save and verify toast. Refresh page and verify all settings retained. Test theme changes apply globally.",
+      "status": "pending",
+      "subtasks": [],
+      "parentId": null
+    },
+    {
+      "id": "18",
+      "title": "SlideOver panel component",
+      "description": "Build the reusable SlideOver panel component used for task details and potentially other uses. Includes slide animation, focus trap, and accessibility features.",
+      "acceptanceCriteria": [
+        "SlideOver component slides in from right side of viewport",
+        "Semi-transparent backdrop behind panel",
+        "Panel has header area for title and close button",
+        "Panel has scrollable body area for content",
+        "Panel has optional footer area for actions",
+        "Close button (X) in header closes panel",
+        "Clicking backdrop closes panel",
+        "Pressing Escape key closes panel",
+        "Focus trapped inside panel when open",
+        "Smooth slide animation on open/close (300ms)",
+        "Panel renders via React Portal",
+        "Component accepts onClose callback prop",
+        "Works correctly in both light and dark modes",
+        "TypeScript props interface defined"
+      ],
+      "dependencies": [
+        "3",
+        "4"
+      ],
+      "estimatedComplexity": "medium",
+      "testingApproach": "Trigger SlideOver open and verify animation. Tab through elements to verify focus trap. Press Escape and verify closes. Click backdrop and verify closes. Test in both themes.",
+      "status": "pending",
+      "subtasks": [],
+      "parentId": null
+    },
+    {
+      "id": "19",
+      "title": "Playwright E2E test suite",
+      "description": "Create comprehensive Playwright E2E tests covering all critical user flows: navigation, theme toggle, projects CRUD, Kanban drag-drop, team filtering, settings persistence, and mobile responsive behavior. Implements Story 29.",
+      "acceptanceCriteria": [
+        "playwright.config.ts configured with appropriate settings",
+        "Test: Navigate to each page via sidebar (Dashboard, Projects, Tasks, Team, Settings)",
+        "Test: Toggle dark mode and verify theme class changes on html element",
+        "Test: Search projects table and verify filtered results count",
+        "Test: Sort projects table by clicking column headers",
+        "Test: Open and close project create/edit modal",
+        "Test: Drag task between Kanban columns and verify move",
+        "Test: Open task detail panel and close with Escape key",
+        "Test: Filter team members by role dropdown",
+        "Test: Save settings and verify toast notification appears",
+        "Test: Mobile viewport - hamburger menu opens sidebar overlay",
+        "All tests pass with npm run test:e2e or npx playwright test",
+        "Tests run against development build",
+        "Test files organized in tests/e2e/ directory"
+      ],
+      "dependencies": [
+        "11",
+        "14",
+        "16",
+        "17"
+      ],
+      "estimatedComplexity": "large",
+      "testingApproach": "Run npx playwright test and verify all tests pass. Run tests in headed mode to visually verify interactions. Check test coverage includes all specified flows.",
+      "status": "pending",
+      "subtasks": [],
+      "parentId": null
+    }
+  ]
+}

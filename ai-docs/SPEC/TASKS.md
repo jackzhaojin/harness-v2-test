@@ -1,0 +1,21 @@
+# Tasks
+
+- [x] Task 1: Project scaffolding with Vite, React, TypeScript, and Tailwind
+- [x] Task 2: Type definitions and mock data setup
+- [ ] Task 3: Core context providers and custom hooks
+- [ ] Task 4: Reusable UI component library
+- [ ] Task 5: Modal and Toast notification systems
+- [ ] Task 6: App shell with sidebar and header navigation
+- [ ] Task 7: Dark/light theme toggle with full application theming
+- [ ] Task 8: Dashboard page with stats cards and activity feed
+- [ ] Task 9: Dashboard charts with Recharts integration
+- [ ] Task 10: Projects table with display, filtering, sorting, and pagination
+- [ ] Task 11: Project CRUD operations with modals
+- [ ] Task 12: Kanban board layout and task card display
+- [ ] Task 13: Kanban drag-and-drop with persistence
+- [ ] Task 14: Task CRUD with forms and detail panel
+- [ ] Task 15: Team members page with grid and filtering
+- [ ] Task 16: Team member invite modal
+- [ ] Task 17: Settings page with profile, notifications, and appearance sections
+- [ ] Task 18: SlideOver panel component
+- [ ] Task 19: Playwright E2E test suite
