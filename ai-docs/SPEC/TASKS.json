@@ -530,7 +530,7 @@
       ],
       "estimatedComplexity": "large",
       "testingApproach": "Load settings, change name, toggle notifications, select theme/accent color. Click Save and verify toast. Refresh page and verify all settings retained. Test theme changes apply globally.",
-      "status": "pending",
+      "status": "complete",
       "subtasks": [],
       "parentId": null
     },

@@ -16,7 +16,7 @@
 - [x] Task 14: Task CRUD with forms and detail panel
 - [x] Task 15: Team members page with grid and filtering
 - [x] Task 16: Team member invite modal
-- [ ] Task 17: Settings page with profile, notifications, and appearance sections
+- [x] Task 17: Settings page with profile, notifications, and appearance sections
 - [ ] Task 18: SlideOver panel component
 - [ ] Task 19: Playwright E2E test suite
 - [x] Task 5.3: Fix: Clicking backdrop does not close modal
