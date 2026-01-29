@@ -13,7 +13,7 @@
 - [x] Task 11: Project CRUD operations with modals
 - [x] Task 12: Kanban board layout and task card display
 - [x] Task 13: Kanban drag-and-drop with persistence
-- [ ] Task 14: Task CRUD with forms and detail panel
+- [x] Task 14: Task CRUD with forms and detail panel
 - [ ] Task 15: Team members page with grid and filtering
 - [ ] Task 16: Team member invite modal
 - [ ] Task 17: Settings page with profile, notifications, and appearance sections
