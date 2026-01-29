@@ -272,7 +272,7 @@
       ],
       "estimatedComplexity": "medium",
       "testingApproach": "Load dashboard and verify both charts render. Hover over data points and verify tooltips appear. Resize browser and verify charts remain visible. Toggle theme and verify colors adapt appropriately.",
-      "status": "pending",
+      "status": "complete",
       "subtasks": [],
       "parentId": null
     },
