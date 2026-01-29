@@ -28,8 +28,8 @@ test.describe('Task 7.1: Dark mode bg fix & system theme selector', () => {
     // Verify heading
     await expect(page.locator('h1')).toContainText('Settings');
 
-    // Verify radiogroup exists
-    const radioGroup = page.locator('[role="radiogroup"]');
+    // Verify theme radiogroup exists
+    const radioGroup = page.getByRole('radiogroup', { name: 'Theme preference' });
     await expect(radioGroup).toBeVisible();
 
     // Verify all three options exist

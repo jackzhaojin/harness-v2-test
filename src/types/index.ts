@@ -45,3 +45,17 @@ export interface Activity {
   target: string;
   timestamp: string;
 }
+
+// Settings types
+export type AccentColor = 'blue' | 'purple' | 'green' | 'orange' | 'pink';
+
+export interface NotificationSettings {
+  email: boolean;
+  push: boolean;
+  slack: boolean;
+}
+
+export interface UserProfile {
+  name: string;
+  email: string;
+}

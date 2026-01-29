@@ -493,7 +493,7 @@
       ],
       "estimatedComplexity": "small",
       "testingApproach": "Open invite modal, try submitting empty/invalid email and verify button disabled. Enter valid email, submit and verify toast appears. Reopen modal and verify form is reset.",
-      "status": "pending",
+      "status": "complete",
       "subtasks": [],
       "parentId": null
     },

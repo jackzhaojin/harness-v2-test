@@ -1,3 +1,10 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Accent color custom properties — default blue */
+:root {
+  --accent-primary: 59 130 246;
+  --accent-hover: 37 99 235;
+  --accent-ring: 59 130 246;
+}
