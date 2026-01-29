@@ -560,7 +560,7 @@
       ],
       "estimatedComplexity": "medium",
       "testingApproach": "Trigger SlideOver open and verify animation. Tab through elements to verify focus trap. Press Escape and verify closes. Click backdrop and verify closes. Test in both themes.",
-      "status": "pending",
+      "status": "complete",
       "subtasks": [],
       "parentId": null
     },
