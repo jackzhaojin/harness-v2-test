@@ -8,12 +8,16 @@ import { Toggle } from '../components/ui/Toggle';
 import { Avatar } from '../components/ui/Avatar';
 import { ProgressBar } from '../components/ui/ProgressBar';
 import { Dropdown } from '../components/ui/Dropdown';
+import { Modal } from '../components/ui/Modal';
+import { useToast } from '../context/ToastContext';
 
 export default function ComponentShowcase(): JSX.Element {
   const [toggleChecked, setToggleChecked] = useState(false);
   const [inputValue, setInputValue] = useState('');
   const [selectValue, setSelectValue] = useState('');
   const [loadingBtn, setLoadingBtn] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
+  const { showToast } = useToast();
 
   const handleLoadingClick = (): void => {
     setLoadingBtn(true);
@@ -210,6 +214,82 @@ export default function ComponentShowcase(): JSX.Element {
               ]}
               onSelect={(value) => console.log('Selected:', value)}
             />
+          </div>
+        </Card>
+      </section>
+
+      {/* Modal */}
+      <section className="mb-8" data-testid="modal-section">
+        <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+          Modal
+        </h2>
+        <Card>
+          <div className="flex gap-3">
+            <Button variant="primary" onClick={() => setModalOpen(true)}>
+              Open Modal
+            </Button>
+          </div>
+        </Card>
+
+        <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)}>
+          <Modal.Header>Example Modal</Modal.Header>
+          <Modal.Body>
+            <div className="space-y-4">
+              <p className="text-gray-600 dark:text-gray-300">
+                This is a modal dialog with compound components. It supports:
+              </p>
+              <ul className="list-disc list-inside text-sm text-gray-600 dark:text-gray-300 space-y-1">
+                <li>Centered overlay with semi-transparent backdrop</li>
+                <li>Header with close button (X)</li>
+                <li>Scrollable body content</li>
+                <li>Footer with action buttons</li>
+                <li>Escape key to close</li>
+                <li>Click backdrop to close</li>
+                <li>Focus trap (Tab cycles within modal)</li>
+                <li>Smooth fade-in/out animations</li>
+              </ul>
+              <Input
+                label="Sample Input (for focus trap testing)"
+                placeholder="Type here to test focus trap..."
+              />
+            </div>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="outline" onClick={() => setModalOpen(false)}>
+              Cancel
+            </Button>
+            <Button variant="primary" onClick={() => setModalOpen(false)}>
+              Confirm
+            </Button>
+          </Modal.Footer>
+        </Modal>
+      </section>
+
+      {/* Toast */}
+      <section className="mb-8" data-testid="toast-section">
+        <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+          Toast Notifications
+        </h2>
+        <Card>
+          <div className="flex flex-wrap gap-3">
+            <Button
+              variant="primary"
+              onClick={() => showToast('Operation completed successfully!', 'success')}
+            >
+              Success Toast
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => showToast('Something went wrong. Please try again.', 'error')}
+            >
+              Error Toast
+            </Button>
+            <Button
+              variant="secondary"
+              onClick={() => showToast('Here is some useful information.', 'info')}
+            >
+              Info Toast
+            </Button>
           </div>
         </Card>
       </section>

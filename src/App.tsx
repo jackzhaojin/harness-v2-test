@@ -3,6 +3,7 @@ import { ThemeProvider } from './context/ThemeContext';
 import { SidebarProvider } from './context/SidebarContext';
 import { ToastProvider } from './context/ToastContext';
 import { DataProvider } from './context/DataContext';
+import { ToastContainer } from './components/ui/Toast';
 import Dashboard from './pages/Dashboard';
 import Projects from './pages/Projects';
 import Tasks from './pages/Tasks';
@@ -26,6 +27,7 @@ function App(): JSX.Element {
                 <Route path="/components" element={<ComponentShowcase />} />
               </Routes>
             </BrowserRouter>
+            <ToastContainer />
           </DataProvider>
         </ToastProvider>
       </SidebarProvider>
