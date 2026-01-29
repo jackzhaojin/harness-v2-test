@@ -8,6 +8,7 @@ import Projects from './pages/Projects';
 import Tasks from './pages/Tasks';
 import Team from './pages/Team';
 import Settings from './pages/Settings';
+import ComponentShowcase from './pages/ComponentShowcase';
 
 function App(): JSX.Element {
   return (
@@ -22,6 +23,7 @@ function App(): JSX.Element {
                 <Route path="/tasks" element={<Tasks />} />
                 <Route path="/team" element={<Team />} />
                 <Route path="/settings" element={<Settings />} />
+                <Route path="/components" element={<ComponentShowcase />} />
               </Routes>
             </BrowserRouter>
           </DataProvider>

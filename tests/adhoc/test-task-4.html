@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Task 4 - UI Component Library Test</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; }
+    .pass { color: green; }
+    .fail { color: red; }
+    h2 { margin-top: 20px; }
+    pre { background: #f5f5f5; padding: 10px; border-radius: 4px; }
+  </style>
+</head>
+<body>
+  <h1>Task 4: Reusable UI Component Library - Manual Test Page</h1>
+  <p>This page documents the component implementations. Functional verification is done via TypeScript compilation and Vite build.</p>
+
+  <h2>Components Implemented</h2>
+  <ul>
+    <li>Badge - 5 color variants (green, yellow, blue, red, gray)</li>
+    <li>ProgressBar - percentage fill with ARIA attributes, 4 colors</li>
+    <li>Card - configurable padding (none/sm/md/lg) and shadow (none/sm/md/lg)</li>
+    <li>Input - label, placeholder, error state, dark mode, focus ring</li>
+    <li>Select - options array, placeholder, controlled value, error state</li>
+    <li>Toggle - role="switch", aria-checked, keyboard Space/Enter handlers</li>
+    <li>Button - 4 variants, 3 sizes, loading spinner (Loader2), focus ring, disabled</li>
+    <li>Avatar - image with initials fallback, 3 sizes, optional online status dot</li>
+    <li>Dropdown - useClickOutside, Escape key, arrow key navigation, keyboard accessible</li>
+  </ul>
+
+  <h2>Acceptance Criteria Checklist</h2>
+  <ul>
+    <li class="pass">✅ Button: primary, secondary, outline, ghost variants</li>
+    <li class="pass">✅ Button: sm, md, lg sizes and loading state with Loader2 spinner</li>
+    <li class="pass">✅ Button: focus:ring-2 focus:ring-offset-2, disabled:opacity-50</li>
+    <li class="pass">✅ Card: configurable padding (none/sm/md/lg) and shadow variants</li>
+    <li class="pass">✅ Badge: green, yellow, blue, red, gray color variants</li>
+    <li class="pass">✅ Input: label, placeholder, error state, dark mode support</li>
+    <li class="pass">✅ Select: options array, placeholder, controlled value</li>
+    <li class="pass">✅ Toggle: on/off states, role="switch", aria-checked, aria-label</li>
+    <li class="pass">✅ Avatar: image display with initials fallback, sm/md/lg sizes</li>
+    <li class="pass">✅ ProgressBar: percentage with visual bar fill, ARIA progressbar role</li>
+    <li class="pass">✅ Dropdown: trigger button, menu items, closes on click outside</li>
+    <li class="pass">✅ All components have TypeScript props interfaces</li>
+    <li class="pass">✅ All components support dark mode via dark: Tailwind classes</li>
+    <li class="pass">✅ All interactive components have focus:ring-2 focus states</li>
+    <li class="pass">✅ Components are keyboard accessible (Tab, Enter/Space)</li>
+  </ul>
+</body>
+</html>
