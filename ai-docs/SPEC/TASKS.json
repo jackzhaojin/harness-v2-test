@@ -343,7 +343,7 @@
       ],
       "estimatedComplexity": "medium",
       "testingApproach": "Click New Project, fill form, submit and verify project appears in table. Edit a project and verify changes persist. Delete a project with confirmation and verify removal. Check toasts appear for all actions.",
-      "status": "pending",
+      "status": "complete",
       "subtasks": [],
       "parentId": null
     },

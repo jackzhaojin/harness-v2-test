@@ -10,7 +10,7 @@
 - [x] Task 8: Dashboard page with stats cards and activity feed
 - [x] Task 9: Dashboard charts with Recharts integration
 - [x] Task 10: Projects table with display, filtering, sorting, and pagination
-- [ ] Task 11: Project CRUD operations with modals
+- [x] Task 11: Project CRUD operations with modals
 - [ ] Task 12: Kanban board layout and task card display
 - [ ] Task 13: Kanban drag-and-drop with persistence
 - [ ] Task 14: Task CRUD with forms and detail panel
