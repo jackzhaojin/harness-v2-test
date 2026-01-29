@@ -65,7 +65,7 @@ function renderLegend(
   const { payload } = props as { payload: Array<{ color: string; value: string; payload: { value: number } }> };
 
   return (
-    <ul className="flex flex-wrap justify-center gap-x-5 gap-y-1 mt-2" role="list">
+    <ul className="flex flex-wrap justify-center gap-x-5 gap-y-1 mt-2" data-testid="chart-legend">
       {payload.map((entry) => (
         <li key={entry.value} className="flex items-center gap-1.5 text-sm text-gray-700 dark:text-gray-300">
           <span

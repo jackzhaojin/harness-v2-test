@@ -3,6 +3,8 @@ import { useData } from '../context/DataContext';
 import { activities, teamMembers as mockTeamMembers } from '../data/mockData';
 import { StatCard } from '../components/dashboard/StatCard';
 import { ActivityFeed } from '../components/dashboard/ActivityFeed';
+import { TaskCompletionChart } from '../components/dashboard/TaskCompletionChart';
+import { TaskStatusChart } from '../components/dashboard/TaskStatusChart';
 
 export default function Dashboard(): JSX.Element {
   const { state } = useData();
@@ -55,6 +57,15 @@ export default function Dashboard(): JSX.Element {
           iconBg="bg-purple-100 dark:bg-purple-900/50"
         />
       </div>
+
+      {/* Charts Section: 1 col mobile, 2 col desktop */}
+      <section aria-label="Dashboard charts">
+        <h2 className="sr-only">Charts</h2>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
+          <TaskCompletionChart />
+          <TaskStatusChart />
+        </div>
+      </section>
 
       {/* Activity Feed */}
       <ActivityFeed activities={activities} teamMembers={teamForActivities} />
