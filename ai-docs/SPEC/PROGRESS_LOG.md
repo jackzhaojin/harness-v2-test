@@ -496,3 +496,30 @@ fatal: 'main' is not a commit and a branch '2026-01-28-feature/dashboard-mvp' ca
 [2026-01-29T17:22:14.254Z] Completed: 24
 [2026-01-29T17:22:14.254Z] Failed: 0
 [2026-01-29T17:22:14.255Z] ════════════════════════════════════════════════════════════
+[2026-01-29T17:46:26.329Z] ════════════════════════════════════════════════════════════
+[2026-01-29T17:46:26.330Z] ORCHESTRATION STARTED
+[2026-01-29T17:46:26.331Z] Mode: extend (Scenario 3: Existing code + AI docs, adding features)
+[2026-01-29T17:46:26.331Z] Docs: /Users/jackjin/dev/harness-v2-test/ai-docs
+[2026-01-29T17:46:26.332Z] Code: /Users/jackjin/dev/harness-v2-test
+[2026-01-29T17:46:26.332Z] Resuming from phase: COMPLETE
+[2026-01-29T17:46:26.332Z] ════════════════════════════════════════════════════════════
+[2026-01-29T17:46:26.361Z] Already on branch feature/dashboard-mvp
+[2026-01-29T17:46:26.361Z] Phase: EXTEND (adding features to existing project)
+[2026-01-29T17:46:26.375Z] Copied original prompt to SPEC/PROMPT.md
+[2026-01-29T17:46:26.382Z] Generated BUILD_HISTORY.md (compressed prior context)
+[2026-01-29T17:46:26.382Z] Phase: EXTEND
+[2026-01-29T17:46:26.382Z] Adding new tasks to existing project
+[2026-01-29T17:46:26.383Z] WHY Agent: SKIP (CONSTITUTION is immutable)
+[2026-01-29T17:46:26.383Z] WHAT Agent: Generating/updating WHY_WHAT.md...
+[2026-01-29T17:50:11.613Z] WHAT Agent: WHY_WHAT.md generated
+[2026-01-29T17:50:11.614Z] HOW Agent: SKIP (using existing patterns)
+[2026-01-29T17:50:11.615Z] WHEN Agent: Generating TASKS.json...
+[2026-01-29T17:55:43.464Z] WHEN Agent: TASKS.json generated
+[2026-01-29T17:55:43.466Z] Spec refresh complete. 27 tasks reconciled.
+[2026-01-29T17:55:43.467Z] Spec updated with new tasks. Continuing to task execution...
+[2026-01-29T17:55:43.468Z] ────────────────────────────────────────────────────────────
+[2026-01-29T17:55:43.468Z] Task 20: Demo infrastructure: Playwright config, shared helpers, and data-testid additions
+[2026-01-29T17:55:43.469Z] ────────────────────────────────────────────────────────────
+[2026-01-29T17:55:43.474Z] Phase: RESEARCH
+[2026-01-29T17:59:58.418Z] Phase: BUILD
+[2026-01-29T17:59:58.419Z] Build attempt 1/3

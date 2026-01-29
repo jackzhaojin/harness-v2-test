@@ -109,7 +109,7 @@ export function TaskStatusChart(): JSX.Element {
   const tooltipBorder = isDark ? '#374151' : '#e5e7eb';
 
   return (
-    <Card padding="none" shadow="sm">
+    <Card padding="none" shadow="sm" data-testid="chart-task-status">
       <div className="p-4 md:p-6 border-b border-gray-200 dark:border-gray-700">
         <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
           Tasks by Status

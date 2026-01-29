@@ -80,7 +80,7 @@ export function ProjectsTable({
   onAction,
 }: ProjectsTableProps): JSX.Element {
   return (
-    <div className="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700">
+    <div className="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700" data-testid="projects-table">
       <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
         <thead className="bg-gray-50 dark:bg-gray-800/50">
           <tr>
@@ -193,6 +193,7 @@ export function ProjectsTable({
                           type="button"
                           className="p-1 rounded-md text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900"
                           aria-label={`Actions for ${project.name}`}
+                          data-testid={`project-actions-${project.id}`}
                         >
                           <MoreVertical className="h-4 w-4" />
                         </button>

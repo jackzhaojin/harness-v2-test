@@ -1,0 +1,26 @@
+{
+  "agentName": "spec-when",
+  "sessionId": "extend/spec-when",
+  "timestamp": "2026-01-29T17:55:43.463Z",
+  "success": true,
+  "modelUsed": "claude-opus-4-5",
+  "artifacts": [],
+  "handoff": {
+    "agent": "spec-when",
+    "mode": "extend",
+    "action": "appended",
+    "output": "SPEC/TASKS.json",
+    "taskCount": 3,
+    "newTaskIds": [
+      "20",
+      "21",
+      "22"
+    ],
+    "complexityBreakdown": {
+      "small": 0,
+      "medium": 0,
+      "large": 3
+    },
+    "handoffNotes": "3 large tasks appended (IDs 20-22) for demo enhancement iteration. T20: Demo infrastructure (Playwright demo config, shared helpers with pacing/DnD/viewport utilities, data-testid additions to app components). T21: Highlights demo (~2-3 min) + voice-over markdown + app bug fixes found during scripting. T22: Full tour demo (~5-7 min) + voice-over markdown covering all pages/features. All e2eRequired:false — demos are showcases, not tests. Linear dependency chain respects priority order from WHY_WHAT."
+  }
+}

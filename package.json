@@ -9,7 +9,9 @@
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "test": "playwright test",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "demo:highlights": "playwright test --config=playwright.demo.config.ts --grep @highlights",
+    "demo:full": "playwright test --config=playwright.demo.config.ts --grep @full-tour"
   },
   "dependencies": {
     "react": "^18.2.0",

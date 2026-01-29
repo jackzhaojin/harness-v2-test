@@ -31,6 +31,7 @@ export default function Dashboard(): JSX.Element {
           to="/projects"
           iconColor="text-blue-600 dark:text-blue-400"
           iconBg="bg-blue-100 dark:bg-blue-900/50"
+          testId="stat-total-projects"
         />
         <StatCard
           icon={CheckSquare}
@@ -39,6 +40,7 @@ export default function Dashboard(): JSX.Element {
           to="/tasks"
           iconColor="text-amber-600 dark:text-amber-400"
           iconBg="bg-amber-100 dark:bg-amber-900/50"
+          testId="stat-active-tasks"
         />
         <StatCard
           icon={Users}
@@ -47,6 +49,7 @@ export default function Dashboard(): JSX.Element {
           to="/team"
           iconColor="text-emerald-600 dark:text-emerald-400"
           iconBg="bg-emerald-100 dark:bg-emerald-900/50"
+          testId="stat-team-members"
         />
         <StatCard
           icon={TrendingUp}
@@ -55,11 +58,12 @@ export default function Dashboard(): JSX.Element {
           to="/tasks"
           iconColor="text-purple-600 dark:text-purple-400"
           iconBg="bg-purple-100 dark:bg-purple-900/50"
+          testId="stat-completed-tasks"
         />
       </div>
 
       {/* Charts Section: 1 col mobile, 2 col desktop */}
-      <section aria-label="Dashboard charts">
+      <section aria-label="Dashboard charts" data-testid="dashboard-charts">
         <h2 className="sr-only">Charts</h2>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
           <TaskCompletionChart />

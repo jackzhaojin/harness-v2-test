@@ -1,0 +1,17 @@
+{
+  "agentName": "spec-what",
+  "sessionId": "extend/spec-what",
+  "timestamp": "2026-01-29T17:50:11.613Z",
+  "success": true,
+  "modelUsed": "claude-opus-4-5",
+  "artifacts": [],
+  "handoff": {
+    "agent": "spec-what",
+    "mode": "extend",
+    "action": "appended",
+    "output": "SPEC/WHY_WHAT.md",
+    "storyCount": 7,
+    "totalCriteria": 53,
+    "handoffNotes": "Requirements defined for Dashboard Demo Enhancement iteration. 7 new stories (30-36) appended covering: shared demo helpers, highlights demo script, highlights voice-over, full tour demo script, full tour voice-over, Playwright demo configuration, and app bug fixes for demo readiness. Includes 6 research topics that must be completed before implementation. Priority order: highlights demo → highlights voice-over → full tour → full tour voice-over. All stories reference existing MVP features (Stories 1-29) as dependencies. Ready for HOW agent."
+  }
+}

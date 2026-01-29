@@ -64,6 +64,7 @@ export function KanbanColumn({ title, tasks, teamLookup, variant, onTaskClick }:
         isDragOver ? 'ring-2 ring-blue-500 ring-inset' : ''
       }`}
       aria-label={`${title} column`}
+      data-testid={`kanban-column-${variant}`}
     >
       {/* Column Header */}
       <div className="flex items-center gap-2 px-4 py-3 border-b border-gray-200 dark:border-gray-700">

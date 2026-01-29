@@ -1,7 +1,7 @@
 {
   "version": "1.0",
   "generatedBy": "spec-when",
-  "generatedAt": "2026-01-28T12:00:00Z",
+  "generatedAt": "2026-01-29T12:00:00Z",
   "tasks": [
     {
       "id": "1",
@@ -608,7 +608,8 @@
         "4"
       ],
       "parentId": "5",
-      "status": "complete"
+      "status": "complete",
+      "subtasks": []
     },
     {
       "id": "5.1",
@@ -624,7 +625,8 @@
         "4"
       ],
       "parentId": "5",
-      "status": "complete"
+      "status": "complete",
+      "subtasks": []
     },
     {
       "id": "5.2",
@@ -640,7 +642,8 @@
         "4"
       ],
       "parentId": "5",
-      "status": "complete"
+      "status": "complete",
+      "subtasks": []
     },
     {
       "id": "6.1",
@@ -658,7 +661,8 @@
         "4"
       ],
       "parentId": "6",
-      "status": "complete"
+      "status": "complete",
+      "subtasks": []
     },
     {
       "id": "7.1",
@@ -679,7 +683,111 @@
         "6"
       ],
       "parentId": "7",
-      "status": "complete"
+      "status": "complete",
+      "subtasks": []
+    },
+    {
+      "id": "20",
+      "title": "Demo infrastructure: Playwright config, shared helpers, and data-testid additions",
+      "description": "Set up the demo system foundation including a demo-specific Playwright configuration, shared helper utilities for pacing/scrolling/viewport/drag-and-drop, and add any missing data-testid attributes to app components for stable demo selectors. This is scaffolding that both demo scripts will build upon. Covers Stories 30, 35, and the data-testid portion of Story 36.",
+      "acceptanceCriteria": [
+        "demo/ directory created at project root with proper structure",
+        "demo/helpers.ts created with TypeScript-typed utility functions importable by demo scripts",
+        "pause(page, ms) helper wraps page.waitForTimeout() with descriptive name for demo readability",
+        "scenicPause(page, ms?) provides default viewer-absorbs-content pause (1500-2000ms)",
+        "quickPause(page, ms?) provides short transition pause (500-800ms)",
+        "smoothScroll(page, selector) scrolls element into view with smooth behavior rather than instant jump",
+        "setViewport(page, width, height) wraps page.setViewportSize() with small delay after resize for React re-render settling",
+        "Drag-and-drop helper function implements reliable approach for HTML5 native DnD in Playwright (manual mouse event sequence or synthetic dispatch, based on research of Playwright DnD reliability)",
+        "All helpers are interaction-only utilities with zero test assertions",
+        "playwright.demo.config.ts created (or existing config extended) with demo-specific settings: headless false, generous timeouts (120s+ for highlights, 600s+ for full tour), retry count 0, minimal reporter",
+        "Demo config includes webServer setup reusing existing pattern (npm run dev on localhost:5173)",
+        "Demo config testDir points to demo/ directory so demo specs are discovered correctly",
+        "Running npm test or npm run test:e2e still only runs tests/e2e/ specs (no interference)",
+        "npm scripts added to package.json: demo:highlights and demo:full with correct Playwright commands using --config flag for demo config",
+        "data-testid attributes added to key app components where existing selectors (roles, text, aria) are insufficient — at minimum: stat cards on dashboard, chart containers, sidebar nav links, kanban column containers, column add-task buttons, project table action dropdowns",
+        "npm run build still succeeds after any app code changes for data-testid additions",
+        "Existing E2E tests in tests/e2e/ still pass after data-testid additions"
+      ],
+      "dependencies": [
+        "19"
+      ],
+      "estimatedComplexity": "large",
+      "e2eRequired": false,
+      "testingApproach": "Verify demo/ directory structure exists with helpers.ts and config file. Run npm run build to confirm no breakage. Run npm run test:e2e to verify existing tests still pass. Import helpers in a minimal test script to verify TypeScript compilation. Confirm npm run demo:highlights and demo:full commands are wired in package.json (will fail without actual spec files, but command should be present).",
+      "status": "pending",
+      "subtasks": [],
+      "parentId": null
+    },
+    {
+      "id": "21",
+      "title": "Highlights demo script with voice-over and app bug fixes",
+      "description": "Build the ~2-3 minute highlights demo Playwright script that showcases the most visually impressive dashboard features at a natural pace, plus the companion voice-over narration document with timing cues. Fix any app bugs discovered during demo development (broken interactions, modals not opening, drag-drop failures, theme toggle issues). Covers Stories 31, 32, and the runtime bug-fix portion of Story 36.",
+      "acceptanceCriteria": [
+        "demo/highlights.spec.ts created as a Playwright test file using shared helpers from demo/helpers.ts",
+        "Script opens app at localhost at 1280x800 desktop resolution",
+        "Demo sequence includes: dashboard landing with scenic pause, hover over stat cards, scroll to charts section with pauses on line and donut charts",
+        "Demo navigates to Projects page via sidebar click, uses search/filter on projects table, sorts table by clicking a column header",
+        "Demo clicks New Project button, fills modal form fields at natural typing pace, submits the form",
+        "Demo navigates to Tasks (Kanban board) via sidebar, drags a task from To Do to In Progress column, drags another from In Progress to Done",
+        "Demo toggles dark mode via header theme button, pauses to show dark mode, navigates to Dashboard in dark mode, toggles back to light mode",
+        "Demo resizes browser to mobile viewport width showing responsive sidebar collapse, then resizes back to desktop",
+        "Each action has appropriate pause (500ms-2000ms) so a human viewer can follow along",
+        "Total demo runtime is approximately 2-3 minutes",
+        "Script runs end-to-end without errors or timeouts via: npm run demo:highlights",
+        "Script uses stable selectors (data-testid, aria roles, text content) — no fragile CSS-only selectors",
+        "demo/highlights-voiceover.md created with timestamped narration sections in format ## [M:SS] Section Title",
+        "Voice-over covers all demo actions: dashboard stats/charts, projects search/sort/create, Kanban drag-drop, dark mode, responsive resize",
+        "Voice-over includes intro (## [0:00] Welcome) and outro sections with natural speaking cadence",
+        "Voice-over timing cues include [pause] markers where presenter should let demo speak for itself",
+        "Any app features that fail during demo scripting are fixed in app source code (drag-drop, modals, theme toggle, responsive layout)",
+        "Toast notifications remain visible long enough during demo pacing to be seen by viewer",
+        "Existing E2E tests in tests/e2e/ still pass after any app code fixes",
+        "npm run build still succeeds after any app code fixes"
+      ],
+      "dependencies": [
+        "20"
+      ],
+      "estimatedComplexity": "large",
+      "e2eRequired": false,
+      "testingApproach": "Run npm run demo:highlights and verify the browser opens, walks through the full sequence at natural pace, and completes without errors. Visually confirm a human viewer can follow every action. Verify voice-over timestamps roughly align with actual demo runtime. Run npm run test:e2e to confirm no regressions.",
+      "status": "pending",
+      "subtasks": [],
+      "parentId": null
+    },
+    {
+      "id": "22",
+      "title": "Full tour demo script with voice-over document",
+      "description": "Build the comprehensive ~5-7 minute full tour Playwright demo that walks through every dashboard feature, plus the companion voice-over narration document. Extends the highlights demo to cover all pages in depth: dashboard deep-dive, projects CRUD with pagination, Kanban task CRUD with detail panel, team search/filter/invite, settings with all sections, and responsive showcase at tablet and mobile breakpoints. Covers Stories 33 and 34.",
+      "acceptanceCriteria": [
+        "demo/full-tour.spec.ts created as a Playwright test file using shared helpers from demo/helpers.ts",
+        "Script opens app at localhost at 1280x800 desktop resolution with test timeout of at least 600000ms (10 minutes)",
+        "Demo covers Dashboard deep-dive: clicks stat cards showing navigation, interacts with activity feed, hovers chart tooltips for exact values",
+        "Demo covers Projects extended: search/filter/sort, pagination (navigate multiple pages), create new project via modal, edit an existing project (open edit modal, change fields, save), delete a project with confirmation modal",
+        "Demo covers Kanban extended: drag tasks between columns, add a new task via Add Task button (fill form, submit), click task card to open SlideOver detail panel, edit task details in panel, close panel",
+        "Demo covers Team page: search members by name, filter by role dropdown, click Invite Member button (fill email, submit, show toast notification)",
+        "Demo covers Settings page: change profile name, toggle notification switches (email/push/slack), change theme in appearance section, select an accent color, click Save Changes (show success toast)",
+        "Demo covers responsive showcase: resize to tablet breakpoint (~900px, sidebar collapses to icons), resize to mobile breakpoint (~375px, hamburger menu appears), open hamburger menu, navigate via mobile menu, resize back to desktop",
+        "Longer pauses (2000-3000ms) at transition points between major page sections",
+        "Total demo runtime is approximately 5-7 minutes",
+        "Script runs end-to-end without errors or timeouts via: npm run demo:full",
+        "Script uses stable selectors consistent with highlights script patterns",
+        "demo/full-tour-voiceover.md created with timestamped narration sections in format ## [M:SS] Section Title",
+        "Voice-over covers every feature with detailed explanations of user benefit, interaction model, and UX touches",
+        "Voice-over sections grouped by page/feature area with clear headers for easy navigation during live presentation",
+        "Voice-over includes detailed intro setting context for full tour and comprehensive outro summarizing all features",
+        "Voice-over includes [pause] cues for scenic moments and page transitions",
+        "Total voice-over timestamps span 5-7 minutes matching demo runtime"
+      ],
+      "dependencies": [
+        "21"
+      ],
+      "estimatedComplexity": "large",
+      "e2eRequired": false,
+      "testingApproach": "Run npm run demo:full and verify the browser opens, walks through the complete feature set at natural pace, and completes without errors within 10-minute timeout. Visually confirm all pages and features are demonstrated. Verify voice-over timestamps align with actual demo runtime. Run npm run test:e2e to confirm no regressions from any fixes.",
+      "status": "pending",
+      "subtasks": [],
+      "parentId": null
     }
   ]
 }

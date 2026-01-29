@@ -1,7 +1,7 @@
 {
   "version": "1.0",
-  "phase": "COMPLETE",
-  "currentTaskId": null,
+  "phase": "EXECUTING",
+  "currentTaskId": "20",
   "tasks": [
     {
       "id": "1",
@@ -608,7 +608,8 @@
         "4"
       ],
       "parentId": "5",
-      "status": "complete"
+      "status": "complete",
+      "subtasks": []
     },
     {
       "id": "5.1",
@@ -624,7 +625,8 @@
         "4"
       ],
       "parentId": "5",
-      "status": "complete"
+      "status": "complete",
+      "subtasks": []
     },
     {
       "id": "5.2",
@@ -640,7 +642,8 @@
         "4"
       ],
       "parentId": "5",
-      "status": "complete"
+      "status": "complete",
+      "subtasks": []
     },
     {
       "id": "6.1",
@@ -658,7 +661,8 @@
         "4"
       ],
       "parentId": "6",
-      "status": "complete"
+      "status": "complete",
+      "subtasks": []
     },
     {
       "id": "7.1",
@@ -679,7 +683,111 @@
         "6"
       ],
       "parentId": "7",
-      "status": "complete"
+      "status": "complete",
+      "subtasks": []
+    },
+    {
+      "id": "20",
+      "title": "Demo infrastructure: Playwright config, shared helpers, and data-testid additions",
+      "description": "Set up the demo system foundation including a demo-specific Playwright configuration, shared helper utilities for pacing/scrolling/viewport/drag-and-drop, and add any missing data-testid attributes to app components for stable demo selectors. This is scaffolding that both demo scripts will build upon. Covers Stories 30, 35, and the data-testid portion of Story 36.",
+      "acceptanceCriteria": [
+        "demo/ directory created at project root with proper structure",
+        "demo/helpers.ts created with TypeScript-typed utility functions importable by demo scripts",
+        "pause(page, ms) helper wraps page.waitForTimeout() with descriptive name for demo readability",
+        "scenicPause(page, ms?) provides default viewer-absorbs-content pause (1500-2000ms)",
+        "quickPause(page, ms?) provides short transition pause (500-800ms)",
+        "smoothScroll(page, selector) scrolls element into view with smooth behavior rather than instant jump",
+        "setViewport(page, width, height) wraps page.setViewportSize() with small delay after resize for React re-render settling",
+        "Drag-and-drop helper function implements reliable approach for HTML5 native DnD in Playwright (manual mouse event sequence or synthetic dispatch, based on research of Playwright DnD reliability)",
+        "All helpers are interaction-only utilities with zero test assertions",
+        "playwright.demo.config.ts created (or existing config extended) with demo-specific settings: headless false, generous timeouts (120s+ for highlights, 600s+ for full tour), retry count 0, minimal reporter",
+        "Demo config includes webServer setup reusing existing pattern (npm run dev on localhost:5173)",
+        "Demo config testDir points to demo/ directory so demo specs are discovered correctly",
+        "Running npm test or npm run test:e2e still only runs tests/e2e/ specs (no interference)",
+        "npm scripts added to package.json: demo:highlights and demo:full with correct Playwright commands using --config flag for demo config",
+        "data-testid attributes added to key app components where existing selectors (roles, text, aria) are insufficient — at minimum: stat cards on dashboard, chart containers, sidebar nav links, kanban column containers, column add-task buttons, project table action dropdowns",
+        "npm run build still succeeds after any app code changes for data-testid additions",
+        "Existing E2E tests in tests/e2e/ still pass after data-testid additions"
+      ],
+      "dependencies": [
+        "19"
+      ],
+      "estimatedComplexity": "large",
+      "e2eRequired": false,
+      "testingApproach": "Verify demo/ directory structure exists with helpers.ts and config file. Run npm run build to confirm no breakage. Run npm run test:e2e to verify existing tests still pass. Import helpers in a minimal test script to verify TypeScript compilation. Confirm npm run demo:highlights and demo:full commands are wired in package.json (will fail without actual spec files, but command should be present).",
+      "status": "in_progress",
+      "subtasks": [],
+      "parentId": null
+    },
+    {
+      "id": "21",
+      "title": "Highlights demo script with voice-over and app bug fixes",
+      "description": "Build the ~2-3 minute highlights demo Playwright script that showcases the most visually impressive dashboard features at a natural pace, plus the companion voice-over narration document with timing cues. Fix any app bugs discovered during demo development (broken interactions, modals not opening, drag-drop failures, theme toggle issues). Covers Stories 31, 32, and the runtime bug-fix portion of Story 36.",
+      "acceptanceCriteria": [
+        "demo/highlights.spec.ts created as a Playwright test file using shared helpers from demo/helpers.ts",
+        "Script opens app at localhost at 1280x800 desktop resolution",
+        "Demo sequence includes: dashboard landing with scenic pause, hover over stat cards, scroll to charts section with pauses on line and donut charts",
+        "Demo navigates to Projects page via sidebar click, uses search/filter on projects table, sorts table by clicking a column header",
+        "Demo clicks New Project button, fills modal form fields at natural typing pace, submits the form",
+        "Demo navigates to Tasks (Kanban board) via sidebar, drags a task from To Do to In Progress column, drags another from In Progress to Done",
+        "Demo toggles dark mode via header theme button, pauses to show dark mode, navigates to Dashboard in dark mode, toggles back to light mode",
+        "Demo resizes browser to mobile viewport width showing responsive sidebar collapse, then resizes back to desktop",
+        "Each action has appropriate pause (500ms-2000ms) so a human viewer can follow along",
+        "Total demo runtime is approximately 2-3 minutes",
+        "Script runs end-to-end without errors or timeouts via: npm run demo:highlights",
+        "Script uses stable selectors (data-testid, aria roles, text content) — no fragile CSS-only selectors",
+        "demo/highlights-voiceover.md created with timestamped narration sections in format ## [M:SS] Section Title",
+        "Voice-over covers all demo actions: dashboard stats/charts, projects search/sort/create, Kanban drag-drop, dark mode, responsive resize",
+        "Voice-over includes intro (## [0:00] Welcome) and outro sections with natural speaking cadence",
+        "Voice-over timing cues include [pause] markers where presenter should let demo speak for itself",
+        "Any app features that fail during demo scripting are fixed in app source code (drag-drop, modals, theme toggle, responsive layout)",
+        "Toast notifications remain visible long enough during demo pacing to be seen by viewer",
+        "Existing E2E tests in tests/e2e/ still pass after any app code fixes",
+        "npm run build still succeeds after any app code fixes"
+      ],
+      "dependencies": [
+        "20"
+      ],
+      "estimatedComplexity": "large",
+      "e2eRequired": false,
+      "testingApproach": "Run npm run demo:highlights and verify the browser opens, walks through the full sequence at natural pace, and completes without errors. Visually confirm a human viewer can follow every action. Verify voice-over timestamps roughly align with actual demo runtime. Run npm run test:e2e to confirm no regressions.",
+      "status": "pending",
+      "subtasks": [],
+      "parentId": null
+    },
+    {
+      "id": "22",
+      "title": "Full tour demo script with voice-over document",
+      "description": "Build the comprehensive ~5-7 minute full tour Playwright demo that walks through every dashboard feature, plus the companion voice-over narration document. Extends the highlights demo to cover all pages in depth: dashboard deep-dive, projects CRUD with pagination, Kanban task CRUD with detail panel, team search/filter/invite, settings with all sections, and responsive showcase at tablet and mobile breakpoints. Covers Stories 33 and 34.",
+      "acceptanceCriteria": [
+        "demo/full-tour.spec.ts created as a Playwright test file using shared helpers from demo/helpers.ts",
+        "Script opens app at localhost at 1280x800 desktop resolution with test timeout of at least 600000ms (10 minutes)",
+        "Demo covers Dashboard deep-dive: clicks stat cards showing navigation, interacts with activity feed, hovers chart tooltips for exact values",
+        "Demo covers Projects extended: search/filter/sort, pagination (navigate multiple pages), create new project via modal, edit an existing project (open edit modal, change fields, save), delete a project with confirmation modal",
+        "Demo covers Kanban extended: drag tasks between columns, add a new task via Add Task button (fill form, submit), click task card to open SlideOver detail panel, edit task details in panel, close panel",
+        "Demo covers Team page: search members by name, filter by role dropdown, click Invite Member button (fill email, submit, show toast notification)",
+        "Demo covers Settings page: change profile name, toggle notification switches (email/push/slack), change theme in appearance section, select an accent color, click Save Changes (show success toast)",
+        "Demo covers responsive showcase: resize to tablet breakpoint (~900px, sidebar collapses to icons), resize to mobile breakpoint (~375px, hamburger menu appears), open hamburger menu, navigate via mobile menu, resize back to desktop",
+        "Longer pauses (2000-3000ms) at transition points between major page sections",
+        "Total demo runtime is approximately 5-7 minutes",
+        "Script runs end-to-end without errors or timeouts via: npm run demo:full",
+        "Script uses stable selectors consistent with highlights script patterns",
+        "demo/full-tour-voiceover.md created with timestamped narration sections in format ## [M:SS] Section Title",
+        "Voice-over covers every feature with detailed explanations of user benefit, interaction model, and UX touches",
+        "Voice-over sections grouped by page/feature area with clear headers for easy navigation during live presentation",
+        "Voice-over includes detailed intro setting context for full tour and comprehensive outro summarizing all features",
+        "Voice-over includes [pause] cues for scenic moments and page transitions",
+        "Total voice-over timestamps span 5-7 minutes matching demo runtime"
+      ],
+      "dependencies": [
+        "21"
+      ],
+      "estimatedComplexity": "large",
+      "e2eRequired": false,
+      "testingApproach": "Run npm run demo:full and verify the browser opens, walks through the complete feature set at natural pace, and completes without errors within 10-minute timeout. Visually confirm all pages and features are demonstrated. Verify voice-over timestamps align with actual demo runtime. Run npm run test:e2e to confirm no regressions from any fixes.",
+      "status": "pending",
+      "subtasks": [],
+      "parentId": null
     }
   ],
   "completedCount": 24,
@@ -707,12 +815,12 @@
       "content": "I now have a thorough understanding of the entire codebase. Let me write the research output.\n\n# Research: Task 13 - Kanban Drag-and-Drop with Persistence\n\n**Task ID**: 13\n**Researched**: 2026-01-29\n**Dependencies**: Task 12 (Kanban Board Layout and Task Card Display) — PASSED\n**Estimated Complexity**: Minor-to-moderate (3 files modified, 0 new source files, 1 new test file)\n\n---\n\n## Relevant Project Context\n\n> This task adds drag-and-drop interaction to the existing Kanban board built in Task 12.\n\n**Project Type**: React 18 + TypeScript SPA with Vite, Tailwind CSS, and Context-based state management\n\n**Key Files**:\n- `src/components/tasks/TaskCard.tsx` — Task card component (needs drag source handlers)\n- `src/components/tasks/KanbanColumn.tsx` — Column component (needs drop target handlers)\n- `src/components/tasks/KanbanBoard.tsx` — Board orchestrator (already connects to DataContext)\n- `src/context/DataContext.tsx` — App state with `MOVE_TASK` action already implemented (line 18, lines 70-78)\n- `src/types/index.ts` — `TaskStatus` type: `'todo' | 'in-progress' | 'done'` (line 2)\n- `ai-docs/SPEC/HOW.md` — Pattern 3 (lines 227-287) prescribes exact HTML5 DnD approach\n\n**Patterns in Use**:\n- **Pattern 1** (Context + useReducer): DataContext already has `MOVE_TASK` action and auto-syncs to localStorage via `useEffect` on line 112-118\n- **Pattern 3** (HTML5 Native Drag and Drop): HOW.md provides the exact blueprint — `dataTransfer.setData('taskId', ...)`, `effectAllowed = 'move'`, `dropEffect = 'move'`, `ring-2 ring-blue-500` for drop zone highlighting\n- **Pattern 4** (localStorage sync): DataContext already syncs entire state to `localStorage.setItem('appData', ...)` on every state change — persistence is free\n\n**Relevant Prior Tasks**:\n- **Task 12**: Built KanbanBoard, KanbanColumn, and TaskCard. All three components exist and are tested. This task adds interaction behavior to those existing components.\n\n---\n\n## Functional Requirements\n\n### Primary Objective\nAdd HTML5"
     }
   ],
-  "currentStateSummary": "CONSTITUTION (/Users/jackjin/dev/harness-v2-test/ai-docs/SPEC/CONSTITUTION.md)\n# Project Constitution\n\n## Mission\nDeliver a polished, production-quality project management dashboard that demonstrates modern React best practices while providing an intuitive, responsive user experience for managing projects, tasks, and team collaboration.\n\n## Immutable Principles\n1. **Type safety is non-negotiable** - TypeScript strict mode, no `any` types, all data structures explicitly typed\n2. **Mobile-first responsive design** - Every component must work flawlessly from 320px to 4K screens\n3. **Zero runtime errors** - No console errors, no unhandled exceptions, graceful degradation for edge cases\n4. **Accessibility by default** - Semantic HTML, keyboard navigation, focus states on all interactive elements\n5. **Component isolation** - Each component is self-contained, testable, and reusable without prop drilling\n6. **Performance matters** - No unnecessary re-renders, lazy loading where appropriate, smooth 60fps interactions\n\n## Vibe / Style Guide\n- **Tone**: Professional and polished, feels like a real SaaS product you'd pay for\n- **Complexity**: Sophisticated UI, simple implementation - leverage Tailwind's utility classes over custom CSS\n- **UX Priority**: Clarity and respo\n\nFile tree (depth 2)\n📂 ai-docs\n  📂 SPEC\n    📄 bootstrap_handoff.json\n    📄 bootstrap.md\n    📄 CONSTITUTION.md\n    📄 CURRENT_STATE.md\n    📄 PROGRESS_LOG.md\n    📄 PROMPT.md",
-  "mode": "resume",
+  "currentStateSummary": "CONSTITUTION (/Users/jackjin/dev/harness-v2-test/ai-docs/SPEC/CONSTITUTION.md)\n# Project Constitution\n\n## Mission\nDeliver a polished, production-quality project management dashboard that demonstrates modern React best practices while providing an intuitive, responsive user experience for managing projects, tasks, and team collaboration.\n\n## Immutable Principles\n1. **Type safety is non-negotiable** - TypeScript strict mode, no `any` types, all data structures explicitly typed\n2. **Mobile-first responsive design** - Every component must work flawlessly from 320px to 4K screens\n3. **Zero runtime errors** - No console errors, no unhandled exceptions, graceful degradation for edge cases\n4. **Accessibility by default** - Semantic HTML, keyboard navigation, focus states on all interactive elements\n5. **Component isolation** - Each component is self-contained, testable, and reusable without prop drilling\n6. **Performance matters** - No unnecessary re-renders, lazy loading where appropriate, smooth 60fps interactions\n\n## Vibe / Style Guide\n- **Tone**: Professional and polished, feels like a real SaaS product you'd pay for\n- **Complexity**: Sophisticated UI, simple implementation - leverage Tailwind's utility classes over custom CSS\n- **UX Priority**: Clarity and respo\n\nWHY_WHAT (/Users/jackjin/dev/harness-v2-test/ai-docs/SPEC/WHY_WHAT.md)\n# Requirements: Project Management Dashboard MVP\n\n## Why This Iteration\nBuild a complete, production-quality project management dashboard that demonstrates modern React best practices. This is a greenfield project establishing a professional SaaS-style application with multiple pages, interactive components, data visualization, and a polished responsive UI with dark/light mode support.\n\n## Scope\n\n### In Scope\n- App shell with collapsible sidebar and header navigation\n- Dashboard overview with stats, charts, and activity feed\n- Projects list with filtering, sorting, pagination, and CRUD modals\n- Kanban task board with drag-and-drop functionality\n- Team members page with grid layout and filtering\n- Settings page with form persistence\n- Dark/light theme toggle with localStorage persistence\n- Mobile-first responsive design\n- Playwright E2E tests for critical flows\n\n### Out of Scope (This Iteration)\n- Backend API integration or database connections\n- User authentication or authorization\n- Real-time collaboration or WebSocket features\n- Data export/import functionality\n- Internationalization (i18n) or multi-language support\n- Offline-first/PWA capabilities\n- Unit testing (Playwright E2E \n\nHOW (/Users/jackjin/dev/harness-v2-test/ai-docs/SPEC/HOW.md)\n# Architecture\n\n## Technology Stack\n\n| Component | Choice | Rationale |\n|-----------|--------|-----------|\n| Runtime | Browser (ES2020+) | Modern SPA, no server-side rendering needed |\n| Framework | React 18 + TypeScript | Constitution mandates React 18 + TS, strict mode for type safety |\n| Build Tool | Vite | Constitution constraint, fast HMR, optimized production builds |\n| Styling | Tailwind CSS | Constitution constraint, utility-first enables rapid UI development |\n| Routing | React Router v6 | Industry standard for React SPAs, declarative routing |\n| State | React Context + useState/useReducer | Constitution prohibits external state management |\n| Charts | Recharts | Constitution constraint for data visualization |\n| Icons | Lucide React | Constitution constraint, consistent icon library |\n| Storage | localStorage | Constitution constraint, no backend/API |\n| Testing | Playwright | Constitution mandates E2E testing for critical flows |\n\n## File Structure\n\n```\nproject/\n├── index.html                    # Vite entry point\n├── package.json                  # Dependencies and scripts\n├── tsconfig.json                 # TypeScript strict configuration\n├── tailwind.config.js        \n\nExisting tasks (24):\n1 - Project scaffolding with Vite, React, TypeScript, and Tailwind [complete]\n2 - Type definitions and mock data setup [complete]\n3 - Core context providers and custom hooks [complete]\n4 - Reusable UI component library [complete]\n5 - Modal and Toast notification systems [complete]\n6 - App shell with sidebar and header navigation [complete]\n7 - Dark/light theme toggle with full application theming [complete]\n8 - Dashboard page with stats cards and activity feed [complete]\n9 - Dashboard charts with Recharts integration [complete]\n10 - Projects table with display, filtering, sorting, and pagination [complete]\n11 - Project CRUD operations with modals [complete]\n12 - Kanban board layout and task card display [complete]\n13 - Kanban drag-and-drop with persistence [complete]\n14 - Task CRUD with forms and detail panel [complete]\n15 - Team members page with grid and filtering [complete]\n16 - Team member invite modal [complete]\n17 - Settings page with profile, notifications, and appearance sections [complete]\n18 - SlideOver panel component [complete]\n19 - Playwright E2E test suite [complete]\n5.3 - Fix: Clicking backdrop does not close modal [complete]\n5.1 - Fix Modal backdrop click not closing modal [complete]\n5.2 - Fix Modal backdrop click not closing modal (still broken after 5.1) [complete]\n6.1 - Fix tablet viewport sidebar to show icons-only by default [complete]\n7.1 - Fix dark mode background color and add system theme selector [complete]\n\nFile tree (depth 2)\n📄 .DS_Store\n📄 .gitignore\n📂 ai-docs\n  📄 .DS_Store\n  📂 SPEC\n    📄 bootstrap_handoff.json\n    📄 bootstrap.md\n    📄 CONSTITUTION.md\n    📄 CURRENT_STATE.md\n    📄 HOW.md\n    📄 PROGRESS_LOG.md\n    📄 PROMPT.md\n    📄 STATUS.json\n    📄 TASKS.json\n    📄 TASKS.md\n    📄 WHY_WHAT.md\n  📂 TASKS\n    📂 1\n    📂 10\n    📂 11\n    📂 12\n    📂 13\n    📂 14\n    📂 15\n    📂 16\n    📂 17\n    📂 18\n    📂 19\n    📂 2\n    📂 3\n    📂 4\n    📂 5\n    📂 5.1\n    📂 5.2\n    📂 5.3\n    📂 6\n    📂 6.1\n    📂 7\n    📂 7.1\n    📂 8\n    📂 9\n📄 dashboard-full.png\n📂 dist\n  📂 assets\n    📄 index-BLvXnYp4.js\n    📄 index-kKKVT2mj.css\n  📄 index.html\n  📄 vite.svg\n📄 harness-run.log\n📄 index.html\n📄 package-lock.json\n📄 package.json\n📂 playwright-report\n  📄 index.html\n📄 playwright.config.ts\n📄 postcss.config.js\n📂 public\n  📄 vite.svg\n📂 src\n  📄 App.tsx\n  📂 components\n    📂 dashboard\n    📂 layout\n    📂 projects\n    📂 settings\n    📂 tasks\n    📂 team\n    📂 ui\n  📂 context\n    📄 DataContext.tsx\n    📄 SidebarContext.tsx\n    📄 ThemeContext.tsx\n    📄 ToastContext.tsx\n  📂 data\n    📄 mockData.ts\n  📂 hooks\n    📄 useClickOutside.ts\n    📄 useDebounce.ts\n    📄 useFocusTrap.ts\n    📄 useLocalStorage.ts\n    📄 useMediaQuery.ts\n    📄 useProjectTable.ts\n    📄 useTeamFilter.ts\n  📄 index.css\n  📄 main.tsx\n  📂 pages\n    📄 ComponentShowcase.tsx\n    📄 Dashboard.tsx\n    📄 Projects.tsx\n    📄 Settings.tsx\n    📄 Tasks.tsx\n    📄 Team.tsx\n  📂 types\n    📄 index.ts\n📄 tailwind.config.js\n📂 test-results\n  📄 .last-run.json\n📂 tests\n  📂 adhoc\n    📄 test-task-2-verify-data.ts\n    📄 test-task-3.html\n    📄 test-task-4.html\n    📄 test-task-5.1.spec.ts\n    📄 test-task-6.spec.ts\n    📄 verify-contexts.tsx\n  📂 e2e\n    📄 .gitkeep\n    📄 smoke.spec.ts\n    📄 task-10-projects-table.spec.ts\n    📄 task-11-project-crud.spec.ts\n    📄 task-12-kanban.spec.ts\n    📄 task-13-kanban-dnd.spec.ts\n    📄 task-14-task-crud.spec.ts\n    📄 task-15-team.spec.ts\n    📄 task-16-invite-modal.spec.ts\n    📄 task-17-settings.spec.ts\n    📄 task-18-slideover.spec.ts\n    📄 task-19-comprehensive-e2e.spec.ts\n    📄 task-6-appshell.spec.ts\n    📄 task-6.1-tablet-sidebar.spec.ts\n    📄 task-7.1-validation.spec.ts\n\npackage.json (name: project-management-dashboard, scripts: dev, build, lint, preview, test, test:e2e)\n\npackage.json excerpt (/Users/jackjin/dev/harness-v2-test/package.json)\n{\n  \"name\": \"project-management-dashboard\",\n  \"private\": true,\n  \"version\": \"0.0.0\",\n  \"type\": \"module\",\n  \"scripts\": {\n    \"dev\": \"vite\",\n    \"build\": \"tsc && vite build\",\n    \"lint\": \"eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0\",\n    \"preview\": \"vite preview\",\n    \"test\": \"playwright test\",\n    \"test:e2e\": \"playwright test\"\n  },\n  \"dependencies\": {\n    \"react\": \"^18.2.0\",\n    \"react-dom\": \"^18.2.0\",\n    \"react-router-dom\": \"^6.21.0\",\n    \"lucide-react\": \"^0.303.0\",\n    \"recharts\": \"^2.10.3\"\n  },\n  \"devDependencies\": {\n    \"@playwright/test\": \"^1.40.1\",\n    \"@typ\n\nCODE: index.html (/Users/jackjin/dev/harness-v2-test/index.html)\n<!doctype html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"UTF-8\" />\n    <link rel=\"icon\" type=\"image/svg+xml\" href=\"/vite.svg\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\n    <title>Project Management Dashboard</title>\n  </head>\n  <body>\n    <div id=\"root\"></div>\n    <script type=\"module\" src=\"/src/main.tsx\"></script>\n  </body>\n</html>\n\n\nCODE: package-lock.json (/Users/jackjin/dev/harness-v2-test/package-lock.json)\n{\n  \"name\": \"project-management-dashboard\",\n  \"version\": \"0.0.0\",\n  \"lockfileVersion\": 3,\n  \"requires\": true,\n  \"packages\": {\n    \"\": {\n      \"name\": \"project-management-dashboard\",\n      \"version\": \"0.0.0\",\n      \"dependencies\": {\n        \"lucide-react\": \"^0.303.0\",\n        \"react\": \"^18.2.0\",\n        \"react-dom\": \"^18.2.0\",\n        \"react-router-dom\": \"^6.21.0\",\n        \"recharts\": \"^2.10.3\"\n      },\n      \"devDependencies\": {\n        \"@playwright/test\": \"^1.40.1\",\n        \"@types/react\": \"^18.2.43\",\n        \"@types/react-dom\": \"^18.2.17\",\n        \"@typescript-eslint/eslint-plugin\": \"^6.14.0\",\n        \"@typescript-eslint/parser\": \"^6.14.0\",\n        \"@vitejs/plugin-react\": \"^4.2.1\",\n        \"autoprefixer\": \"^10.4.16\",\n        \"eslint\": \"^8.55.0\",\n        \"eslint-plugin-react-hooks\": \"^4.6\n\nCODE: playwright.config.ts (/Users/jackjin/dev/harness-v2-test/playwright.config.ts)\nimport { defineConfig, devices } from '@playwright/test';\n\nexport default defineConfig({\n  testDir: './tests/e2e',\n  fullyParallel: true,\n  forbidOnly: !!process.env.CI,\n  retries: process.env.CI ? 2 : 0,\n  workers: process.env.CI ? 1 : undefined,\n  reporter: 'html',\n  use: {\n    baseURL: 'http://localhost:5173',\n    trace: 'on-first-retry',\n  },\n\n  projects: [\n    {\n      name: 'chromium',\n      use: { ...devices['Desktop Chrome'] },\n    },\n  ],\n\n  webServer: {\n    command: 'npm run dev',\n    url: 'http://localhost:5173',\n    reuseExistingServer: !process.env.CI,\n  },\n});\n\n\nCODE: dist/index.html (/Users/jackjin/dev/harness-v2-test/dist/index.html)\n<!doctype html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"UTF-8\" />\n    <link rel=\"icon\" type=\"image/svg+xml\" href=\"/vite.svg\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\n    <title>Project Management Dashboard</title>\n    <script type=\"module\" crossorigin src=\"/assets/index-BLvXnYp4.js\"></script>\n    <link rel=\"stylesheet\" crossorigin href=\"/assets/index-kKKVT2mj.css\">\n  </head>\n  <body>\n    <div id=\"root\"></div>\n  </body>\n</html>\n\n\nCODE: App.tsx (/Users/jackjin/dev/harness-v2-test/src/App.tsx)\nimport { BrowserRouter, Routes, Route } from 'react-router-dom';\nimport { ThemeProvider } from './context/ThemeContext';\nimport { SidebarProvider } from './context/SidebarContext';\nimport { ToastProvider } from './context/ToastContext';\nimport { DataProvider } from './context/DataContext';\nimport { ToastContainer } from './components/ui/Toast';\nimport AppShell from './components/layout/AppShell';\nimport Dashboard from './pages/Dashboard';\nimport Projects from './pages/Projects';\nimport Tasks from './pages/Tasks';\nimport Team from './pages/Team';\nimport Settings from './pages/Settings';\nimport ComponentShowcase from './pages/ComponentShowcase';\n\nfunction App(): JSX.Element {\n  return (\n    <ThemeProvider>\n      <SidebarProvider>\n        <ToastProvider>\n          <DataProvider>\n            <\n\nCODE: index.css (/Users/jackjin/dev/harness-v2-test/src/index.css)\n@tailwind base;\n@tailwind components;\n@tailwind utilities;\n\n/* Accent color custom properties — default blue */\n:root {\n  --accent-primary: 59 130 246;\n  --accent-hover: 37 99 235;\n  --accent-ring: 59 130 246;\n}\n\n\nCODE: main.tsx (/Users/jackjin/dev/harness-v2-test/src/main.tsx)\nimport React from 'react'\nimport ReactDOM from 'react-dom/client'\nimport App from './App.tsx'\nimport './index.css'\n\nReactDOM.createRoot(document.getElementById('root')!).render(\n  <React.StrictMode>\n    <App />\n  </React.StrictMode>,\n)\n\n\nCODE: context/DataContext.tsx (/Users/jackjin/dev/harness-v2-test/src/context/DataContext.tsx)\nimport { createContext, useContext, useReducer, useEffect, ReactNode } from 'react';\nimport type { Project, Task, TeamMember } from '../types';\nimport { projects as mockProjects, tasks as mockTasks, teamMembers as mockTeamMembers } from '../data/mockData';\n\ninterface DataState {\n  projects: Project[];\n  tasks: Task[];\n  team: TeamMember[];\n}\n\ntype DataAction =\n  | { type: 'ADD_PROJECT'; payload: Project }\n  | { type: 'UPDATE_PROJECT'; payload: Project }\n  | { type: 'DELETE_PROJECT'; payload: string }\n  | { type: 'ADD_TASK'; payload: Task }\n  | { type: 'UPDATE_TASK'; payload: Task }\n  | { type: 'DELETE_TASK'; payload: string }\n  | { type: 'MOVE_TASK'; payload: { taskId: string; newStatus: 'todo' | 'in-progress' | 'done' } };\n\ninterface DataContextValue {\n  state: DataState;\n  dispatch: (act\n\nCODE: data/mockData.ts (/Users/jackjin/dev/harness-v2-test/src/data/mockData.ts)\nimport type { Project, Task, TeamMember, Activity } from '../types';\n\n// Team members (8 members with varied roles and online states)\nexport const teamMembers: TeamMember[] = [\n  {\n    id: 'tm-1',\n    name: 'Sarah Chen',\n    email: 'sarah.chen@company.com',\n    role: 'manager',\n    avatar: 'https://i.pravatar.cc/150?img=1',\n    isOnline: true,\n  },\n  {\n    id: 'tm-2',\n    name: 'Marcus Rodriguez',\n    email: 'marcus.rodriguez@company.com',\n    role: 'developer',\n    avatar: 'https://i.pravatar.cc/150?img=2',\n    isOnline: true,\n  },\n  {\n    id: 'tm-3',\n    name: 'Emily Watson',\n    email: 'emily.watson@company.com',\n    role: 'designer',\n    avatar: 'https://i.pravatar.cc/150?img=3',\n    isOnline: false,\n  },\n  {\n    id: 'tm-4',\n    name: 'James Kim',\n    email: 'james.kim@company.com',\n  ",
+  "mode": "extend",
   "scopeClassification": {
     "level": "major",
     "rationale": "Foundation task that establishes the entire project architecture, folder structure, tooling configuration, and dependency baseline. All 18 subsequent tasks depend on this scaffolding. Creates 40+ files across multiple directories."
   },
   "startedAt": "2026-01-29T00:42:04.759Z",
-  "updatedAt": "2026-01-29T17:22:14.255Z"
+  "updatedAt": "2026-01-29T17:55:43.468Z"
 }

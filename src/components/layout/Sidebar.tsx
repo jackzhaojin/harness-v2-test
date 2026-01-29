@@ -8,6 +8,7 @@ export default function Sidebar(): JSX.Element {
 
   return (
     <aside
+      data-testid="sidebar"
       className={`hidden md:flex flex-col h-screen sticky top-0 border-r border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 transition-all duration-300 ${
         isCollapsed ? 'w-16' : 'w-60'
       }`}
@@ -42,6 +43,7 @@ export default function Sidebar(): JSX.Element {
                   } ${isCollapsed ? 'justify-center' : ''}`
                 }
                 title={isCollapsed ? item.label : undefined}
+                data-testid={`nav-${item.path === '/' ? 'dashboard' : item.path.slice(1)}`}
               >
                 <item.icon className="h-5 w-5 shrink-0" aria-hidden="true" />
                 {!isCollapsed && <span>{item.label}</span>}

@@ -77,6 +77,7 @@ export function KanbanBoard(): JSX.Element {
         className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6"
         role="region"
         aria-label="Kanban board"
+        data-testid="kanban-board"
       >
         {columns.map((col) => (
           <KanbanColumn

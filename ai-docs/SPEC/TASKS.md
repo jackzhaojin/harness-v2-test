@@ -24,3 +24,6 @@
 - [x] Task 5.2: Fix Modal backdrop click not closing modal (still broken after 5.1)
 - [x] Task 6.1: Fix tablet viewport sidebar to show icons-only by default
 - [x] Task 7.1: Fix dark mode background color and add system theme selector
+- [ ] Task 20: Demo infrastructure: Playwright config, shared helpers, and data-testid additions
+- [ ] Task 21: Highlights demo script with voice-over and app bug fixes
+- [ ] Task 22: Full tour demo script with voice-over document

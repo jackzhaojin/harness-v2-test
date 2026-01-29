@@ -9,6 +9,7 @@ interface StatCardProps {
   to: string;
   iconColor?: string;
   iconBg?: string;
+  testId?: string;
 }
 
 export function StatCard({
@@ -18,6 +19,7 @@ export function StatCard({
   to,
   iconColor = 'text-blue-600 dark:text-blue-400',
   iconBg = 'bg-blue-100 dark:bg-blue-900/50',
+  testId,
 }: StatCardProps): JSX.Element {
   const navigate = useNavigate();
 
@@ -29,6 +31,7 @@ export function StatCard({
       role="button"
       tabIndex={0}
       aria-label={`${label}: ${value}. Click to view details.`}
+      data-testid={testId}
       onClick={() => navigate(to)}
       onKeyDown={(e: React.KeyboardEvent) => {
         if (e.key === 'Enter' || e.key === ' ') {
