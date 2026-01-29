@@ -33,10 +33,10 @@ export function ToastProvider({ children }: ToastProviderProps): JSX.Element {
 
     setToasts((prev) => [...prev, newToast]);
 
-    // Auto-dismiss after 3 seconds
+    // Auto-dismiss after 4.5 seconds (long enough for demo viewers to read)
     setTimeout(() => {
       removeToast(id);
-    }, 3000);
+    }, 4500);
   }, [removeToast]);
 
   return (

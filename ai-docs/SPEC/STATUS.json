@@ -1,7 +1,7 @@
 {
   "version": "1.0",
   "phase": "EXECUTING",
-  "currentTaskId": "20",
+  "currentTaskId": "21",
   "tasks": [
     {
       "id": "1",
@@ -715,7 +715,7 @@
       "estimatedComplexity": "large",
       "e2eRequired": false,
       "testingApproach": "Verify demo/ directory structure exists with helpers.ts and config file. Run npm run build to confirm no breakage. Run npm run test:e2e to verify existing tests still pass. Import helpers in a minimal test script to verify TypeScript compilation. Confirm npm run demo:highlights and demo:full commands are wired in package.json (will fail without actual spec files, but command should be present).",
-      "status": "in_progress",
+      "status": "complete",
       "subtasks": [],
       "parentId": null
     },
@@ -751,7 +751,7 @@
       "estimatedComplexity": "large",
       "e2eRequired": false,
       "testingApproach": "Run npm run demo:highlights and verify the browser opens, walks through the full sequence at natural pace, and completes without errors. Visually confirm a human viewer can follow every action. Verify voice-over timestamps roughly align with actual demo runtime. Run npm run test:e2e to confirm no regressions.",
-      "status": "pending",
+      "status": "in_progress",
       "subtasks": [],
       "parentId": null
     },
@@ -790,7 +790,7 @@
       "parentId": null
     }
   ],
-  "completedCount": 24,
+  "completedCount": 25,
   "failedCount": 0,
   "pauseReason": null,
   "resumeContext": [
@@ -822,5 +822,5 @@
     "rationale": "Foundation task that establishes the entire project architecture, folder structure, tooling configuration, and dependency baseline. All 18 subsequent tasks depend on this scaffolding. Creates 40+ files across multiple directories."
   },
   "startedAt": "2026-01-29T00:42:04.759Z",
-  "updatedAt": "2026-01-29T17:55:43.468Z"
+  "updatedAt": "2026-01-29T18:11:49.796Z"
 }

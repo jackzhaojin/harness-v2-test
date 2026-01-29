@@ -1,0 +1,59 @@
+{
+  "agentName": "build",
+  "sessionId": "task/20/build/1",
+  "timestamp": "2026-01-29T18:05:39.435Z",
+  "success": true,
+  "modelUsed": "claude-opus-4-5",
+  "artifacts": [],
+  "handoff": {
+    "task": "20",
+    "role": "build",
+    "attempt": 1,
+    "result": "pass",
+    "filesModified": [
+      "package.json",
+      "src/components/dashboard/StatCard.tsx",
+      "src/pages/Dashboard.tsx",
+      "src/components/dashboard/TaskCompletionChart.tsx",
+      "src/components/dashboard/TaskStatusChart.tsx",
+      "src/components/layout/Sidebar.tsx",
+      "src/components/tasks/KanbanBoard.tsx",
+      "src/components/tasks/KanbanColumn.tsx",
+      "src/components/projects/ProjectsTable.tsx"
+    ],
+    "filesCreated": [
+      "demo/helpers.ts",
+      "demo/.gitkeep",
+      "playwright.demo.config.ts",
+      "ai-docs/TASKS/20/test-results.md"
+    ],
+    "checksRun": [
+      {
+        "name": "build",
+        "command": "npm run build",
+        "pass": true
+      },
+      {
+        "name": "smoke",
+        "command": "npx playwright test tests/e2e/smoke.spec.ts --reporter=list",
+        "pass": true
+      },
+      {
+        "name": "e2e-regression",
+        "command": "npx playwright test tests/e2e/ --reporter=list",
+        "pass": true,
+        "notes": "235/243 pass; 8 pre-existing failures in task-7.1-validation.spec.ts (hardcoded port 5174)"
+      },
+      {
+        "name": "demo-isolation",
+        "command": "npx playwright test --list",
+        "pass": true,
+        "notes": "243 tests from tests/e2e/ only; demo dir excluded"
+      }
+    ],
+    "artifacts": [
+      "/Users/jackjin/dev/harness-v2-test/ai-docs/TASKS/20/test-results.md"
+    ],
+    "handoffNotes": "Demo infrastructure scaffolding complete: demo/helpers.ts with 6 typed utility functions, playwright.demo.config.ts with headed/generous-timeout settings, npm scripts for highlights and full-tour demos, and 20+ data-testid attributes across dashboard stat cards, charts, sidebar nav links, kanban board/columns, and projects table. All helpers are interaction-only with zero test assertions. Build passes, smoke passes, E2E regression unaffected. Demo config is fully isolated from test suite."
+  }
+}

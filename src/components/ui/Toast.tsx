@@ -36,7 +36,7 @@ function ToastItem({ toast, onDismiss }: ToastItemProps): JSX.Element {
   useEffect(() => {
     const exitTimer = setTimeout(() => {
       setIsExiting(true);
-    }, 2700);
+    }, 4200);
 
     return () => {
       clearTimeout(exitTimer);

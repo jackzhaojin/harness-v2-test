@@ -715,7 +715,7 @@
       "estimatedComplexity": "large",
       "e2eRequired": false,
       "testingApproach": "Verify demo/ directory structure exists with helpers.ts and config file. Run npm run build to confirm no breakage. Run npm run test:e2e to verify existing tests still pass. Import helpers in a minimal test script to verify TypeScript compilation. Confirm npm run demo:highlights and demo:full commands are wired in package.json (will fail without actual spec files, but command should be present).",
-      "status": "pending",
+      "status": "complete",
       "subtasks": [],
       "parentId": null
     },
