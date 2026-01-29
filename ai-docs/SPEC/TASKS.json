@@ -375,7 +375,7 @@
       ],
       "estimatedComplexity": "medium",
       "testingApproach": "Load tasks page and verify three columns with correct headers. Verify tasks appear in correct columns based on status. Check card displays all required info. Resize to mobile and verify stacking.",
-      "status": "pending",
+      "status": "complete",
       "subtasks": [],
       "parentId": null
     },

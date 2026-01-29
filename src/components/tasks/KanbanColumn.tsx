@@ -1,4 +1,6 @@
+import { useState } from 'react';
 import type { Task, TeamMember } from '../../types';
+import { useData } from '../../context/DataContext';
 import { Badge } from '../ui/Badge';
 import { TaskCard } from './TaskCard';
 
@@ -16,9 +18,39 @@ const columnStyles: Record<KanbanColumnProps['variant'], string> = {
 };
 
 export function KanbanColumn({ title, tasks, teamLookup, variant }: KanbanColumnProps): JSX.Element {
+  const { dispatch } = useData();
+  const [isDragOver, setIsDragOver] = useState(false);
+
+  const handleDragOver = (e: React.DragEvent<HTMLElement>): void => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    setIsDragOver(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent<HTMLElement>): void => {
+    // Only reset if we're leaving the column element itself, not moving between children
+    if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+      setIsDragOver(false);
+    }
+  };
+
+  const handleDrop = (e: React.DragEvent<HTMLElement>): void => {
+    e.preventDefault();
+    const taskId = e.dataTransfer.getData('taskId');
+    if (taskId) {
+      dispatch({ type: 'MOVE_TASK', payload: { taskId, newStatus: variant } });
+    }
+    setIsDragOver(false);
+  };
+
   return (
     <section
-      className={`flex flex-col rounded-xl ${columnStyles[variant]} border border-gray-200 dark:border-gray-700`}
+      onDragOver={handleDragOver}
+      onDragLeave={handleDragLeave}
+      onDrop={handleDrop}
+      className={`flex flex-col rounded-xl ${columnStyles[variant]} border border-gray-200 dark:border-gray-700 transition-shadow ${
+        isDragOver ? 'ring-2 ring-blue-500 ring-inset' : ''
+      }`}
       aria-label={`${title} column`}
     >
       {/* Column Header */}

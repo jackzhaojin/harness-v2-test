@@ -28,13 +28,28 @@ function isOverdue(dateString: string): boolean {
   return dueDate < now;
 }
 
+// Drag event handlers following HOW.md Pattern 3
+// Uses classList for opacity toggle to avoid React state conflicts with browser drag ghost
+function handleDragStart(e: React.DragEvent<HTMLElement>, taskId: string): void {
+  e.dataTransfer.setData('taskId', taskId);
+  e.dataTransfer.effectAllowed = 'move';
+  e.currentTarget.classList.add('opacity-50');
+}
+
+function handleDragEnd(e: React.DragEvent<HTMLElement>): void {
+  e.currentTarget.classList.remove('opacity-50');
+}
+
 export function TaskCard({ task, assignee }: TaskCardProps): JSX.Element {
   const overdue = useMemo(() => isOverdue(task.dueDate), [task.dueDate]);
   const priority = priorityConfig[task.priority];
 
   return (
     <article
-      className="rounded-lg bg-white dark:bg-gray-800 p-4 shadow-sm hover:shadow-md transition-shadow border border-gray-100 dark:border-gray-700"
+      draggable
+      onDragStart={(e) => handleDragStart(e, task.id)}
+      onDragEnd={handleDragEnd}
+      className="rounded-lg bg-white dark:bg-gray-800 p-4 shadow-sm hover:shadow-md transition-shadow border border-gray-100 dark:border-gray-700 cursor-grab active:cursor-grabbing"
       aria-label={`Task: ${task.title}`}
     >
       {/* Title */}

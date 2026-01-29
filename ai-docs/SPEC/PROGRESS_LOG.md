@@ -322,3 +322,76 @@ fatal: 'main' is not a commit and a branch '2026-01-28-feature/dashboard-mvp' ca
 [2026-01-29T05:54:54.696Z] Phase: RESEARCH
 [2026-01-29T05:57:14.591Z] Phase: BUILD
 [2026-01-29T05:57:14.592Z] Build attempt 1/3
+[2026-01-29T06:01:58.900Z] Build PASSED
+[2026-01-29T06:01:58.900Z] Phase: VALIDATE
+[2026-01-29T06:01:58.900Z] Validate attempt 1/2
+[2026-01-29T06:07:44.588Z] Validate PASSED
+[2026-01-29T06:07:44.589Z] Task 12 COMPLETE
+[2026-01-29T06:07:44.592Z] ────────────────────────────────────────────────────────────
+[2026-01-29T06:07:44.592Z] Task 13: Kanban drag-and-drop with persistence
+[2026-01-29T06:07:44.592Z] ────────────────────────────────────────────────────────────
+[2026-01-29T06:07:44.595Z] Phase: RESEARCH
+[2026-01-29T06:24:46.040Z] ════════════════════════════════════════════════════════════
+[2026-01-29T06:24:46.043Z] ORCHESTRATION STARTED
+[2026-01-29T06:24:46.043Z] Mode: resume (Scenario 3: Existing code + AI docs, adding features)
+[2026-01-29T06:24:46.044Z] Docs: /Users/jackjin/dev/harness-v2-test/ai-docs
+[2026-01-29T06:24:46.046Z] Code: /Users/jackjin/dev/harness-v2-test
+[2026-01-29T06:24:46.046Z] Resuming from phase: EXECUTING
+[2026-01-29T06:24:46.047Z] ════════════════════════════════════════════════════════════
+[2026-01-29T06:24:46.079Z] Already on branch feature/dashboard-mvp
+[2026-01-29T06:24:46.080Z] Recovering: was working on task 13
+[2026-01-29T06:24:46.091Z] Recovery context: 5 recent files
+[2026-01-29T06:24:46.092Z]   - TASKS/13/packet.md
+[2026-01-29T06:24:46.093Z]   - TASKS/12/validate_attempt_1.md
+[2026-01-29T06:24:46.093Z]   - TASKS/12/validate_attempt_1_handoff.json
+[2026-01-29T06:24:46.094Z]   - TASKS/12/build_attempt_1.md
+[2026-01-29T06:24:46.094Z]   - TASKS/12/build_attempt_1_handoff.json
+[2026-01-29T06:24:46.094Z] Reset task 13 to pending for retry
+[2026-01-29T06:24:46.098Z] ────────────────────────────────────────────────────────────
+[2026-01-29T06:24:46.098Z] Task 13: Kanban drag-and-drop with persistence
+[2026-01-29T06:24:46.099Z] ────────────────────────────────────────────────────────────
+[2026-01-29T06:24:46.106Z] Phase: RESEARCH
+[2026-01-29T06:34:34.413Z] ════════════════════════════════════════════════════════════
+[2026-01-29T06:34:34.414Z] ORCHESTRATION STARTED
+[2026-01-29T06:34:34.414Z] Mode: resume (Scenario 3: Existing code + AI docs, adding features)
+[2026-01-29T06:34:34.415Z] Docs: /Users/jackjin/dev/harness-v2-test/ai-docs
+[2026-01-29T06:34:34.416Z] Code: /Users/jackjin/dev/harness-v2-test
+[2026-01-29T06:34:34.416Z] Resuming from phase: EXECUTING
+[2026-01-29T06:34:34.416Z] ════════════════════════════════════════════════════════════
+[2026-01-29T06:34:34.439Z] Already on branch feature/dashboard-mvp
+[2026-01-29T06:34:34.440Z] Recovering: was working on task 13
+[2026-01-29T06:34:34.444Z] Recovery context: 5 recent files
+[2026-01-29T06:34:34.445Z]   - TASKS/13/packet.md
+[2026-01-29T06:34:34.445Z]   - TASKS/12/validate_attempt_1.md
+[2026-01-29T06:34:34.445Z]   - TASKS/12/validate_attempt_1_handoff.json
+[2026-01-29T06:34:34.446Z]   - TASKS/12/build_attempt_1.md
+[2026-01-29T06:34:34.446Z]   - TASKS/12/build_attempt_1_handoff.json
+[2026-01-29T06:34:34.446Z] Reset task 13 to pending for retry
+[2026-01-29T06:34:34.447Z] ────────────────────────────────────────────────────────────
+[2026-01-29T06:34:34.447Z] Task 13: Kanban drag-and-drop with persistence
+[2026-01-29T06:34:34.447Z] ────────────────────────────────────────────────────────────
+[2026-01-29T06:34:34.450Z] Phase: RESEARCH
+[2026-01-29T06:39:53.896Z] Phase: BUILD
+[2026-01-29T06:39:53.897Z] Build attempt 1/3
+[2026-01-29T06:51:19.830Z] ════════════════════════════════════════════════════════════
+[2026-01-29T06:51:19.831Z] ORCHESTRATION STARTED
+[2026-01-29T06:51:19.832Z] Mode: resume (Scenario 3: Existing code + AI docs, adding features)
+[2026-01-29T06:51:19.832Z] Docs: /Users/jackjin/dev/harness-v2-test/ai-docs
+[2026-01-29T06:51:19.833Z] Code: /Users/jackjin/dev/harness-v2-test
+[2026-01-29T06:51:19.833Z] Resuming from phase: EXECUTING
+[2026-01-29T06:51:19.834Z] ════════════════════════════════════════════════════════════
+[2026-01-29T06:51:19.861Z] Already on branch feature/dashboard-mvp
+[2026-01-29T06:51:19.862Z] Recovering: was working on task 13
+[2026-01-29T06:51:19.867Z] Recovery context: 5 recent files
+[2026-01-29T06:51:19.867Z]   - TASKS/13/research_handoff.json
+[2026-01-29T06:51:19.868Z]   - TASKS/13/research.md
+[2026-01-29T06:51:19.868Z]   - TASKS/13/packet.md
+[2026-01-29T06:51:19.868Z]   - TASKS/12/validate_attempt_1.md
+[2026-01-29T06:51:19.868Z]   - TASKS/12/validate_attempt_1_handoff.json
+[2026-01-29T06:51:19.869Z] Reset task 13 to pending for retry
+[2026-01-29T06:51:19.870Z] ────────────────────────────────────────────────────────────
+[2026-01-29T06:51:19.870Z] Task 13: Kanban drag-and-drop with persistence
+[2026-01-29T06:51:19.871Z] ────────────────────────────────────────────────────────────
+[2026-01-29T06:51:19.874Z] Phase: RESEARCH skipped (completed on prior run)
+[2026-01-29T06:51:19.875Z] Phase: BUILD
+[2026-01-29T06:51:19.876Z] Build attempt 1/3
