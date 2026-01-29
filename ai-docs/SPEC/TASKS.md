@@ -4,7 +4,7 @@
 - [x] Task 2: Type definitions and mock data setup
 - [x] Task 3: Core context providers and custom hooks
 - [x] Task 4: Reusable UI component library
-- [ ] Task 5: Modal and Toast notification systems
+- [x] Task 5: Modal and Toast notification systems
 - [ ] Task 6: App shell with sidebar and header navigation
 - [ ] Task 7: Dark/light theme toggle with full application theming
 - [ ] Task 8: Dashboard page with stats cards and activity feed
@@ -19,6 +19,6 @@
 - [ ] Task 17: Settings page with profile, notifications, and appearance sections
 - [ ] Task 18: SlideOver panel component
 - [ ] Task 19: Playwright E2E test suite
-- [ ] Task 5.3: Fix: Clicking backdrop does not close modal
+- [x] Task 5.3: Fix: Clicking backdrop does not close modal
 - [x] Task 5.1: Fix Modal backdrop click not closing modal
 - [x] Task 5.2: Fix Modal backdrop click not closing modal (still broken after 5.1)

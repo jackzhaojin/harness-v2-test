@@ -4,6 +4,7 @@ import { SidebarProvider } from './context/SidebarContext';
 import { ToastProvider } from './context/ToastContext';
 import { DataProvider } from './context/DataContext';
 import { ToastContainer } from './components/ui/Toast';
+import AppShell from './components/layout/AppShell';
 import Dashboard from './pages/Dashboard';
 import Projects from './pages/Projects';
 import Tasks from './pages/Tasks';
@@ -18,14 +19,16 @@ function App(): JSX.Element {
         <ToastProvider>
           <DataProvider>
             <BrowserRouter>
-              <Routes>
-                <Route path="/" element={<Dashboard />} />
-                <Route path="/projects" element={<Projects />} />
-                <Route path="/tasks" element={<Tasks />} />
-                <Route path="/team" element={<Team />} />
-                <Route path="/settings" element={<Settings />} />
-                <Route path="/components" element={<ComponentShowcase />} />
-              </Routes>
+              <AppShell>
+                <Routes>
+                  <Route path="/" element={<Dashboard />} />
+                  <Route path="/projects" element={<Projects />} />
+                  <Route path="/tasks" element={<Tasks />} />
+                  <Route path="/team" element={<Team />} />
+                  <Route path="/settings" element={<Settings />} />
+                  <Route path="/components" element={<ComponentShowcase />} />
+                </Routes>
+              </AppShell>
             </BrowserRouter>
             <ToastContainer />
           </DataProvider>

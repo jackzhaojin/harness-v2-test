@@ -1,0 +1,47 @@
+## Validation Complete: Task 5.3 — **PASS** ✅
+
+### Summary
+
+All 3 acceptance criteria verified and passing:
+
+| Criterion | Status |
+|-----------|--------|
+| Clicking backdrop closes modal (unless prevented) | ✅ PASS |
+| Regression tests still pass | ✅ PASS |
+| Original failing check now passes | ✅ PASS |
+
+### Key Evidence
+- **Code fix verified**: `Modal.tsx` line 146 has `pointer-events-none` on the overlay div, allowing clicks to pass through to the `[role="presentation"]` parent where `handleBackdropClick` fires
+- **Playwright tests**: Full suite **25/25 passed** in 7.5s — including dedicated backdrop click tests in both `test-task-5.1.spec.ts` (6/6) and `test-task-5.2.spec.ts` (5/5)
+- **No regressions**: All smoke (3/3) and task3 validation (11/11) tests continue to pass
+
+### Note
+Task 5.3 is a duplicate defect of Tasks 5.1 and 5.2. The fix was already applied by Task 5.1 (commit `8b23ab4`). No additional code changes were needed.
+
+```json
+{
+  "task": "5.3",
+  "role": "validate",
+  "attempt": 1,
+  "result": "pass",
+  "criteriaResults": [
+    {
+      "criterion": "Clicking backdrop closes modal (unless prevented)",
+      "status": "pass",
+      "evidence": "Playwright tests 'clicking backdrop closes the modal' pass in both test-task-5.1.spec.ts and test-task-5.2.spec.ts. Code confirms pointer-events-none on overlay div at Modal.tsx line 146. Computed style verification test also passes."
+    },
+    {
+      "criterion": "Regression tests still pass",
+      "status": "pass",
+      "evidence": "Full Playwright suite: 25/25 passed (smoke 3/3, task3 11/11, task5.1 6/6, task5.2 5/5). No console errors."
+    },
+    {
+      "criterion": "Original failing check now passes",
+      "status": "pass",
+      "evidence": "The backdrop click test that previously failed (dialog still visible after clicking backdrop) now passes. The pointer-events-none fix on the overlay div allows clicks to reach the presentation parent, making e.target === e.currentTarget true."
+    }
+  ],
+  "issues": [],
+  "handoffNotes": "All acceptance criteria verified and passing. Task 5.3 is a duplicate defect — the fix (pointer-events-none on Modal.tsx line 146) was already applied by Task 5.1 (commit 8b23ab4). Full test suite 25/25 passes."
+}
+```
