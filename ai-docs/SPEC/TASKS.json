@@ -751,7 +751,7 @@
       "estimatedComplexity": "large",
       "e2eRequired": false,
       "testingApproach": "Run npm run demo:highlights and verify the browser opens, walks through the full sequence at natural pace, and completes without errors. Visually confirm a human viewer can follow every action. Verify voice-over timestamps roughly align with actual demo runtime. Run npm run test:e2e to confirm no regressions.",
-      "status": "pending",
+      "status": "complete",
       "subtasks": [],
       "parentId": null
     },
