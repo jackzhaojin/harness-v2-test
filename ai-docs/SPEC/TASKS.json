@@ -466,7 +466,7 @@
       ],
       "estimatedComplexity": "medium",
       "testingApproach": "Load team page and verify grid displays all members. Type in search to filter by name. Select role from dropdown and verify filter combines with search. Check empty state appears when no matches.",
-      "status": "pending",
+      "status": "complete",
       "subtasks": [],
       "parentId": null
     },

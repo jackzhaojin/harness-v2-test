@@ -14,7 +14,7 @@
 - [x] Task 12: Kanban board layout and task card display
 - [x] Task 13: Kanban drag-and-drop with persistence
 - [x] Task 14: Task CRUD with forms and detail panel
-- [ ] Task 15: Team members page with grid and filtering
+- [x] Task 15: Team members page with grid and filtering
 - [ ] Task 16: Team member invite modal
 - [ ] Task 17: Settings page with profile, notifications, and appearance sections
 - [ ] Task 18: SlideOver panel component
