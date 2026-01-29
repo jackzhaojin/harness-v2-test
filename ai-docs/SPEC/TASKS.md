@@ -19,3 +19,6 @@
 - [ ] Task 17: Settings page with profile, notifications, and appearance sections
 - [ ] Task 18: SlideOver panel component
 - [ ] Task 19: Playwright E2E test suite
+- [ ] Task 5.3: Fix: Clicking backdrop does not close modal
+- [ ] Task 5.1: Fix Modal backdrop click not closing modal
+- [ ] Task 5.2: Fix Modal backdrop click not closing modal (still broken after 5.1)

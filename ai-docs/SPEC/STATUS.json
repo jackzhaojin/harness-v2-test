@@ -1,7 +1,7 @@
 {
   "version": "1.0",
   "phase": "EXECUTING",
-  "currentTaskId": "5",
+  "currentTaskId": "5.1",
   "tasks": [
     {
       "id": "1",
@@ -145,8 +145,12 @@
       ],
       "estimatedComplexity": "medium",
       "testingApproach": "Open modal and verify focus trap by tabbing. Press Escape to close. Click backdrop to close. Trigger multiple toasts and verify stacking. Wait 3 seconds and verify auto-dismiss.",
-      "status": "in_progress",
-      "subtasks": [],
+      "status": "needs_subtask",
+      "subtasks": [
+        "5.3",
+        "5.1",
+        "5.2"
+      ],
       "parentId": null
     },
     {
@@ -587,10 +591,56 @@
       "status": "pending",
       "subtasks": [],
       "parentId": null
+    },
+    {
+      "id": "5.3",
+      "title": "Fix: Clicking backdrop does not close modal",
+      "description": "Modal closes when clicking the semi-transparent backdrop overlay",
+      "acceptanceCriteria": [
+        "Clicking backdrop closes modal (unless prevented)"
+      ],
+      "dependencies": [
+        "3",
+        "4"
+      ],
+      "parentId": "5",
+      "status": "pending"
+    },
+    {
+      "id": "5.1",
+      "title": "Fix Modal backdrop click not closing modal",
+      "description": "Clicking the semi-transparent backdrop overlay outside the modal dialog does NOT close the modal. The acceptance criterion \"Clicking backdrop closes modal (unless prevented)\" fails.",
+      "acceptanceCriteria": [
+        "Clicking the backdrop (outside the modal dialog) closes the modal",
+        "Clicking inside the modal dialog does NOT close the modal",
+        "All original parent task criteria still pass (escape key, focus trap, animations, compound components, etc.)"
+      ],
+      "dependencies": [
+        "3",
+        "4"
+      ],
+      "parentId": "5",
+      "status": "in_progress"
+    },
+    {
+      "id": "5.2",
+      "title": "Fix Modal backdrop click not closing modal (still broken after 5.1)",
+      "description": "Clicking the semi-transparent backdrop overlay outside the modal dialog does NOT close the modal. The acceptance criterion \"Clicking backdrop closes modal (unless prevented)\" continues to fail after attempt 2. Task 5.1 identified this same issue but the fix was not applied.",
+      "acceptanceCriteria": [
+        "Clicking the backdrop (outside the modal dialog) closes the modal",
+        "Clicking inside the modal dialog does NOT close the modal",
+        "All original parent task criteria still pass"
+      ],
+      "dependencies": [
+        "3",
+        "4"
+      ],
+      "parentId": "5",
+      "status": "pending"
     }
   ],
   "completedCount": 4,
-  "failedCount": 0,
+  "failedCount": 1,
   "pauseReason": null,
   "resumeContext": [
     {
@@ -621,5 +671,5 @@
     "rationale": "Foundation task that establishes the entire project architecture, folder structure, tooling configuration, and dependency baseline. All 18 subsequent tasks depend on this scaffolding. Creates 40+ files across multiple directories."
   },
   "startedAt": "2026-01-29T00:42:04.759Z",
-  "updatedAt": "2026-01-29T01:39:52.607Z"
+  "updatedAt": "2026-01-29T02:00:50.657Z"
 }

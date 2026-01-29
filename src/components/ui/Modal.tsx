@@ -143,7 +143,7 @@ function Modal({ isOpen, onClose, children }: ModalProps): JSX.Element | null {
         role="presentation"
       >
         {/* Backdrop overlay */}
-        <div className="absolute inset-0 bg-black/50" aria-hidden="true" />
+        <div className="absolute inset-0 bg-black/50 pointer-events-none" aria-hidden="true" />
 
         {/* Modal content panel */}
         <div

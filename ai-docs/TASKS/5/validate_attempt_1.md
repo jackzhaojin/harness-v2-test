@@ -1,0 +1,72 @@
+## Validation Report: Task 5 (Attempt 1) — FAIL
+
+**15 of 16 criteria passed. 1 critical failure identified.**
+
+### Results Summary
+
+| # | Criterion | Status |
+|---|-----------|--------|
+| 1 | Modal renders centered with semi-transparent backdrop overlay | ✅ PASS |
+| 2 | Modal has compound components: Modal.Header, Modal.Body, Modal.Footer | ✅ PASS |
+| 3 | Modal.Header includes close button (X) in corner | ✅ PASS |
+| 4 | **Clicking backdrop closes modal** | ❌ **FAIL** |
+| 5 | Pressing Escape key closes modal | ✅ PASS |
+| 6 | Focus is trapped inside modal when open | ✅ PASS |
+| 7 | Modal has smooth fade-in/out animation (200-300ms) | ✅ PASS |
+| 8 | Modal body scrolls if content overflows viewport | ✅ PASS |
+| 9 | Toast appears in bottom-right corner | ✅ PASS |
+| 10 | Toast shows message, type icon with correct colors | ✅ PASS |
+| 11 | Toast has close button (X) for manual dismiss | ✅ PASS |
+| 12 | Toast auto-dismisses after 3 seconds | ✅ PASS |
+| 13 | Multiple toasts stack vertically with newest at bottom | ✅ PASS |
+| 14 | Toast has enter (slide up) and exit (fade out) animations | ✅ PASS |
+| 15 | Both components render via React Portal to document.body | ✅ PASS |
+| 16 | Smoke: App loads without errors | ✅ PASS |
+
+### Failure: Backdrop Click (Criterion 4)
+
+**Root cause**: The `<div className="absolute inset-0 bg-black/50">` overlay inside `[role="presentation"]` intercepts all mouse clicks. The `handleBackdropClick` handler checks `e.target === e.currentTarget`, which is always `false` because `e.target` is the overlay child, not the presentation parent.
+
+**Fix**: Add `pointer-events-none` to the overlay div.
+
+### Defect Subtask Created
+
+**Task 5.1** created at `ai-docs/TASKS/5.1/packet.md` with full root cause analysis and fix approach.
+
+```json
+{
+  "task": "5",
+  "role": "validate",
+  "attempt": 1,
+  "result": "fail",
+  "defectCreated": "5.1",
+  "criteriaResults": [
+    {"criterion": "Modal renders centered with semi-transparent backdrop overlay", "status": "pass", "evidence": "Backdrop has fixed inset-0 flex items-center justify-center classes; overlay has bg-black/50; dialog visible and centered"},
+    {"criterion": "Modal has compound components: Modal.Header, Modal.Body, Modal.Footer", "status": "pass", "evidence": "Header (.border-b with title), Body (.overflow-y-auto with content), Footer (.border-t with 2 buttons) all present and visible"},
+    {"criterion": "Modal.Header includes close button (X) in corner", "status": "pass", "evidence": "button[aria-label='Close'] with SVG icon found in header section"},
+    {"criterion": "Clicking backdrop closes modal (unless prevented)", "status": "fail", "evidence": "Modal remains visible after clicking backdrop. The absolute inset-0 overlay div intercepts clicks, making e.target !== e.currentTarget always true in handleBackdropClick"},
+    {"criterion": "Pressing Escape key closes modal", "status": "pass", "evidence": "Dialog becomes not visible within 400ms of pressing Escape"},
+    {"criterion": "Focus is trapped inside modal when open", "status": "pass", "evidence": "After tabbing through all focusable elements + 1, activeElement.closest('[role=dialog]') returns true"},
+    {"criterion": "Modal has smooth fade-in/out animation (200-300ms)", "status": "pass", "evidence": "animate-fade-in on open, animate-fade-out on close; modal-scale-in/out; Tailwind config defines 200ms durations"},
+    {"criterion": "Modal body scrolls if content overflows viewport", "status": "pass", "evidence": "Body has overflow-y-auto and max-h-[calc(100vh-200px)] classes"},
+    {"criterion": "Toast component appears in bottom-right corner of viewport", "status": "pass", "evidence": "Container has fixed bottom-4 right-4 z-[100] classes"},
+    {"criterion": "Toast shows message, type icon (success=green, error=red, info=blue)", "status": "pass", "evidence": "Success: text-green-500 icon + border-l-green-500; Error: text-red-500 + border-l-red-500; Info: text-blue-500 + border-l-blue-500"},
+    {"criterion": "Toast has close button (X) for manual dismiss", "status": "pass", "evidence": "button[aria-label='Close'] present in toast, clicking it removes the toast"},
+    {"criterion": "Toast auto-dismisses after 3 seconds", "status": "pass", "evidence": "Toast disappears after 3.5s wait; ToastContext uses setTimeout(removeToast, 3000)"},
+    {"criterion": "Multiple toasts stack vertically with newest at bottom", "status": "pass", "evidence": "3 toasts rendered; container uses flex flex-col gap-3; newest toast has higher Y position"},
+    {"criterion": "Toast has enter animation (slide up) and exit animation (fade out)", "status": "pass", "evidence": "Enter: animate-slide-up (300ms); Exit: animate-fade-out (200ms) triggered at 2700ms"},
+    {"criterion": "Both components render via React Portal to document.body", "status": "pass", "evidence": "Modal presentation parent is document.body; Toast container parent is document.body; both use createPortal"},
+    {"criterion": "Smoke: App loads without errors", "status": "pass", "evidence": "Zero console errors or page errors on /components page load"}
+  ],
+  "issues": [
+    {
+      "title": "Modal backdrop click does not close modal",
+      "criterion": "Clicking backdrop closes modal (unless prevented)",
+      "expected": "Clicking the semi-transparent overlay outside the modal dialog should close the modal",
+      "actual": "Modal remains open because the absolute inset-0 overlay div intercepts all clicks, causing e.target !== e.currentTarget in handleBackdropClick",
+      "evidence": "Playwright test: isStillVisible === true after clicking backdrop at coordinates above the dialog. Fix: add pointer-events-none to overlay div."
+    }
+  ],
+  "handoffNotes": "Created defect subtask 5.1 to fix Modal backdrop click. The overlay div (absolute inset-0 bg-black/50) needs pointer-events-none so clicks pass through to the presentation parent div, allowing handleBackdropClick to work correctly."
+}
+```
