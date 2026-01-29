@@ -1,8 +1,9 @@
 import { useState, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, Bell, Menu, User, Settings, LogOut } from 'lucide-react';
+import { Search, Bell, Menu, User, Settings, LogOut, Sun, Moon } from 'lucide-react';
 import { Avatar } from '../ui/Avatar';
 import { useClickOutside } from '../../hooks/useClickOutside';
+import { useTheme } from '../../context/ThemeContext';
 
 interface HeaderProps {
   onMenuToggle: () => void;
@@ -24,6 +25,16 @@ export default function Header({ onMenuToggle }: HeaderProps): JSX.Element {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const userMenuRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
+  const { theme, setTheme } = useTheme();
+
+  const handleThemeToggle = useCallback((): void => {
+    // Determine the current effective theme so toggle feels immediate
+    const isDark =
+      theme === 'dark' ||
+      (theme === 'system' &&
+        window.matchMedia('(prefers-color-scheme: dark)').matches);
+    setTheme(isDark ? 'light' : 'dark');
+  }, [theme, setTheme]);
 
   const closeUserMenu = useCallback((): void => {
     setIsUserMenuOpen(false);
@@ -89,6 +100,30 @@ export default function Header({ onMenuToggle }: HeaderProps): JSX.Element {
 
       {/* Right actions */}
       <div className="flex items-center gap-2">
+        {/* Theme toggle */}
+        <button
+          onClick={handleThemeToggle}
+          className="p-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
+          aria-label={
+            theme === 'dark' ||
+            (theme === 'system' &&
+              typeof window !== 'undefined' &&
+              window.matchMedia('(prefers-color-scheme: dark)').matches)
+              ? 'Switch to light mode'
+              : 'Switch to dark mode'
+          }
+          data-testid="theme-toggle"
+        >
+          {theme === 'dark' ||
+          (theme === 'system' &&
+            typeof window !== 'undefined' &&
+            window.matchMedia('(prefers-color-scheme: dark)').matches) ? (
+            <Sun className="h-5 w-5" aria-hidden="true" />
+          ) : (
+            <Moon className="h-5 w-5" aria-hidden="true" />
+          )}
+        </button>
+
         {/* Notifications bell */}
         <button
           className="relative p-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"

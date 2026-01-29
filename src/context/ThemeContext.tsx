@@ -15,7 +15,7 @@ interface ThemeProviderProps {
 }
 
 export function ThemeProvider({ children }: ThemeProviderProps): JSX.Element {
-  const [theme, setTheme] = useLocalStorage<Theme>('theme', 'system');
+  const [theme, setTheme] = useLocalStorage<Theme>('theme', 'light');
 
   useEffect(() => {
     const root = document.documentElement;
