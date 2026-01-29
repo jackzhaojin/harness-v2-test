@@ -184,9 +184,7 @@
       "testingApproach": "Navigate to each page via sidebar and verify URL changes. Toggle sidebar collapse and refresh to verify persistence. Resize to mobile and verify hamburger menu. Open user dropdown and click outside to close.",
       "status": "needs_subtask",
       "subtasks": [
-        "6.3",
-        "6.1",
-        "6.2"
+        "6.1"
       ],
       "parentId": null
     },
@@ -643,20 +641,6 @@
       "status": "complete"
     },
     {
-      "id": "6.3",
-      "title": "Fix: Tablet sidebar not icons-only by default",
-      "description": "Sidebar auto-collapsed to w-16 with icons only at 768-1024px viewports",
-      "acceptanceCriteria": [
-        "Tablet (768-1024px): sidebar shows icons only by default"
-      ],
-      "dependencies": [
-        "3",
-        "4"
-      ],
-      "parentId": "6",
-      "status": "pending"
-    },
-    {
       "id": "6.1",
       "title": "Fix tablet viewport sidebar to show icons-only by default",
       "description": "The acceptance criterion \"Tablet (768-1024px): sidebar shows icons only by default\" is NOT met. At tablet viewports (768px-1024px), the sidebar displays in fully expanded mode (w-60) with text labels visible instead of icons-only collapsed mode (w-16).",
@@ -672,27 +656,10 @@
         "4"
       ],
       "parentId": "6",
-      "status": "in_progress"
-    },
-    {
-      "id": "6.2",
-      "title": "Fix tablet viewport sidebar to auto-collapse to icons-only mode",
-      "description": "The acceptance criterion \"Tablet (768-1024px): sidebar shows icons only by default\" is NOT met. At tablet viewports (768px-1024px), the sidebar displays in fully expanded mode (`w-60`) with text labels visible instead of icons-only collapsed mode (`w-16`). Task 6.1 was created for this same issue but was never built/executed.",
-      "acceptanceCriteria": [
-        "At tablet viewports (768px-1024px), sidebar shows icons only (collapsed/w-16) by default",
-        "At desktop viewports (>1024px), sidebar remains expanded (w-60) by default (existing behavior)",
-        "User can still manually toggle sidebar collapse/expand at any viewport",
-        "All original parent task criteria still pass"
-      ],
-      "dependencies": [
-        "3",
-        "4"
-      ],
-      "parentId": "6",
-      "status": "pending"
+      "status": "complete"
     }
   ],
-  "completedCount": 8,
+  "completedCount": 9,
   "failedCount": 1,
   "pauseReason": null,
   "resumeContext": [
@@ -724,5 +691,5 @@
     "rationale": "Foundation task that establishes the entire project architecture, folder structure, tooling configuration, and dependency baseline. All 18 subsequent tasks depend on this scaffolding. Creates 40+ files across multiple directories."
   },
   "startedAt": "2026-01-29T00:42:04.759Z",
-  "updatedAt": "2026-01-29T02:40:28.308Z"
+  "updatedAt": "2026-01-29T02:49:23.976Z"
 }

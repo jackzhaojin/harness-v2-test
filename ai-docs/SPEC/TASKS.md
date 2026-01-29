@@ -22,6 +22,4 @@
 - [x] Task 5.3: Fix: Clicking backdrop does not close modal
 - [x] Task 5.1: Fix Modal backdrop click not closing modal
 - [x] Task 5.2: Fix Modal backdrop click not closing modal (still broken after 5.1)
-- [ ] Task 6.3: Fix: Tablet sidebar not icons-only by default
-- [ ] Task 6.1: Fix tablet viewport sidebar to show icons-only by default
-- [ ] Task 6.2: Fix tablet viewport sidebar to auto-collapse to icons-only mode
+- [x] Task 6.1: Fix tablet viewport sidebar to show icons-only by default
