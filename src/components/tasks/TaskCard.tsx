@@ -7,6 +7,7 @@ import { Calendar } from 'lucide-react';
 interface TaskCardProps {
   task: Task;
   assignee: TeamMember | undefined;
+  onClick?: (task: Task) => void;
 }
 
 const priorityConfig: Record<Priority, { variant: 'gray' | 'yellow' | 'red'; label: string }> = {
@@ -40,17 +41,23 @@ function handleDragEnd(e: React.DragEvent<HTMLElement>): void {
   e.currentTarget.classList.remove('opacity-50');
 }
 
-export function TaskCard({ task, assignee }: TaskCardProps): JSX.Element {
+export function TaskCard({ task, assignee, onClick }: TaskCardProps): JSX.Element {
   const overdue = useMemo(() => isOverdue(task.dueDate), [task.dueDate]);
   const priority = priorityConfig[task.priority];
+
+  const handleClick = (): void => {
+    onClick?.(task);
+  };
 
   return (
     <article
       draggable
       onDragStart={(e) => handleDragStart(e, task.id)}
       onDragEnd={handleDragEnd}
+      onClick={handleClick}
       className="rounded-lg bg-white dark:bg-gray-800 p-4 shadow-sm hover:shadow-md transition-shadow border border-gray-100 dark:border-gray-700 cursor-grab active:cursor-grabbing"
       aria-label={`Task: ${task.title}`}
+      data-testid={`task-card-${task.id}`}
     >
       {/* Title */}
       <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 line-clamp-2">

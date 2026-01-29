@@ -395,3 +395,37 @@ fatal: 'main' is not a commit and a branch '2026-01-28-feature/dashboard-mvp' ca
 [2026-01-29T06:51:19.874Z] Phase: RESEARCH skipped (completed on prior run)
 [2026-01-29T06:51:19.875Z] Phase: BUILD
 [2026-01-29T06:51:19.876Z] Build attempt 1/3
+[2026-01-29T06:55:37.637Z] Build PASSED
+[2026-01-29T06:55:37.638Z] Phase: VALIDATE
+[2026-01-29T06:55:37.638Z] Validate attempt 1/2
+[2026-01-29T14:58:12.013Z] ════════════════════════════════════════════════════════════
+[2026-01-29T14:58:12.014Z] ORCHESTRATION STARTED
+[2026-01-29T14:58:12.014Z] Mode: resume (Scenario 3: Existing code + AI docs, adding features)
+[2026-01-29T14:58:12.014Z] Docs: /Users/jackjin/dev/harness-v2-test/ai-docs
+[2026-01-29T14:58:12.015Z] Code: /Users/jackjin/dev/harness-v2-test
+[2026-01-29T14:58:12.015Z] Resuming from phase: EXECUTING
+[2026-01-29T14:58:12.015Z] ════════════════════════════════════════════════════════════
+[2026-01-29T14:58:12.038Z] Already on branch feature/dashboard-mvp
+[2026-01-29T14:58:12.038Z] Recovering: was working on task 13
+[2026-01-29T14:58:12.043Z] Recovery context: 5 recent files
+[2026-01-29T14:58:12.043Z]   - TASKS/13/build_attempt_1.md
+[2026-01-29T14:58:12.044Z]   - TASKS/13/build_attempt_1_handoff.json
+[2026-01-29T14:58:12.044Z]   - TASKS/13/test-results.md
+[2026-01-29T14:58:12.044Z]   - TASKS/13/research_handoff.json
+[2026-01-29T14:58:12.044Z]   - TASKS/13/research.md
+[2026-01-29T14:58:12.045Z] Reset task 13 to pending for retry
+[2026-01-29T14:58:12.046Z] ────────────────────────────────────────────────────────────
+[2026-01-29T14:58:12.046Z] Task 13: Kanban drag-and-drop with persistence
+[2026-01-29T14:58:12.046Z] ────────────────────────────────────────────────────────────
+[2026-01-29T14:58:12.049Z] Phase: RESEARCH skipped (completed on prior run)
+[2026-01-29T14:58:12.049Z] Phase: BUILD skipped (passed on prior run)
+[2026-01-29T14:58:12.049Z] Phase: VALIDATE
+[2026-01-29T14:58:12.051Z] Validate attempt 1/2
+[2026-01-29T15:31:31.384Z] Validate PASSED
+[2026-01-29T15:31:31.385Z] Task 13 COMPLETE
+[2026-01-29T15:31:31.387Z] ────────────────────────────────────────────────────────────
+[2026-01-29T15:31:31.388Z] Task 14: Task CRUD with forms and detail panel
+[2026-01-29T15:31:31.388Z] ────────────────────────────────────────────────────────────
+[2026-01-29T15:31:31.392Z] Phase: RESEARCH
+[2026-01-29T16:10:40.696Z] Phase: BUILD
+[2026-01-29T16:10:40.696Z] Build attempt 1/3

@@ -402,7 +402,7 @@
       ],
       "estimatedComplexity": "medium",
       "testingApproach": "Drag task from To Do to In Progress, verify move and count update. Drag to Done, verify. Refresh page and verify tasks remain in new positions. Test dropping outside column area.",
-      "status": "pending",
+      "status": "complete",
       "subtasks": [],
       "parentId": null
     },
