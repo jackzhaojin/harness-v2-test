@@ -785,7 +785,7 @@
       "estimatedComplexity": "large",
       "e2eRequired": false,
       "testingApproach": "Run npm run demo:full and verify the browser opens, walks through the complete feature set at natural pace, and completes without errors within 10-minute timeout. Visually confirm all pages and features are demonstrated. Verify voice-over timestamps align with actual demo runtime. Run npm run test:e2e to confirm no regressions from any fixes.",
-      "status": "pending",
+      "status": "complete",
       "subtasks": [],
       "parentId": null
     }

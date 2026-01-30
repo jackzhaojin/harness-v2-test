@@ -26,4 +26,4 @@
 - [x] Task 7.1: Fix dark mode background color and add system theme selector
 - [x] Task 20: Demo infrastructure: Playwright config, shared helpers, and data-testid additions
 - [x] Task 21: Highlights demo script with voice-over and app bug fixes
-- [ ] Task 22: Full tour demo script with voice-over document
+- [x] Task 22: Full tour demo script with voice-over document

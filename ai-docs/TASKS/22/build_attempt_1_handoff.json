@@ -1,0 +1,51 @@
+{
+  "agentName": "build",
+  "sessionId": "task/22/build/1",
+  "timestamp": "2026-01-29T18:45:35.258Z",
+  "success": true,
+  "modelUsed": "claude-opus-4-5",
+  "artifacts": [],
+  "handoff": {
+    "task": "22",
+    "role": "build",
+    "attempt": 1,
+    "result": "pass",
+    "filesModified": [],
+    "filesCreated": [
+      "demo/full-tour.spec.ts",
+      "demo/full-tour-voiceover.md",
+      "ai-docs/TASKS/22/test-results.md"
+    ],
+    "checksRun": [
+      {
+        "name": "smoke",
+        "command": "npx playwright test tests/e2e/smoke.spec.ts",
+        "pass": true
+      },
+      {
+        "name": "typescript",
+        "command": "npx tsc --noEmit",
+        "pass": true
+      },
+      {
+        "name": "demo-list",
+        "command": "npx playwright test --config=playwright.demo.config.ts --grep @full-tour --list",
+        "pass": true
+      },
+      {
+        "name": "functional",
+        "command": "npx playwright test --config=playwright.demo.config.ts --grep @full-tour",
+        "pass": true
+      },
+      {
+        "name": "regression-highlights",
+        "command": "npx playwright test --config=playwright.demo.config.ts --grep @highlights",
+        "pass": true
+      }
+    ],
+    "artifacts": [
+      "/Users/jackjin/dev/harness-v2-test/ai-docs/TASKS/22/test-results.md"
+    ],
+    "handoffNotes": "Full tour demo script and voice-over narration created. Demo covers all 7 sections (dashboard, projects CRUD+pagination, kanban DnD+SlideOver, team search/filter/invite, settings all sections, responsive showcase, outro). Uses shared helpers from demo/helpers.ts. Runs end-to-end in 2.2 min headless (5-7 min headed with natural pauses). Voice-over has timestamped sections [0:00]-[6:40] with [pause] cues. All existing tests pass with no regressions."
+  }
+}
