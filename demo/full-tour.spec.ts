@@ -73,7 +73,7 @@ test('@full-tour Project Management Dashboard — Full Tour', async ({ page }) =
   // =========================================================================
 
   // --- 1a. Stat cards ---
-  await scenicPause(page, 2500); // Let viewer absorb full dashboard
+  await scenicPause(page, 3500); // Let viewer absorb full dashboard
 
   // Hover and click each stat card to show navigation
   const statCards = [
@@ -112,14 +112,14 @@ test('@full-tour Project Management Dashboard — Full Tour', async ({ page }) =
       const x = chartsBBox.x + chartsBBox.width * 0.08 + (chartsBBox.width * 0.38 * i) / 5;
       const y = chartsBBox.y + chartsBBox.height * 0.4;
       await page.mouse.move(x, y);
-      await pause(page, 350);
+      await pause(page, 500);
     }
   }
-  await scenicPause(page, 1500);
+  await scenicPause(page, 2500);
 
   // --- 1c. Activity feed ---
   await scrollMainToBottom(page);
-  await scenicPause(page, 2000); // Let viewer read the activity feed
+  await scenicPause(page, 3000); // Let viewer read the activity feed
 
   // Scroll back to top
   await scrollMainToTop(page);
@@ -127,7 +127,7 @@ test('@full-tour Project Management Dashboard — Full Tour', async ({ page }) =
   // =========================================================================
   // TRANSITION PAUSE → Projects
   // =========================================================================
-  await pause(page, 2500);
+  await pause(page, 3500);
 
   // =========================================================================
   // SECTION 2: Projects Extended — CRUD + Pagination (0:50 – 2:20)
@@ -136,7 +136,7 @@ test('@full-tour Project Management Dashboard — Full Tour', async ({ page }) =
   // --- 2a. Navigate to Projects ---
   await page.click('[data-testid="nav-projects"]');
   await page.waitForLoadState('networkidle');
-  await scenicPause(page, 1800);
+  await scenicPause(page, 2500);
 
   // --- 2b. Search / Filter / Sort ---
   // Type a search query
@@ -243,7 +243,7 @@ test('@full-tour Project Management Dashboard — Full Tour', async ({ page }) =
   // =========================================================================
   // TRANSITION PAUSE → Kanban
   // =========================================================================
-  await pause(page, 2500);
+  await pause(page, 3500);
 
   // =========================================================================
   // SECTION 3: Kanban Extended — DnD + Task CRUD + SlideOver (2:20 – 3:40)
@@ -252,7 +252,7 @@ test('@full-tour Project Management Dashboard — Full Tour', async ({ page }) =
   // --- 3a. Navigate to Tasks (Kanban) ---
   await page.click('[data-testid="nav-tasks"]');
   await page.waitForLoadState('networkidle');
-  await scenicPause(page, 1800);
+  await scenicPause(page, 2500);
 
   // --- 3b. Drag tasks between columns ---
   // Drag To Do → In Progress
@@ -318,7 +318,7 @@ test('@full-tour Project Management Dashboard — Full Tour', async ({ page }) =
 
   // SlideOver panel is open
   const detailPanel = page.getByRole('dialog');
-  await scenicPause(page, 2000); // Let viewer read task details
+  await scenicPause(page, 3000); // Let viewer read task details
 
   // --- 3e. Edit task details in panel ---
   await detailPanel.getByRole('button', { name: /edit/i }).click();
@@ -346,7 +346,7 @@ test('@full-tour Project Management Dashboard — Full Tour', async ({ page }) =
   // =========================================================================
   // TRANSITION PAUSE → Team
   // =========================================================================
-  await pause(page, 2500);
+  await pause(page, 3500);
 
   // =========================================================================
   // SECTION 4: Team Page — Search / Filter / Invite (3:40 – 4:30)
@@ -355,7 +355,7 @@ test('@full-tour Project Management Dashboard — Full Tour', async ({ page }) =
   // --- 4a. Navigate to Team ---
   await page.click('[data-testid="nav-team"]');
   await page.waitForLoadState('networkidle');
-  await scenicPause(page, 1800);
+  await scenicPause(page, 2500);
 
   // --- 4b. Search members by name ---
   const teamSearchInput = page.getByPlaceholder('Search members...');
@@ -404,7 +404,7 @@ test('@full-tour Project Management Dashboard — Full Tour', async ({ page }) =
   // =========================================================================
   // TRANSITION PAUSE → Settings
   // =========================================================================
-  await pause(page, 2500);
+  await pause(page, 3500);
 
   // =========================================================================
   // SECTION 5: Settings Page — All Sections (4:30 – 5:30)
@@ -413,7 +413,7 @@ test('@full-tour Project Management Dashboard — Full Tour', async ({ page }) =
   // --- 5a. Navigate to Settings ---
   await page.click('[data-testid="nav-settings"]');
   await page.waitForLoadState('networkidle');
-  await scenicPause(page, 1800);
+  await scenicPause(page, 2500);
 
   // --- 5b. Profile — change name ---
   const profileNameInput = page.getByTestId('profile-name-input');
@@ -476,10 +476,10 @@ test('@full-tour Project Management Dashboard — Full Tour', async ({ page }) =
   // =========================================================================
   // TRANSITION PAUSE → Responsive
   // =========================================================================
-  await pause(page, 2500);
+  await pause(page, 3500);
 
   // =========================================================================
-  // SECTION 6: Responsive Showcase (5:30 – 6:20)
+  // SECTION 6: Responsive Showcase — Full Mobile Experience (5:30 – 7:30)
   // =========================================================================
 
   // Navigate back to dashboard for the showcase
@@ -489,49 +489,144 @@ test('@full-tour Project Management Dashboard — Full Tour', async ({ page }) =
 
   // --- 6a. Tablet breakpoint (~900px) — sidebar collapses to icons ---
   await setViewport(page, 900, 800);
-  await scenicPause(page, 2000); // Show collapsed sidebar
+  await scenicPause(page, 2500); // Let viewer see collapsed sidebar
 
-  // Hover over icon-only sidebar items
+  // Hover over icon-only sidebar items to show tooltips
   const sidebar = page.locator('aside');
   const sidebarVisible = await sidebar.isVisible().catch(() => false);
   if (sidebarVisible) {
-    await sidebar.hover();
-    await pause(page, 600);
+    const navItems = ['nav-dashboard', 'nav-projects', 'nav-tasks', 'nav-team', 'nav-settings'];
+    for (const item of navItems) {
+      const navEl = page.getByTestId(item);
+      if (await navEl.isVisible().catch(() => false)) {
+        await navEl.hover();
+        await quickPause(page, 500);
+      }
+    }
+    await pause(page, 800);
   }
 
-  // --- 6b. Mobile breakpoint (~375px) — hamburger menu ---
+  // Navigate to Projects at tablet width to show table adapts
+  await page.click('[data-testid="nav-projects"]');
+  await page.waitForLoadState('networkidle');
+  await scenicPause(page, 2000);
+
+  // Navigate to Kanban at tablet width
+  await page.click('[data-testid="nav-tasks"]');
+  await page.waitForLoadState('networkidle');
+  await scenicPause(page, 2000);
+
+  // --- 6b. Transition to mobile — step down through widths ---
+  await setViewport(page, 768, 800);
+  await scenicPause(page, 1500);
+  await setViewport(page, 600, 800);
+  await scenicPause(page, 1500);
   await setViewport(page, 375, 800);
-  await scenicPause(page, 2000); // Show mobile layout
+  await scenicPause(page, 3000); // Let viewer absorb mobile layout
 
-  // Open hamburger menu
-  const hamburger = page.getByLabel('Open navigation menu');
-  const hamburgerVisible = await hamburger.isVisible().catch(() => false);
-  if (hamburgerVisible) {
-    await hamburger.click();
-    await scenicPause(page, 1500); // Show mobile nav overlay
+  // --- 6c. Mobile: Full page tour via hamburger menu ---
 
-    // Navigate via mobile menu to Projects
-    const mobileDialog = page.locator('[role="dialog"]');
-    await mobileDialog.getByText('Projects').click();
-    await page.waitForLoadState('networkidle');
-    await scenicPause(page, 1500);
-
-    // Re-open hamburger and navigate to Tasks
-    const hamburgerAgain = page.getByLabel('Open navigation menu');
-    const hamburgerAgainVisible = await hamburgerAgain.isVisible().catch(() => false);
-    if (hamburgerAgainVisible) {
-      await hamburgerAgain.click();
+  // Helper to navigate via hamburger in mobile view
+  async function mobileNavigateTo(pageName: string) {
+    const hamburgerBtn = page.getByLabel('Open navigation menu');
+    if (await hamburgerBtn.isVisible().catch(() => false)) {
+      await hamburgerBtn.click();
       await pause(page, 800);
-      const mobileDialogAgain = page.locator('[role="dialog"]');
-      await mobileDialogAgain.getByText('Tasks').click();
+      const mobileNav = page.locator('[role="dialog"]');
+      await mobileNav.getByText(pageName).click();
       await page.waitForLoadState('networkidle');
-      await scenicPause(page, 1200);
     }
   }
 
-  // --- 6c. Resize back to desktop ---
+  // Mobile: Dashboard
+  await mobileNavigateTo('Dashboard');
+  await scenicPause(page, 3000); // Let viewer absorb mobile dashboard
+  // Scroll through dashboard content in mobile
+  await smoothScroll(page, '[data-testid="dashboard-charts"]');
+  await scenicPause(page, 2500);
+  await scrollMainToBottom(page);
+  await scenicPause(page, 2500);
+  await scrollMainToTop(page);
+  await pause(page, 1000);
+
+  // Mobile: Projects — show table scrolls horizontally
+  await mobileNavigateTo('Projects');
+  await scenicPause(page, 3000);
+  // Scroll table area right to show horizontal overflow
+  await page.evaluate(() => {
+    const table = document.querySelector('table');
+    const wrapper = table?.closest('[class*="overflow"]') || table?.parentElement;
+    if (wrapper) wrapper.scrollTo({ left: 300, behavior: 'smooth' });
+  });
+  await scenicPause(page, 2000);
+  await page.evaluate(() => {
+    const table = document.querySelector('table');
+    const wrapper = table?.closest('[class*="overflow"]') || table?.parentElement;
+    if (wrapper) wrapper.scrollTo({ left: 0, behavior: 'smooth' });
+  });
+  await pause(page, 1000);
+
+  // Mobile: Tasks (Kanban) — columns should stack vertically
+  await mobileNavigateTo('Tasks');
+  await scenicPause(page, 3000);
+  // Scroll through stacked columns
+  await smoothScroll(page, '[data-testid="kanban-column-in-progress"]');
+  await scenicPause(page, 2500);
+  await smoothScroll(page, '[data-testid="kanban-column-done"]');
+  await scenicPause(page, 2500);
+  await scrollMainToTop(page);
+  await pause(page, 1000);
+
+  // Mobile: Team — cards stack in single column
+  await mobileNavigateTo('Team');
+  await scenicPause(page, 3000);
+  await scrollMainToBottom(page);
+  await scenicPause(page, 2500);
+  await scrollMainToTop(page);
+  await pause(page, 1000);
+
+  // Mobile: Settings
+  await mobileNavigateTo('Settings');
+  await scenicPause(page, 3000);
+  await scrollMainToBottom(page);
+  await scenicPause(page, 2500);
+  await scrollMainToTop(page);
+  await pause(page, 1000);
+
+  // --- 6d. Toggle dark mode in mobile to show it works at all sizes ---
+  const mobileThemeToggle = page.getByTestId('theme-toggle');
+  if (await mobileThemeToggle.isVisible().catch(() => false)) {
+    await mobileThemeToggle.click();
+    await scenicPause(page, 3000); // Dark mode on mobile — let it sink in
+  }
+
+  // Navigate to Dashboard in dark mobile
+  await mobileNavigateTo('Dashboard');
+  await scenicPause(page, 3000);
+
+  // Scroll through dark mobile dashboard
+  await smoothScroll(page, '[data-testid="dashboard-charts"]');
+  await scenicPause(page, 2500);
+  await scrollMainToBottom(page);
+  await scenicPause(page, 2000);
+  await scrollMainToTop(page);
+
+  // Toggle back to light mode
+  const mobileThemeToggleBack = page.getByTestId('theme-toggle');
+  if (await mobileThemeToggleBack.isVisible().catch(() => false)) {
+    await mobileThemeToggleBack.click();
+    await pause(page, 800);
+  }
+
+  // --- 6e. Step back up to desktop ---
+  await setViewport(page, 600, 800);
+  await scenicPause(page, 1200);
+  await setViewport(page, 768, 800);
+  await scenicPause(page, 1200);
+  await setViewport(page, 900, 800);
+  await scenicPause(page, 1500);
   await setViewport(page, 1280, 800);
-  await scenicPause(page, 2000); // Sidebar expands back
+  await scenicPause(page, 3000); // Sidebar fully expanded — desktop is back
 
   // Navigate back to Dashboard for final shot
   await page.click('[data-testid="nav-dashboard"]');
@@ -548,5 +643,5 @@ test('@full-tour Project Management Dashboard — Full Tour', async ({ page }) =
   await scrollMainToTop(page);
 
   // Final scenic pause on dashboard for closing shot
-  await scenicPause(page, 3000);
+  await scenicPause(page, 4000);
 });

@@ -1,6 +1,6 @@
 # Full Tour Demo — Voice-Over Narration
 
-> **Total runtime:** ~6:30 – 6:45
+> **Total runtime:** ~8:00 – 8:30
 > **Script:** `demo/full-tour.spec.ts`
 > **Run command:** `npm run demo:full`
 > **Timing cues:** `[pause]` = let the demo speak for itself (no narration)
@@ -201,33 +201,77 @@ Finally, clicking **"Save Changes"** triggers a loading state on the button (sho
 
 ## [6:05] Responsive Showcase — Tablet
 
-Now let's demonstrate the responsive design. We're resizing the browser from 1280px desktop down to **900px tablet** width. Watch the sidebar — it automatically collapses to an **icons-only** mode, preserving navigation while maximizing content space. The main content area expands to fill the available width, and grid layouts reflow appropriately.
+Now let's demonstrate the responsive design. We're resizing the browser from 1280px desktop down to **900px tablet** width. Watch the sidebar — it automatically collapses to an **icons-only** mode, preserving navigation while maximizing content space. Hovering over each icon reveals the page label.
+
+[pause]
+
+Let's visit the Projects table at tablet width — notice how the table adapts, and the content area expands to use the extra space freed up by the collapsed sidebar. Now over to the Kanban board — the three columns fit comfortably at this width.
 
 [pause]
 
 ---
 
-## [6:15] Responsive Showcase — Mobile
+## [6:25] Responsive Showcase — Transition to Mobile
 
-Shrinking further to **375px mobile** width, the sidebar disappears entirely and a **hamburger menu icon** appears in the header. Tapping it opens a full-screen navigation overlay with all five menu items. Selecting "Projects" navigates to the page and automatically closes the overlay.
-
-[pause]
-
-We open the menu again and navigate to Tasks — the Kanban board adapts to the narrow viewport with stacked columns. Every page in the application is fully functional at mobile width.
+Watch as we step down through breakpoints — 768, 600, all the way to **375px mobile width**. The layout progressively adapts at each stage. At mobile, the sidebar disappears entirely and a **hamburger menu icon** appears in the header.
 
 [pause]
 
 ---
 
-## [6:30] Responsive Showcase — Back to Desktop
+## [6:35] Mobile — Full Page Tour
 
-Resizing back to **1280px desktop**, the full sidebar returns with text labels, and the multi-column layout restores. We navigate back to the Dashboard for our closing shot.
+Now let's tour **every page** in mobile view to show nothing breaks at small sizes.
+
+Starting with the **Dashboard** — the stat cards stack vertically, charts resize to fit the narrow viewport, and the activity feed remains fully readable. Scrolling is smooth and natural.
+
+[pause]
+
+Opening the hamburger menu and navigating to **Projects** — the data table adapts with horizontal scroll capability, so all columns remain accessible even on a small screen. Users can swipe left and right to see the full table.
+
+[pause]
+
+Over to **Tasks** — the Kanban columns stack vertically instead of side-by-side. Scrolling down reveals In Progress and Done columns, each with their full card layout intact. Drag-and-drop still works in this stacked layout.
+
+[pause]
+
+The **Team** page at mobile width shows member cards in a single column — each card is full-width and easy to read. Scrolling through the list feels native.
+
+[pause]
+
+And **Settings** — all form sections remain fully functional. Toggle switches, text inputs, theme options, and accent colors all work perfectly at mobile size.
 
 [pause]
 
 ---
 
-## [6:35] Outro
+## [7:20] Mobile — Dark Mode at Mobile Size
+
+Let's toggle **dark mode** while still in mobile view — demonstrating that the theme system works flawlessly across all viewport sizes. Every component adapts: cards, backgrounds, text, icons, charts.
+
+[pause]
+
+Navigating to the Dashboard in dark mobile — the charts and stat cards look crisp against the dark background. The activity feed maintains excellent readability.
+
+[pause]
+
+Toggling back to light mode before we return to desktop.
+
+---
+
+## [7:45] Responsive Showcase — Back to Desktop
+
+Now we step back up through the breakpoints — 600, 768, 900, back to **1280px desktop**. Watch the sidebar progressively return: first as icons at tablet width, then fully expanded with labels at desktop. The multi-column layout snaps back into place.
+
+[pause]
+
+We navigate to the Dashboard for our closing shot.
+
+[pause]
+
+---
+
+## [8:00] Outro
 
 That's the **complete tour** of ProjectHub. Let's recap everything we've seen:
 
@@ -236,7 +280,7 @@ That's the **complete tour** of ProjectHub. Let's recap everything we've seen:
 - **Kanban** task board with fluid drag-and-drop between columns, inline task creation, and a SlideOver detail panel with edit capabilities
 - **Team** management with search, role-based filtering, and member invitation via email validation
 - **Settings** with profile editing, notification toggles, theme switching (light/dark/system), and accent color personalization — all persisted to localStorage
-- **Responsive design** that adapts seamlessly from desktop to tablet (icons-only sidebar) to mobile (hamburger menu overlay)
+- **Responsive design** that adapts seamlessly across every page — from desktop to tablet (icons-only sidebar) to mobile (hamburger menu overlay) — with dark mode working at every size
 
 All built with **React 18**, **TypeScript** with strict mode, **Tailwind CSS**, and **Recharts** — zero external state management libraries, no backend required. Every interaction is tested with a comprehensive **Playwright** E2E test suite.
 
