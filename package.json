@@ -11,7 +11,9 @@
     "test": "playwright test",
     "test:e2e": "playwright test",
     "demo:highlights": "playwright test --config=playwright.demo.config.ts --grep @highlights",
-    "demo:full": "playwright test --config=playwright.demo.config.ts --grep @full-tour"
+    "demo:full": "playwright test --config=playwright.demo.config.ts --grep @full-tour",
+    "video:highlights": "playwright test --config=playwright.video.config.ts --grep @highlights-captioned",
+    "video:full": "playwright test --config=playwright.video.config.ts --grep @full-tour-captioned"
   },
   "dependencies": {
     "react": "^18.2.0",
