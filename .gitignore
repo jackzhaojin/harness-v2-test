@@ -30,3 +30,6 @@ playwright/.cache/
 
 # Demo videos
 demo/videos/
+demo/audio/
+
+.env
