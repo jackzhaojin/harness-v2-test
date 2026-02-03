@@ -1,0 +1,171 @@
+{
+  "projectName": "Project Management Dashboard",
+  "projectDir": "/Users/jackjin/dev/harness-v2-test",
+  "framework": {
+    "name": "react",
+    "label": "React"
+  },
+  "buildTool": "vite",
+  "chartLib": "Recharts",
+  "styling": [
+    "Tailwind CSS"
+  ],
+  "routes": [
+    {
+      "path": "/",
+      "source": "react-router",
+      "file": "src/App.tsx"
+    },
+    {
+      "path": "/projects",
+      "source": "react-router",
+      "file": "src/App.tsx"
+    },
+    {
+      "path": "/tasks",
+      "source": "react-router",
+      "file": "src/App.tsx"
+    },
+    {
+      "path": "/team",
+      "source": "react-router",
+      "file": "src/App.tsx"
+    },
+    {
+      "path": "/settings",
+      "source": "react-router",
+      "file": "src/App.tsx"
+    },
+    {
+      "path": "/components",
+      "source": "react-router",
+      "file": "src/App.tsx"
+    }
+  ],
+  "features": [
+    {
+      "category": "charts",
+      "label": "Data Visualization",
+      "description": "Charts powered by Recharts",
+      "testIds": [
+        "chart-task-completion",
+        "line-chart-container",
+        "chart-legend",
+        "chart-task-status",
+        "pie-chart-container",
+        "dashboard-charts"
+      ],
+      "demoTimeSec": 10,
+      "priority": 1,
+      "route": "/"
+    },
+    {
+      "category": "stat-cards",
+      "label": "Stat Cards",
+      "description": "4 interactive metric cards",
+      "testIds": [
+        "stat-total-projects",
+        "stat-active-tasks",
+        "stat-team-members",
+        "stat-completed-tasks"
+      ],
+      "demoTimeSec": 8,
+      "priority": 2,
+      "route": "/"
+    },
+    {
+      "category": "table",
+      "label": "Sortable Data Table",
+      "description": "Table with search, sort, and pagination",
+      "testIds": [
+        "projects-table"
+      ],
+      "demoTimeSec": 12,
+      "priority": 3,
+      "route": "/projects"
+    },
+    {
+      "category": "kanban",
+      "label": "Kanban Board",
+      "description": "Drag-and-drop task management board",
+      "testIds": [
+        "kanban-board"
+      ],
+      "demoTimeSec": 12,
+      "priority": 4,
+      "route": "/tasks"
+    },
+    {
+      "category": "dark-mode",
+      "label": "Dark Mode",
+      "description": "Theme toggle with full interface adaptation",
+      "testIds": [
+        "theme-toggle",
+        "appearance-section"
+      ],
+      "demoTimeSec": 8,
+      "priority": 5,
+      "route": null
+    },
+    {
+      "category": "forms",
+      "label": "Forms & Input",
+      "description": "Interactive forms with validation",
+      "testIds": [
+        "task-form",
+        "task-edit-form",
+        "invite-email-input",
+        "invite-cancel-btn",
+        "invite-submit-btn",
+        "invite-member-btn"
+      ],
+      "demoTimeSec": 10,
+      "priority": 6,
+      "route": null
+    },
+    {
+      "category": "navigation",
+      "label": "Navigation",
+      "description": "Sidebar navigation with active state",
+      "testIds": [
+        "sidebar",
+        "nav-dashboard",
+        "nav-projects",
+        "nav-tasks",
+        "nav-team",
+        "nav-settings",
+        "nav-components"
+      ],
+      "demoTimeSec": 5,
+      "priority": 7,
+      "route": null
+    },
+    {
+      "category": "responsive",
+      "label": "Responsive Design",
+      "description": "Adaptive layout from mobile to desktop",
+      "testIds": [],
+      "demoTimeSec": 10,
+      "priority": 8,
+      "route": "/"
+    },
+    {
+      "category": "settings",
+      "label": "Settings & Preferences",
+      "description": "User profile, notifications, appearance customization",
+      "testIds": [
+        "profile-section",
+        "profile-avatar",
+        "profile-name-input",
+        "profile-email-input",
+        "settings-page",
+        "save-settings-btn"
+      ],
+      "demoTimeSec": 8,
+      "priority": 9,
+      "route": "/settings"
+    }
+  ],
+  "totalEstimatedTimeSec": 83,
+  "generatedAt": "2026-02-02T04:14:41.826Z"
+}

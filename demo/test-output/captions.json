@@ -1,0 +1,155 @@
+[
+  {
+    "id": 1,
+    "text": "Welcome to ProjectHub — a modern project management dashboard.",
+    "startSec": 1.9,
+    "type": "caption",
+    "line": 107,
+    "durationMs": 3500
+  },
+  {
+    "id": 2,
+    "text": "Interactive stat cards show key metrics at a glance.",
+    "startSec": 6,
+    "type": "showCaption",
+    "line": 110
+  },
+  {
+    "id": 3,
+    "text": "Data visualization powered by Recharts.",
+    "startSec": 8.3,
+    "type": "showCaption",
+    "line": 129
+  },
+  {
+    "id": 4,
+    "text": "Hover tooltips reveal exact data points.",
+    "startSec": 11.4,
+    "type": "showCaption",
+    "line": 134
+  },
+  {
+    "id": 5,
+    "text": "The activity feed tracks team actions in real time.",
+    "startSec": 14,
+    "type": "showCaption",
+    "line": 149
+  },
+  {
+    "id": 6,
+    "text": "Next — the Projects page.",
+    "startSec": 18.4,
+    "type": "caption",
+    "line": 169,
+    "durationMs": 2000
+  },
+  {
+    "id": 7,
+    "text": "Search, sorting, and pagination — all built in.",
+    "startSec": 21.6,
+    "type": "showCaption",
+    "line": 174
+  },
+  {
+    "id": 8,
+    "text": "Real-time filtering as you type.",
+    "startSec": 23.9,
+    "type": "showCaption",
+    "line": 178
+  },
+  {
+    "id": 9,
+    "text": "Sortable column headers toggle direction.",
+    "startSec": 27,
+    "type": "showCaption",
+    "line": 190
+  },
+  {
+    "id": 10,
+    "text": "Creating a new project via modal form.",
+    "startSec": 30.7,
+    "type": "showCaption",
+    "line": 200
+  },
+  {
+    "id": 11,
+    "text": "Success — the new project appears instantly.",
+    "startSec": 33.4,
+    "type": "showCaption",
+    "line": 218
+  },
+  {
+    "id": 12,
+    "text": "The Kanban board — drag-and-drop task management.",
+    "startSec": 36.5,
+    "type": "caption",
+    "line": 226,
+    "durationMs": 3000
+  },
+  {
+    "id": 13,
+    "text": "Moving a task from To Do to In Progress.",
+    "startSec": 42.2,
+    "type": "showCaption",
+    "line": 237
+  },
+  {
+    "id": 14,
+    "text": "And from In Progress to Done.",
+    "startSec": 44.3,
+    "type": "showCaption",
+    "line": 252
+  },
+  {
+    "id": 15,
+    "text": "Dark mode — one click transforms the entire interface.",
+    "startSec": 46.7,
+    "type": "caption",
+    "line": 267,
+    "durationMs": 3000
+  },
+  {
+    "id": 16,
+    "text": "Every chart and card adapts to the dark palette.",
+    "startSec": 51.9,
+    "type": "showCaption",
+    "line": 272
+  },
+  {
+    "id": 17,
+    "text": "Responsive design — from desktop to mobile.",
+    "startSec": 60.9,
+    "type": "caption",
+    "line": 296,
+    "durationMs": 3000
+  },
+  {
+    "id": 18,
+    "text": "Mobile at 375px — everything adapts.",
+    "startSec": 64.5,
+    "type": "showCaption",
+    "line": 299
+  },
+  {
+    "id": 19,
+    "text": "Tablet — the sidebar collapses to icons.",
+    "startSec": 67.7,
+    "type": "showCaption",
+    "line": 304
+  },
+  {
+    "id": 20,
+    "text": "Back to desktop — full layout restored.",
+    "startSec": 70.2,
+    "type": "showCaption",
+    "line": 309
+  },
+  {
+    "id": 21,
+    "text": "ProjectHub — React 18, TypeScript, Tailwind CSS. No backend required. Thanks for watching.",
+    "startSec": 73.2,
+    "type": "caption",
+    "line": 317,
+    "durationMs": 4500
+  }
+]
