@@ -1,4 +1,3 @@
-import { useMemo } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import useManifest from '@/hooks/useManifest'
 import ResearchViewer from '@/components/ResearchViewer'

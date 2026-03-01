@@ -17,11 +17,6 @@ function countLeafTopics(topics) {
   return count
 }
 
-function countSubtopics(topic) {
-  const subs = topic.subtopics || []
-  return countLeafTopics(subs.length > 0 ? subs : [])
-}
-
 export default function HomePage() {
   const { manifest, loading, error } = useManifest()
 
