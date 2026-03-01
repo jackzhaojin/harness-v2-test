@@ -1,0 +1,51 @@
+{
+  "version": "1.0",
+  "pipeline": "COMPLETE",
+  "phases": {
+    "DECOMPOSE": {
+      "status": "complete",
+      "attempts": 0,
+      "error": null,
+      "completedAt": "2026-03-01T04:37:48.876Z"
+    },
+    "RESEARCH": {
+      "status": "complete",
+      "attempts": 0,
+      "error": null,
+      "completedAt": "2026-03-01T06:17:32.241Z"
+    },
+    "SYNTHESIZE": {
+      "status": "complete",
+      "attempts": 0,
+      "error": null,
+      "completedAt": "2026-03-01T06:21:36.747Z"
+    },
+    "CONTENT": {
+      "status": "complete",
+      "attempts": 0,
+      "error": null,
+      "completedAt": "2026-03-01T07:04:56.174Z"
+    },
+    "TTS": {
+      "status": "complete",
+      "attempts": 0,
+      "error": null,
+      "completedAt": "2026-03-01T07:58:06.049Z"
+    },
+    "DEPOSIT": {
+      "status": "complete",
+      "attempts": 0,
+      "error": null,
+      "completedAt": "2026-03-01T08:08:52.812Z"
+    },
+    "VALIDATE": {
+      "status": "pending",
+      "attempts": 0,
+      "error": null,
+      "completedAt": null
+    }
+  },
+  "topicCount": 0,
+  "startedAt": "2026-03-01T04:35:31.273Z",
+  "updatedAt": "2026-03-01T08:13:11.558Z"
+}
