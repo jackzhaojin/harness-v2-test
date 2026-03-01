@@ -2,9 +2,12 @@ import { useState, useEffect } from 'react'
 import { Outlet, NavLink } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import TopicSidebar from '@/components/TopicSidebar'
+import useManifest from '@/hooks/useManifest'
 import { Sun, Moon, Menu, X } from 'lucide-react'
 
-export default function AppLayout({ topicTree }) {
+export default function AppLayout() {
+  const { manifest } = useManifest()
+  const topicTree = manifest?.topicTree || null
   const [darkMode, setDarkMode] = useState(true)
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [selectedTopic, setSelectedTopic] = useState(null)
