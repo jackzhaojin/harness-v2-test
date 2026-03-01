@@ -1,319 +1,227 @@
-HOST: Okay, so imagine you're cooking Thanksgiving dinner. You've got four burners going, the oven's packed, there's a timer for the turkey, another for the pie, and your mom just asked you to also make gravy. What do you do?
+HOST: So here's a question that's been bugging me. You're building this really slick AI agent, right? It's doing great work, calling tools, having these long multi-turn conversations, and then one day your bill comes in and it's just... astronomical. Like, you're reprocessing the same hundred thousand tokens over and over and over again.
 
-EXPERT: I mean, you'd probably panic a little?
+EXPERT: Every single API call. Every single turn. The full context window, re-tokenized, reprocessed, billed.
 
-HOST: Right! But here's the thing — you'd have to make a choice. Do you turn off one burner to make room? Do you wait until something's done? Or do you try to like, remember what was on that burner and come back to it later?
+HOST: That's like... okay, imagine you're at a restaurant, and every time you want to order dessert, the waiter makes you re-read the entire menu from appetizers. Out loud. And you're paying by the word.
 
-EXPERT: Oh, wait — are we talking about context windows?
+EXPERT: That's actually not a bad analogy. And here's the thing — this was just how it worked for a long time. You accepted it. But now there's this whole toolkit around context window management that most developers are either not using or using wrong.
 
-HOST: Exactly! That's basically what every AI application faces. Claude has this massive working memory — 200,000 tokens, which is like... I don't know, a short novel's worth of text?
+HOST: And that's what I want to dig into today, because there's prompt caching, there's context compaction, there's token counting — and they all interact with each other in ways that are, honestly, kind of sneaky.
 
-EXPERT: Yeah, and some models go up to a million tokens in beta, which sounds incredible until you actually try to use it.
+EXPERT: Sneaky is the right word. Let's start with the one that saves the most money, because I think that hooks people. Prompt caching.
 
-HOST: Wait, what do you mean? Bigger is better, right?
+HOST: Okay so, the basic pitch is what — you process a prompt once, and then subsequent calls that share the same prefix get to skip all that work?
 
-EXPERT: So here's the counterintuitive part that blew my mind when I first learned this — performance actually degrades as you fill up the context window. It's not just about running out of space. The model starts losing focus, retrieval accuracy drops, response quality suffers.
+EXPERT: Exactly. So the way it works is, there's a strict ordering. The system processes your request in this hierarchy — tools first, then system prompt, then messages. And you can mark certain content blocks with this cache control parameter. Everything from the beginning of your request up to that marker becomes your cached prefix.
 
-HOST: Huh. So it's like... even though the model can technically hold all that information, it's not actually good at using all of it at once?
+HOST: And if the next request has the same prefix...
 
-EXPERT: Exactly. Think of it like trying to have a conversation in a room where everyone who's ever talked to you is still there, all talking at once. Sure, you can technically hear them all, but—
+EXPERT: It just reads it from cache instead of reprocessing. And this is where the numbers get wild. A cache read costs one-tenth of the normal input price. So you're looking at a ninety percent discount on those tokens.
 
-HOST: Yeah, that sounds like a nightmare. Okay, so what do people do about this?
+HOST: Wait — ninety percent?
 
-EXPERT: Well, this is where it gets really interesting. There are basically two main strategies that have emerged, and they're both pretty clever. The first one is called prompt caching.
+EXPERT: Ninety percent. And the latency improvement is just as dramatic. They cite an example of a hundred-thousand-token document going from eleven and a half seconds to two point four seconds on the second call.
 
-HOST: Okay, caching. I know that word from like, web browsers and stuff.
+HOST: That's... that's not a minor optimization. That's a fundamentally different user experience.
 
-EXPERT: Right, right, right. Same concept. So here's how it works — when you send a request to Claude, normally it has to process every single token from scratch every single time. System prompt, conversation history, tool definitions, all of it.
+EXPERT: Right. And the break-even point is just two API calls. The first call pays a small premium — one-point-two-five times the base price for the five-minute cache — and then every subsequent call within that window saves ninety percent. Two calls and you're already ahead.
 
-HOST: That sounds expensive.
+HOST: Okay so let's talk about that window, because I think this is where people get tripped up. There's a five-minute TTL and a one-hour TTL. Walk me through that.
 
-EXPERT: Oh, it is. But with prompt caching, Claude can actually remember parts of your prompt that don't change. It stores what they call a "KV cache representation" — basically the processed version of that content.
+EXPERT: So the default is five minutes. You make a cached request, the cache lives for five minutes, and — this is important — every time you hit that cache, the timer resets. So if you're in an active conversation, making calls every minute or two, the cache effectively lives forever.
 
-HOST: Wait, so it's not just storing the text, it's storing the already-processed version?
+HOST: Oh, that's clever. So it's not five minutes from creation, it's five minutes from last use.
 
-EXPERT: Yes! That's the key insight. And this means on subsequent requests, if you're sending the same stuff again — like, let's say you have a 100,000 token document you're analyzing — Claude doesn't reprocess that document. It just pulls the cached version.
+EXPERT: Exactly. But here's one of those gotchas that I love — some developers have reported that the five-minute window is actually closer to three minutes in practice.
 
-HOST: Okay, that's actually kind of wild. How much faster are we talking?
+HOST: Seriously? Like, the documented TTL doesn't match reality?
 
-EXPERT: So get this — they have this example in the docs where a 100K-token document analysis drops from 11.5 seconds to 2.4 seconds after the cache is established.
+EXPERT: The docs still say five minutes, but there's enough anecdotal evidence that if you're cutting it close — say, four minutes between calls — you might want to budget for misses. And if your workflow has longer gaps, there's the one-hour option. It costs double the base input price on the write, so it's more expensive to set up, but the reads are still that same ninety percent discount.
 
-HOST: Get out of here. That's like... what, 80% faster?
+HOST: And you mentioned there's a minimum size to even be eligible for caching?
 
-EXPERT: About 85%, yeah. And the cost savings are even more dramatic. You pay 90% less for cached tokens versus regular input tokens.
+EXPERT: Yeah, this catches people. You can't cache a tiny system prompt. For Sonnet models, the minimum is one thousand twenty-four tokens. For Opus? Four thousand ninety-six tokens. So your little "you are a helpful assistant" one-liner — that's not getting cached.
 
-HOST: Okay but hold on — that can't be right because... if it was that good, everyone would just cache everything all the time, right?
+HOST: Right, you need to actually have a substantial prefix. Which honestly, in real production apps, you usually do.
 
-EXPERT: Well, there's a catch. Actually, several catches. First, you have to pay to write to the cache. It's 1.25 times the normal input price.
+EXPERT: Absolutely. Your tool definitions, your system prompt with all the instructions, your few-shot examples — that adds up fast. And speaking of tool definitions, here's something that blew my mind a little.
 
-HOST: Ah, there it is.
+HOST: Go on.
 
-EXPERT: But here's the thing — you break even after just two requests. So if you're doing anything conversational, anything with multiple back-and-forth turns, it pays for itself immediately.
+EXPERT: A single tool definition can cost three hundred to five hundred tokens. Just one. If you've got ten, fifteen tools registered, that's potentially five thousand tokens just in tool definitions, every single call.
 
-HOST: So what's the second catch?
+HOST: So caching those becomes a no-brainer.
 
-EXPERT: The cache only lasts five minutes.
+EXPERT: Total no-brainer. You slap the cache control marker on the last tool in your list, and every tool before it gets cached as part of that prefix. Same with your system prompt. The pattern most people should use is four cache breakpoints — tools, system instructions, your RAG context or document, and then the conversation history. Each one changes at a different frequency, so you get maximum cache hits.
 
-HOST: Wait, what?
+HOST: Okay, but here's what I want to know. What breaks the cache? Because prefix matching sounds fragile.
 
-EXPERT: Five minutes. After that, it expires and you have to write it again.
+EXPERT: Oh, it is fragile. And this is where developers lose money without realizing it. The cache is prefix-based, right? So if you change anything early in the sequence, everything downstream gets invalidated.
 
-HOST: That seems... really short? Like, what if I'm having a conversation and I pause to think for six minutes?
+HOST: Everything.
 
-HOST: Or like, what if the user goes to grab coffee?
+EXPERT: Everything. Add an image to your messages? Cache invalidated. Change your tool choice parameter? Cache invalidated. Toggle web search on or off? That actually modifies the system prompt internally, so — cache invalidated.
 
-EXPERT: Yeah, exactly. So they actually added a longer option — one hour cache, but it costs twice the base input price to write.
+HOST: Wait, toggling web search invalidates your system prompt cache? Even though you didn't touch the system prompt?
 
-HOST: Okay, so you have to decide between cheap but short-lived, or expensive but more stable.
+EXPERT: Even though you didn't touch it. The system injects additional instructions under the hood. And here's one that really gets people — in languages like Go or Swift, JSON serialization can randomize key ordering. So your tool definitions might serialize differently every time, and the cache just... never hits.
 
-EXPERT: Right. And here's another gotcha that's kind of subtle — the cache is based on exact prefix matching. So content is cached in a specific order: tools, then system prompts, then messages. And if you change anything earlier in that sequence, it invalidates everything after it.
+HOST: That's brutal. You could have caching set up perfectly and be getting zero benefit because your JSON keys are shuffling around.
 
-HOST: Oh, that's... huh. So like, if I modify my system prompt, that breaks the cache for all the messages?
+EXPERT: Exactly. You'd see cache writes every single call and zero cache reads, and you'd be paying MORE than if you hadn't enabled caching at all, because of that one-point-two-five-times write premium.
 
-EXPERT: Yep. And this trips people up constantly. They'll be like, "Why am I not getting cache hits?" and it turns out they're doing something innocuous like... toggling web search on and off, which modifies the system prompt internally.
+HOST: Okay, so — so that's the caching fundamentals. But things get really interesting when you throw extended thinking into the mix, right?
 
-HOST: Wait, really? Just enabling a feature breaks your cache?
+EXPERT: Oh, this is where it gets spicy. So, okay, extended thinking — where Claude can reason through problems step by step before answering. Those thinking blocks create this whole new dimension of caching complexity.
 
-EXPERT: Yeah. Or here's another one — JSON key ordering. In some languages like Swift or Go, when you serialize your tool definitions to JSON, the keys might get reordered. Different order, different cache key, no cache hit.
+HOST: Because thinking blocks produce tokens too.
 
-HOST: Oh man, that's the kind of bug that would take forever to track down.
+EXPERT: Lots of tokens. And here's the fundamental tension — you can't put an explicit cache control marker on a thinking block.
 
-EXPERT: Right? You'd be staring at your code like "I didn't change anything!" but the JSON serialization is non-deterministic.
+HOST: You can't?
 
-HOST: Okay, so caching is powerful but finicky. What's the second strategy?
+EXPERT: Nope. They're excluded from being explicit cache breakpoints. But — and this is the sneaky part — they do get cached implicitly as part of the request content when you make follow-up calls with tool results.
 
-EXPERT: The second one is called context compaction. And this is... okay, this is going to sound nerdy but I think it's genuinely brilliant.
+HOST: So they're cached, but you have no control over it.
 
-HOST: I mean, we're already pretty deep in the nerd zone here.
+EXPERT: Right. And you're billed for those thinking tokens when they're read from cache. It's cheaper than reprocessing, sure, but it's not free, and the costs aren't immediately obvious because you didn't ask for that caching to happen.
 
-EXPERT: Fair. So, compaction is basically automatic summarization of old conversation context. When your conversation gets too long and approaches the context limit, the system automatically summarizes the older parts while keeping recent stuff intact.
+HOST: Huh. That's... kind of a hidden cost.
 
-HOST: So it's like... the AI is taking notes on its own conversation?
+EXPERT: It gets more interesting. With Claude Opus four-point-five and newer, thinking blocks from previous turns are preserved by default. Older models would strip them out. So the newer models get better cache hit rates because the thinking is still there in context, but they also eat up more of your context window.
 
-EXPERT: Yes! Exactly. Instead of truncating and losing information, or just failing when you hit the limit, it creates this condensed version that preserves the essential information.
+HOST: It's a trade-off.
 
-HOST: That's actually really clever. How does it know what to keep and what to summarize?
+EXPERT: Everything in this space is a trade-off. And the cache invalidation rules around thinking are surprisingly strict. If you change your thinking budget — say from ten thousand tokens to eight thousand — that invalidates your message cache.
 
-EXPERT: So by default, Claude has this built-in summarization prompt that tells it to capture state, next steps, and learnings — basically anything you'd need to continue the conversation coherently.
+HOST: Even though the messages themselves didn't change?
 
-HOST: Okay, but like... does it work? Because I can imagine this going wrong in so many ways.
+EXPERT: Even though the messages didn't change. Your tools and system prompt stay cached, but all the message content has to be reprocessed. Same thing if you switch between adaptive thinking and manual thinking mode. Same thing if you go from thinking enabled to thinking disabled.
 
-EXPERT: It's surprisingly good. The key is that they're using the same model for summarization — so if you're using Claude Opus, Opus is doing the summarizing. It understands context the same way it would for a regular response.
+HOST: So the advice is basically — pick your thinking strategy at the start and stick with it?
 
-HOST: Wait wait wait — so I'm paying for Opus-level summarization every time this triggers?
+EXPERT: That's the advice. Don't dynamically toggle thinking modes mid-conversation. You'll just be blowing up your cache over and over. And there's this other subtle thing — in a tool use loop, the entire sequence of thinking, tool call, tool result, response — that's conceptually one assistant turn. You can't change thinking mode in the middle of it.
 
-EXPERT: You are. You can't use a cheaper model for the summary. That's one of the trade-offs.
+HOST: Right, right. And you mentioned the signature field?
 
-HOST: Huh. And when does it trigger? Like, how does it know when to compact?
+EXPERT: Oh yeah. Every thinking block has an encrypted signature that you have to preserve exactly when passing it back to the API. You can't modify it, you can't remove it, you can't rearrange thinking blocks. The whole sequence has to match the original output bit for bit or the verification fails.
 
-EXPERT: You set a threshold. The default is 150,000 tokens, but you can go as low as 50,000. When your conversation hits that point, compaction kicks in.
+HOST: So it's like — handle with extreme care.
 
-HOST: And then what? Does it just... pause everything and summarize?
+EXPERT: Basically, yeah. The golden rule is: whatever the model gives you, pass it back exactly as-is.
 
-EXPERT: So this is where it gets interesting. You have two options. By default, it compacts and then continues processing your request in the same call. But you can also set it to pause after compaction, which gives you a chance to preserve certain messages.
+HOST: Okay, so we've talked about caching the stuff you've already processed. But what about when you've been talking for so long that your context window is just... full? Like, two hundred thousand tokens full?
 
-HOST: Oh! So like, you could say "summarize everything except the last three messages, keep those verbatim"?
+EXPERT: And this is where context compaction comes in, and honestly, I think this is the most exciting development in this whole space.
 
-EXPERT: Exactly. This is super useful for things like code review, where you might want to keep the actual code visible even after summarizing the discussion about it.
+HOST: Why's that?
 
-HOST: Okay, I love that. But I'm sensing there's a gotcha here too.
+EXPERT: Because it solves a problem that used to require really ugly application-level code. The idea is — when your conversation gets too long, instead of just chopping off the oldest messages or crashing, the API automatically summarizes the older context and replaces it with a compact summary.
 
-EXPERT: Oh yeah. The big one is information loss risk. Once something gets summarized, you're trusting the model's judgment about what was important. And sometimes you don't know what's important until later.
+HOST: So it's like... taking notes. Instead of remembering every word of a three-hour meeting, you condense it down to the key points and keep going.
 
-HOST: Right, like... you summarize away some detail that seemed irrelevant, but then ten turns later it becomes crucial?
+EXPERT: That's exactly it. And the summary becomes this special compaction block in the conversation. When the API sees that block in a subsequent request, it ignores everything before it and just works from the summary forward.
 
-EXPERT: Yes. And then the agent has to go re-fetch it, which adds latency and defeats the whole purpose.
+HOST: And this happens automatically?
 
-HOST: So it's another trade-off. You're trading token efficiency for potential information loss.
+EXPERT: You set a trigger threshold — the default is a hundred fifty thousand tokens — and when the input hits that threshold, compaction kicks in. The minimum you can set is fifty thousand tokens. And the really clever thing is that you can combine this with the pause-after-compaction option.
 
-EXPERT: Exactly. Although they do have this thing called "rolling summarization" where the summary gets continuously updated as the conversation evolves, which helps.
+HOST: What does that do?
 
-HOST: Okay, so here's what I'm wondering — can you use both? Like, caching and compaction together?
+EXPERT: It lets you intervene between the compaction and the response. So the model generates the summary, pauses, and then you can inject preserved messages — like, "okay, keep the summary, but also keep the last two turns verbatim because they're directly relevant."
 
-EXPERT: You absolutely can. And that's actually the recommended approach for long-running agentic workflows. You cache your system prompts and tool definitions, because those don't change often, and you use compaction to manage the growing conversation history.
+HOST: Oh, that's smart. You get the space savings of compaction but you don't lose the immediacy of the recent conversation.
 
-HOST: Oh, that's smart. The stable stuff gets cached, the growing stuff gets compacted.
+EXPERT: Exactly. And you can provide custom instructions for how the summarization should work. Tell it what to prioritize, what to preserve.
 
-EXPERT: Right. And you can add cache breakpoints on your system prompt so it survives compaction events.
+HOST: But — and I feel like there has to be a "but" here.
 
-HOST: Wait, say that again. The cache survives compaction?
+EXPERT: There are a few buts. First, the summarization uses the same model you're running. If you're on Opus, your summaries are being generated by Opus. There's no option to use a cheaper model for the summary step.
 
-EXPERT: Yeah! Because remember, the cache hierarchy is tools, then system, then messages. Compaction only affects the message level. So your system prompt cache is totally unaffected.
+HOST: So every compaction event has a cost proportional to your model choice.
 
-HOST: Huh. That's... actually that's pretty elegant.
+EXPERT: Right. And second — this is the one that really matters for agentic workflows — once you summarize something away, it's gone. If the agent later needs details from that earlier context, it might have to re-fetch them. Go back to the web, re-read the file, whatever.
 
-EXPERT: It is! But okay, here's where things get really complicated. We need to talk about extended thinking.
+HOST: So you could end up in this loop where you're compacting to save tokens, but then spending tokens re-fetching the stuff you just compacted away.
 
-HOST: Oh no.
+EXPERT: Exactly. For iterative workflows like debugging or code review, where you keep going back to earlier context, aggressive compaction can actually make things worse. You have to find that sweet spot.
 
-EXPERT: So you know how Claude has this extended thinking mode where it can reason through problems step by step?
+HOST: And there's a hallucination risk, right? Because it's summarizing, not compressing.
 
-HOST: Yeah, it generates these internal thinking blocks that you can see, right?
+EXPERT: That's a really important distinction. Summarization generates new sentences — the model is paraphrasing, which means it can introduce inaccuracies. Compression, by contrast, keeps original phrasing but removes redundancy. Server-side compaction uses summarization, so for precision-critical applications, you want to be careful.
 
-EXPERT: Right. Well, those thinking blocks interact with the caching system in ways that are... not intuitive.
+HOST: Okay so let me ask you this — how do all these pieces fit together? Because I feel like there's an interplay between caching and compaction that isn't obvious.
 
-HOST: I don't like where this is going.
+EXPERT: There absolutely is. So here's the thing — your system prompt cache survives compaction. You mark your system prompt with a cache control breakpoint, compaction happens in the message history, but the system prompt is still cached because it's a separate layer in the hierarchy. Tools, system, messages — compaction only touches messages.
 
-EXPERT: So here's the core issue — thinking blocks must be preserved during tool use loops to maintain reasoning continuity. Like, if Claude is in the middle of solving a problem and needs to call a tool, you have to pass that thinking block back in the next request.
+HOST: Oh! That's actually really elegant. So even as your conversation gets compacted, you're still getting cache hits on the stuff that doesn't change.
 
-HOST: Okay, that makes sense. Otherwise it would forget what it was thinking about.
+EXPERT: Exactly. And this is where the token counting API completes the picture, because if you're trying to orchestrate all of this — caching, compaction, budget management — you need to know how many tokens you're actually dealing with.
 
-EXPERT: Exactly. But here's the twist — you cannot explicitly mark thinking blocks with cache_control. They're excluded from being cache breakpoints.
+HOST: Before you send the request.
 
-HOST: Wait, what? Why?
+EXPERT: Before you send the request. And that's exactly what the token counting endpoint does. You send it the same payload you'd send to the Messages API — same system prompt, same tools, same messages — and it tells you the exact input token count.
 
-EXPERT: I honestly don't know the technical reason, but the result is that thinking blocks get cached implicitly as part of the request content. So they are cached, you just can't control where the breakpoint is.
+HOST: And it's free?
 
-HOST: That's... okay, that's kind of weird.
+EXPERT: Completely free. Has its own rate limits separate from your inference limits. Using the token counting API doesn't eat into your actual API quota at all.
 
-EXPERT: It gets weirder. If you change the thinking mode — like, switch from adaptive thinking to manual thinking — it invalidates all your message caches.
+HOST: So you can call it as much as you want.
 
-HOST: Even though the actual content is the same?
+EXPERT: As much as you want. And the patterns that fall out of this are really powerful. You can do pre-flight cost estimation — "hey, this request is going to cost you twelve cents, want to proceed?" You can do smart model routing — small request goes to Haiku, medium to Sonnet, complex one goes to Opus.
 
-EXPERT: Yep. System prompts and tools stay cached, but all the messages have to be reprocessed.
+HOST: Wait, actually, that model routing pattern is really interesting. You're using the token count as a proxy for complexity?
 
-HOST: That seems like it would be really expensive if you're experimenting with different thinking modes.
+EXPERT: It's a rough proxy, but it works surprisingly well. Under a thousand tokens? Probably a simple question — send it to Haiku, fast and cheap. Under fifty thousand? Sonnet handles it well. Over fifty thousand? You probably need Opus's capability. Obviously it's not perfect — you could have a short but incredibly complex prompt — but as a heuristic for automated routing, it's solid.
 
-EXPERT: Oh, it is. That's why the recommendation is to pick your thinking strategy at the start and stick with it. Don't toggle mid-conversation.
+HOST: And you can use it to prevent context overflow too, right?
 
-HOST: And I'm guessing changing the thinking budget also breaks the cache?
+EXPERT: Absolutely. Count your tokens, and if you're at eighty percent of the context window, start trimming old messages. Or — and this is the elegant version — use it to decide when to trigger your own compaction. Don't just rely on the server-side threshold. Count tokens, check against your budget, and if you're getting close, maybe it's time to wrap up that conversation thread.
 
-EXPERT: You got it. Change the budget_tokens parameter, invalidate the cache.
+HOST: I love that pattern of tracking compaction events. Like, every time compaction fires, you know roughly how many tokens have been processed, so you can estimate your cumulative spending.
 
-HOST: Man. Okay, so there are all these little gotchas that could silently ruin your cache hit rate.
+EXPERT: Right, and you can set a hard budget. "I'm willing to spend three million tokens on this task." Track your compaction count, multiply by the trigger threshold, and when you approach the budget, inject a message telling the agent to wrap up.
 
-EXPERT: Yeah. Although to be fair, once you know about them, they're pretty avoidable. The real trick is monitoring your cache hit rate so you notice when something's wrong.
+HOST: Okay I want to go back to something that's been nagging me. You mentioned that the token count is technically an estimate?
 
-HOST: How do you do that?
+EXPERT: Yeah, this is worth clarifying. It's highly accurate — it uses the same tokenizer as the inference pipeline — but the docs explicitly say actual tokens billed during inference may differ by a small amount. It's not like you're going to see a massive discrepancy, but for absolutely billing-critical applications, treat it as an approximation.
 
-EXPERT: The API response includes usage fields that break down cache creation tokens, cache read tokens, and regular input tokens. So you can track what percentage of your requests are hitting the cache versus writing new cache entries.
+HOST: And there's this weird thing where system-added tokens — tokens Anthropic injects for internal optimizations — show up in the count but you don't get charged for them?
 
-HOST: And what's a good hit rate?
+EXPERT: Yeah, that's one of those things where the API is being transparent about what's happening internally, even though it doesn't affect your bill. Which is nice, I guess, but can be confusing if you're trying to reconcile your token counts with your invoice.
 
-EXPERT: It depends on your use case, but for conversational applications, you should be seeing 80-90% of your tokens coming from cache after the first few turns.
+HOST: So let me try to pull this all together, because I feel like there's a mental model emerging here. You've got these three layers working together — caching for repeated content, compaction for overflow management, and token counting for awareness and orchestration.
 
-HOST: And if you're not?
+EXPERT: And the key insight is the hierarchy. Tools and system prompts at the top — they change rarely, cache them aggressively. RAG context in the middle — changes sometimes, cache it with shorter TTLs. Messages at the bottom — growing constantly, that's where compaction lives. And token counting is the eyes and ears that let you make smart decisions about all of it.
 
-EXPERT: Then you're probably doing something that's invalidating the cache. Time to check for those gotchas we talked about.
+HOST: It's like managing memory in an operating system. You've got your cache for fast access, your working memory for active processing, and when things get full, you swap to compressed storage.
 
-HOST: Okay, so we've talked about caching, compaction, and thinking. Is there anything else in the context management toolkit?
+EXPERT: That's... actually a really good analogy. And just like in OS memory management, the wrong strategy can make things worse. Over-cache and you're paying write premiums for stuff that never gets reused. Over-compact and you're re-fetching everything. Don't count tokens and you're flying blind.
 
-EXPERT: Oh yeah, there's this great utility called the Token Counting API that I think is super underrated.
+HOST: And there are all these sharp edges that can bite you. The JSON key ordering thing in Go and Swift. The thinking budget invalidation. The fact that toggling web search destroys your system prompt cache. These aren't things you'd discover from a quick skim of the docs.
 
-HOST: What does it do?
+EXPERT: No. And honestly, the one that I keep coming back to is the lack of manual cache clearing. There's no API to force-evict cached content. If you cache something wrong, you just have to... wait for it to expire.
 
-EXPERT: Exactly what it sounds like — you send it a message structure, and it tells you exactly how many tokens it would use, before you actually send the request.
+HOST: That feels like it should be a bigger deal than it is.
 
-HOST: Wait, that's actually really useful. Why is that underrated?
+EXPERT: I think in practice, the short TTLs make it manageable. Five minutes and the problem solves itself. But conceptually? Yeah, it bugs me.
 
-EXPERT: Because a lot of people try to estimate tokens locally using third-party tokenizers, which gives you approximate results. But the Token Counting API uses the exact same tokenization as the inference pipeline, so it's billing-accurate.
+HOST: So if someone's building an agentic system today — like, a real production agent that's going to have long conversations, call tools, think through complex problems — what's the play?
 
-HOST: Oh, so you can do cost estimation before committing to an expensive request?
+EXPERT: Start with token counting in your middleware. Know what you're dealing with before every call. Cache your tools and system prompt — that's free money, basically. Use the four-breakpoint pattern for content that changes at different frequencies. Choose your thinking strategy upfront and don't switch mid-conversation. Set up compaction with a reasonable threshold, but monitor for re-fetch patterns. And — this is the one people forget — test your cache hit rates. Log the cache read and cache write token counts from every response and make sure you're actually getting hits.
 
-EXPERT: Exactly. Or model routing — like, "if this message is under 1,000 tokens, use Haiku because it's fast and cheap. If it's over 50,000 tokens, use Opus because we need the full capability."
+HOST: Because if your JSON keys are shuffling or you're inadvertently changing something in the prefix...
 
-HOST: That's smart. Does it cost anything to count tokens?
+EXPERT: You're paying more than you would without caching and you have no idea.
 
-EXPERT: Nope! It's completely free. Separate rate limits too, so counting doesn't eat into your inference quota.
+HOST: You know what's fascinating about all this? A year ago, "context management" meant "don't go over the token limit." And now it's this whole discipline with its own patterns, trade-offs, and failure modes.
 
-HOST: Okay, that seems like a no-brainer. Why wouldn't you use this for everything?
+EXPERT: And honestly, I think it's only going to get more complex. Context windows are getting bigger, thinking is getting more sophisticated, agents are running longer. The developers who really understand how these systems interact under the hood — they're going to have a massive advantage in both cost and performance.
 
-EXPERT: I mean, you should use it for anything where cost matters or you're managing context windows tightly. The only reason not to is if the extra network round-trip adds too much latency.
+HOST: Because at the end of the day, the model doesn't care how smart your prompts are if you're hemorrhaging tokens on stuff it's already seen.
 
-HOST: Right, because you're making two API calls instead of one.
+EXPERT: Exactly. The best prompt in the world means nothing if you're reprocessing it from scratch a hundred times a day when you could be reading it from cache for a tenth of the cost.
 
-EXPERT: Yeah. But for most applications, the benefits outweigh that cost. Especially if you're building user-facing tools where you want to show cost estimates.
+HOST: That's the kind of thing that separates a demo from a production system, isn't it? Not the model choice, not the prompt engineering — but whether you're managing your context like it's a precious resource. Because it is.
 
-HOST: Okay, so let me see if I can synthesize all this. You've got caching for stuff that doesn't change, compaction for conversations that go long, thinking blocks that have their own weird rules, and token counting to keep track of it all.
-
-EXPERT: That's pretty much it. Oh, and one more thing I should mention — there's this newer feature in Claude Sonnet 4.5 and later called "context awareness."
-
-HOST: What's that?
-
-EXPERT: The model can actually track its own remaining token budget. So it knows when it's approaching context limits and can manage itself more effectively.
-
-HOST: Wait, the AI is aware of its own memory constraints?
-
-EXPERT: Yeah! It can be like, "I'm at 180,000 out of 200,000 tokens, I should start wrapping this up."
-
-HOST: That's... huh. That feels like a big deal?
-
-EXPERT: I think it is. It's one of those features that seems simple but enables a lot of emergent behavior. Like, the model can decide when to summarize on its own, or when to stop pulling in more context.
-
-HOST: So it's like... giving the model agency over its own resource management?
-
-EXPERT: Exactly. And I think we're going to see more of this — not just context management as something developers configure, but as something the model participates in.
-
-HOST: Okay, that's actually a really interesting place to end. Because we've been talking about all these tools and techniques, but fundamentally they're all trying to solve the same problem, right? How do you maintain coherent, high-quality conversations when working memory is finite?
-
-EXPERT: Right. And what we're seeing is a shift from "make the context window bigger" to "make context management smarter."
-
-HOST: Yeah, because bigger isn't always better. We started with that cooking analogy — more burners doesn't help if you can't actually track what's on all of them.
-
-EXPERT: Exactly. And I think the really interesting thing is how these techniques compose. You're not choosing between caching or compaction or context awareness — you're layering them together.
-
-HOST: Cache the stable stuff, compact the growing stuff, let the model manage its own budget.
-
-EXPERT: And count tokens before you commit to expensive requests.
-
-HOST: Right. It's like... building a sophisticated memory system out of these primitives.
-
-EXPERT: Yeah. And honestly, I think we're still early. Like, the Token Counting API just came out recently. Compaction is still in beta. Five years from now, context management is going to look completely different.
-
-HOST: What do you think changes?
-
-EXPERT: I mean, I think we'll see more aggressive automatic management. Right now you have to explicitly enable compaction, set thresholds, decide on cache strategies. But I could see a future where the API just figures it out based on your usage patterns.
-
-HOST: Like, "we noticed you always cache these tool definitions and compact after 100,000 tokens, so we're just gonna do that for you"?
-
-EXPERT: Exactly. Or even more sophisticated — analyzing which parts of the conversation history are actually being used to inform responses, and only keeping those parts in full fidelity.
-
-HOST: Oh, that's interesting. So like, attention-aware compaction?
-
-EXPERT: Yeah! Only keep the stuff that's actually getting attended to, aggressively summarize everything else.
-
-HOST: Although that makes me wonder... at what point does the system become too opaque? Like, if I don't know what's being cached, what's being compacted, what's being summarized — how do I debug when something goes wrong?
-
-EXPERT: That's a great question. And I don't think there's a good answer yet. We're seeing this tension between "make it automatic and easy" versus "give developers control and visibility."
-
-HOST: Yeah. I mean, I like having the tools available, but I also don't want to have to think about KV cache representations and 20-block lookback windows every time I build a chatbot.
-
-EXPERT: Right, right. And that's probably the direction things are headed — automatic by default, with escape hatches for when you need fine-grained control.
-
-HOST: Which honestly sounds pretty good? Like, 80% of applications can just turn on automatic context management and forget about it, and the other 20% can dive into the weeds.
-
-EXPERT: Yeah. Although I'll say, even if you're in that 80%, it's worth understanding how this stuff works under the hood. Because when you do hit edge cases — and you will — knowing that "oh, I changed my system prompt and that's why my cache hit rate tanked" is way better than just being confused.
-
-HOST: That's fair. It's like... you don't need to be a mechanic to drive a car, but knowing how brakes work is probably useful.
-
-EXPERT: Exactly. And some of these gotchas are just not intuitive. Like, who would guess that JSON key ordering affects caching?
-
-HOST: Yeah, that one's definitely going in my mental list of "debugging steps to try when weird stuff happens."
-
-HOST: Along with "did you accidentally toggle web search."
-
-EXPERT: Ha! Yes. That's probably going to catch a lot of people.
-
-HOST: Alright, I think we've covered this pretty thoroughly. Any final thoughts?
-
-EXPERT: Just that context management is one of those areas where the tooling is evolving really fast. If you're building production applications with Claude, it's worth staying up to date on the docs because new features land pretty regularly.
-
-HOST: And the cost savings are real, right? Like, this isn't just theoretical optimization.
-
-EXPERT: Oh no, it's very real. Especially with caching — 90% reduction on cached tokens adds up fast at scale. I've seen applications cut their API costs in half just by implementing basic caching.
-
-HOST: Half! Okay, yeah, that's worth paying attention to.
-
-EXPERT: Definitely. And the latency improvements are just as important. Users notice when responses come back in 2 seconds instead of 11.
-
-HOST: For sure. Alright, well, this has been enlightening. I feel like I actually understand what's happening behind the scenes now.
-
-EXPERT: Yeah, it's one of those topics that seems really technical and intimidating, but once you get the core concepts, it all kind of clicks.
-
-HOST: Cache the stable stuff, compact the growing stuff, count before you commit.
-
-EXPERT: That's the mantra.
-
-HOST: Perfect. Thanks for nerding out with me on this.
-
-EXPERT: Anytime.
+EXPERT: It really is. And I think once you start thinking of your context window as a resource to be managed — not just a bucket to fill — everything about how you design these systems changes.

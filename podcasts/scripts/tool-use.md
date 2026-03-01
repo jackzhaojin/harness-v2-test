@@ -1,383 +1,227 @@
-HOST: Okay, so — you know how everyone's talking about AI agents now? Like, "oh, AI agents are going to do everything for us"?
+HOST: So imagine you've got this incredibly smart friend, right? Like, scary smart. They can write essays, they can reason through complex problems, they can hold a conversation about literally anything. But they're locked in a room with no phone, no computer, no internet. They can tell you how to look something up, but they can't actually do it themselves.
 
-EXPERT: Right, right. The hype is real.
+EXPERT: Right, and that's basically what an LLM is without tool use. It's this powerful reasoning engine trapped behind a text interface. It can describe how to call an API, but it can't actually call one.
 
-HOST: Yeah, but here's what I couldn't figure out until recently — how do they actually... do things? Like, an LLM is just text in, text out. How does it check the weather, or book a flight, or pull data from your CRM?
+HOST: Until you give it tools.
 
-EXPERT: Oh! So that's where tool use comes in. And honestly, it's way simpler than people think, but also... there's some genuinely wild stuff happening under the hood.
+EXPERT: Until you give it tools. And that's... honestly, that's the thing that turns a chatbot into an agent. That's the leap.
 
-HOST: Okay, break it down for me. What is tool use?
+HOST: Okay so let's talk about how that actually works, because I think a lot of people hear "function calling" and think it's this magical thing where the model just, like, reaches out into the world. But it's not that at all, is it?
 
-EXPERT: So, imagine you're texting with someone who's helping you plan a trip. You say "what's the weather in Tokyo?" and they can't just... know that. They need to check a weather service, right?
+EXPERT: No, no, not even close. And I think that's the first misconception worth clearing up. Claude never executes a tool. It never calls your API. What it does is it says, "Hey, I think we should call this function with these parameters." And then your code actually does the work.
 
-HOST: Sure.
+HOST: So it's more like... a really smart dispatcher?
 
-EXPERT: Tool use is basically that, but for AI. You define a set of functions — tools — that Claude can request. You give it a name, a description, and a schema that says what parameters it needs. Then when someone asks "what's the weather in Tokyo?", Claude doesn't hallucinate an answer. It says "I need to call the get_weather tool with location equals Tokyo."
+EXPERT: That's a great way to put it. It's a dispatcher that reads a menu of available tools, figures out which one to use, fills in the order form correctly, and hands it to you. You go to the kitchen, make the thing, and bring it back.
 
-HOST: Wait, so Claude doesn't actually execute the function?
+HOST: I love that. The restaurant analogy. So what does this menu look like? What do you actually hand Claude?
 
-EXPERT: No! That's the key thing people get wrong. Claude just requests it. The API returns a tool_use block — basically a JSON object saying "hey, call this function with these parameters." Your application reads that, runs the actual function, and sends the result back to Claude. Then Claude uses that real data to answer the user.
+EXPERT: So every tool has three parts. You've got a name, which is just an identifier -- something like "get_weather" or "database_query." You've got a description, which tells Claude when and how to use it. And then you've got an input schema, which is a JSON Schema that defines the parameters.
 
-HOST: Huh. So it's like... Claude is the brain, but my code is the hands?
+HOST: And I'm guessing the description is where people get lazy?
 
-EXPERT: Exactly. Claude figures out what needs to happen, your code makes it happen.
+EXPERT: Oh, so lazy. And here's the thing that surprises people -- the description is the single most important factor in whether your tool works well. Not the schema, not the name. The description.
 
-HOST: Okay, that makes sense. But how does Claude know which tool to use? Like, if I give it ten different tools, how does it pick the right one?
+HOST: Wait, really? More important than the actual schema?
 
-EXPERT: This is where the description field becomes absolutely critical. And I mean critical. The tool name and parameter schema matter, but the description is what Claude actually reads to decide "should I use this?"
+EXPERT: Way more. Think about it -- if you write a description that just says "Gets stock price," Claude doesn't know... should I use this for historical prices? Real-time quotes? Crypto? What does it return? But if you write three or four sentences explaining exactly what the tool does, when to use it, what it returns, and what its limitations are -- suddenly Claude picks the right tool almost every time.
 
-HOST: So it's not just like, "gets weather"?
+HOST: Huh. So it's almost like writing a really good job description for a position you're hiring for.
 
-EXPERT: God, no. That's the mistake everyone makes at first. If you write "Gets stock price" as your description, Claude's going to use that tool at the wrong times — or not use it when it should. You want 3-4 sentences minimum. Explain what it does, when to use it, what it returns, any edge cases.
+EXPERT: Exactly! Vague job posting, you get random applicants. Detailed, specific job posting, you get exactly who you need.
 
-HOST: Give me an example.
+HOST: Okay, so Claude reads these definitions, decides to use a tool, and then what? Walk me through the actual mechanics.
 
-EXPERT: Okay, so instead of "Gets stock price," you'd write: "Retrieves the current stock price for a given ticker symbol from the NYSE or NASDAQ. Use this when the user asks about current stock values, not historical data or predictions. Returns price in USD and timestamp of last trade."
+EXPERT: So Claude responds with a special content block -- a "tool_use" block. It's got the tool name, a unique ID, and the input parameters. Your application sees that, executes the actual function -- maybe it's calling a weather API, maybe it's querying a database -- and then you send the result back to Claude in a "tool_result" block.
 
-HOST: Oh wow, that's way more specific.
+HOST: And you have to match the IDs, right?
 
-EXPERT: Yeah! Because now Claude knows: don't use this for crypto, don't use this for historical trends, and the result will have a timestamp. That context prevents so many errors.
+EXPERT: You have to match the IDs exactly. Every tool_use needs a corresponding tool_result with the same ID. Miss one, mismatch one, and the whole thing blows up with an error.
 
-HOST: So it's like... you're teaching Claude through descriptions?
+HOST: So it's like a call-and-response. Claude says "I need this," you go get it, you bring it back, and then Claude incorporates it into its answer.
 
-EXPERT: Basically, yeah. The description is your chance to do prompt engineering at the tool level.
+EXPERT: Right, right, right. And the cool thing is this can loop. Claude might use a tool, get the result, realize it needs more information, use another tool, get that result, and finally give you the answer. It's this back-and-forth dance.
 
-HOST: Okay, that's smart. What about the schema part? That's the JSON thing, right?
+HOST: Okay, so here's where it gets interesting to me. What happens when Claude wants to use multiple tools at once? Like, "What's the weather in Tokyo and Paris and New York?"
 
-EXPERT: Yeah, the input_schema. It's just JSON Schema — you define what parameters the tool expects, their types, whether they're required or optional.
+EXPERT: So this is parallel tool calling, and it's... honestly, it's a game-changer for performance. Instead of calling get_weather for Tokyo, waiting for the result, then calling it for Paris, waiting, then New York -- Claude just fires off all three in a single response.
 
-HOST: And that's how Claude knows to ask for, like, location and unit for the weather tool?
+HOST: And your application runs them all at the same time.
 
-EXPERT: Exactly. You'd have a "location" field that's a string, a "unit" field that's an enum with "celsius" and "fahrenheit," and you'd mark location as required.
+EXPERT: Exactly. And the math here is pretty dramatic. If each API call takes 300 milliseconds, sequential execution takes 900 milliseconds. Parallel? Still 300. For the user, that's the difference between "wow, that was fast" and "ugh, why is this taking so long."
 
-HOST: What happens if Claude doesn't provide a required parameter?
+HOST: That's like... going from O(n) to O(1) for the data-fetching step.
 
-EXPERT: So here's the thing — by default, Claude is pretty good about following the schema, but it's not perfect. It might skip a required field or pass the wrong type. Like, you want an integer for number of passengers, but Claude gives you the string "two."
+EXPERT: Precisely. And it's not just speed -- it lets agents cross-reference multiple data sources without killing the user experience. Imagine an agent that needs to check your calendar, your email, and your task list to plan your day. Sequential, that's painful. Parallel, it feels instant.
 
-HOST: Oh, that would break everything.
+HOST: But you can't always parallelize, right? Sometimes one tool's output feeds into another.
 
-EXPERT: Yep. Which is why there's this feature called strict tool use. And this is where it gets interesting.
+EXPERT: Right, and Claude is actually smart about this. If you ask "What's the weather where I am?" -- that's two steps. First, figure out the location, then get the weather for that location. Claude will correctly sequence those. It calls the location tool first, gets the result, then uses that result to call the weather tool.
 
-HOST: Okay, I'm listening.
+HOST: So it understands data dependencies automatically.
 
-EXPERT: So normally, Claude generates tool calls the same way it generates any text — it's probabilistic, right? It's predicting the next token. But with strict mode, Anthropic does something called constrained decoding.
+EXPERT: It does. But here's a gotcha -- if you prompt it aggressively to parallelize things that actually have dependencies, it might try to guess the intermediate values. And that's... bad.
 
-HOST: Wait, what does that mean?
+HOST: Oh no. "I'll just assume you're in San Francisco."
 
-EXPERT: They compile your JSON schema into a grammar — like, a formal grammar — and then during inference, Claude literally cannot generate tokens that would violate your schema.
+EXPERT: Exactly. So the rule of thumb is: let the model decide the execution order based on your tool descriptions. Don't try to force it.
 
-HOST: Get out of here. Seriously?
+HOST: Okay, now I want to talk about something that I think is really clever. Tool choice. Because sometimes you don't want Claude to decide whether to use a tool -- you want to force it.
 
-EXPERT: I'm serious! It's not prompting Claude to "please follow the schema." The model physically cannot produce invalid JSON. If your schema says passengers must be an integer between 1 and 6, Claude will only generate tokens that satisfy that.
+EXPERT: Yeah, tool_choice is this parameter that gives you fine-grained control. There are four modes. Auto is the default -- Claude decides. Any means Claude must use at least one tool, but it picks which one. Tool mode forces a specific tool. And none means no tools, even if you provided them.
 
-HOST: That's... actually kind of wild. So you get a hard guarantee?
+HOST: So when would you use "any"? That seems like a weird middle ground.
 
-EXPERT: You get a hard guarantee. No type mismatches, no missing required fields, no extra fields you didn't ask for.
+EXPERT: Okay, this is going to sound nerdy but it's one of my favorite patterns. Imagine you're building an SMS chatbot. Every response has to go through a send_message tool because that's how SMS works. There's no "just respond with text" option. So you set tool_choice to "any" and now Claude must route everything through a tool.
 
-HOST: What's the catch?
+HOST: Oh! Oh, that's interesting. So it's not just about getting data -- it's about making sure the output goes through the right channel.
 
-EXPERT: Well, there's a few. First, there's a compilation step the first time you use a schema, so you get like 100-300 milliseconds of latency. But it caches for 24 hours, so subsequent requests are fast.
+EXPERT: Exactly. And the tool mode -- forcing a specific tool -- is amazing for data extraction. Say you need to classify support tickets. You define a classify_ticket tool with categories, priorities, and you force Claude to use it. Now every response is guaranteed to be structured data matching your schema.
 
-HOST: Okay, that's not too bad.
+HOST: That's basically using tool use as a structured output mechanism.
 
-EXPERT: Second, there are complexity limits. You can only have 20 strict tools per request, and there's limits on optional parameters and union types — things that make the grammar really complex.
+EXPERT: That's exactly what it is. And here's a subtle thing that catches people -- when you set tool_choice to "any" or "tool," the API prefills the response to force tool usage. Which means Claude won't write any natural language before the tool call. No "Sure, let me look that up for you."
 
-HOST: Why?
+HOST: So if you need both the conversational lead-in and the structured output, you're stuck with auto mode?
 
-EXPERT: Because the grammar size explodes. Every optional parameter roughly doubles the state space. So if you have a bunch of optional fields, the grammar becomes huge and slow to compile.
+EXPERT: Right, you'd use auto mode with explicit instructions in your prompt. But honestly, for most extraction pipelines, you don't want the conversational fluff anyway.
 
-HOST: So the advice is to make things required when you can?
+HOST: Fair point. Okay, so let's talk about strict mode because this one kind of blew my mind when I first learned how it works.
 
-EXPERT: Exactly. Or accept that Claude will infer reasonable defaults. Which it does pretty well, actually — Sonnet models especially are aggressive about filling in optional parameters.
+EXPERT: So, okay, here's the thing. Without strict mode, Claude is doing its best to produce valid JSON that matches your schema. And it's pretty good at it! But "pretty good" is not good enough for production. You might define a parameter as an integer, and Claude returns the string "two." Or it returns "2" as a string instead of the number 2.
 
-HOST: Huh. Okay, so we've got tools, we've got schemas, we've got strict mode. What about when Claude needs to call multiple tools?
+HOST: And your parser just dies.
 
-EXPERT: Oh! Okay, this is one of my favorite parts. So there's parallel and sequential tool calling.
+EXPERT: Your parser dies, your downstream function throws a type error, and now you need retry logic. But with strict mode, you set strict: true on the tool definition, and Anthropic guarantees the output matches your schema. Not "tries really hard." Guarantees.
 
-HOST: I assume parallel means calling multiple tools at once?
+HOST: How can they guarantee it? That's... that feels impossible for a language model.
 
-EXPERT: Yep. And the performance difference is dramatic. Like, if you need to fetch weather for Tokyo, Paris, and New York — three API calls at 300 milliseconds each — that's 900ms if you do them sequentially, right?
+EXPERT: And this is the part that's actually wild. They're not just prompting the model to be more careful. They compile your JSON Schema into a grammar -- like, an actual formal grammar -- and they use that grammar during token generation to physically restrict which tokens can be produced.
 
-HOST: Right.
+HOST: Wait, wait, wait. So the model literally cannot generate a token that would violate the schema?
 
-EXPERT: But if Claude requests all three in one response and you run them in parallel with async code, it's just 300ms total.
+EXPERT: Cannot. Physically impossible. It's called constrained decoding. The token probabilities for anything that would break the schema are zeroed out during inference. So if a field expects an integer, the model can only produce integer tokens at that position.
 
-HOST: Oh, that's a huge difference for user experience.
+HOST: That's... actually kind of wild. It's not a validation layer after the fact. It's baked into the generation process itself.
 
-EXPERT: Yeah! The difference between feeling snappy and feeling sluggish. And both OpenAI and Anthropic models support this by default.
+EXPERT: Right! And there's this neat consequence -- the first time you use a new schema, there's a small latency hit, maybe 100 to 300 milliseconds, because they have to compile the grammar. But then it's cached for 24 hours. So subsequent requests with the same schema are fast.
 
-HOST: So Claude just... knows to do it?
+HOST: Okay but there have to be limitations, right? You can't just throw any JSON Schema at it.
 
-EXPERT: It depends. Claude will parallelize when it makes sense — when the operations are independent. Like, fetching weather for three different cities? Obviously parallel. But if you ask "what's the weather where I am?", Claude needs to call a location tool first, then use that result to call the weather tool. That's sequential.
+EXPERT: Oh yeah, there are real constraints. No recursive schemas. No minimum/maximum on numbers. No minLength/maxLength on strings. And here's a fun one -- optional parameters roughly double the grammar's state space.
 
-HOST: Because there's a dependency.
+HOST: So if you have a bunch of optional fields...
 
-EXPERT: Exactly. And Claude's pretty good at figuring that out. But there's this parameter you can set — disable_parallel_tool_use — if you want to force it to only call one tool at a time.
+EXPERT: You hit complexity limits fast. They cap it at 24 total optional parameters across all strict tools in a request, and max 20 strict tools per request. So you want to mark things as required wherever you can.
 
-HOST: Why would you want that?
+HOST: And you have to set additionalProperties to false on every object.
 
-EXPERT: Rate limiting, mostly. If you're hitting external APIs that have strict rate limits, you might not want Claude firing off four requests simultaneously and blowing your quota.
+EXPERT: Every single one. Nested objects too. Forget it on one nested object and you get a 400 error.
 
-HOST: Fair enough. Are there gotchas with parallel execution?
+HOST: Okay, I want to shift gears to something that I think is really exciting -- server-side tools. Because everything we've talked about so far is client tools, where your code does the execution. But there's this other category where Anthropic handles it.
 
-EXPERT: Oh yeah. So when Claude makes parallel tool calls, it returns multiple tool_use blocks, each with a unique ID. You have to execute all of them, then return all the results in a single message. If you send results in separate messages, you actually teach Claude to stop doing parallel calls.
+EXPERT: Yeah, so web search and web fetch are what they call server tools. When Claude wants to search the web, it's not sending you a tool_use block for you to execute. Anthropic's servers actually perform the search and inject the results directly.
 
-HOST: Wait, really?
+HOST: So it's fully managed. You just say "give Claude web search" and it handles everything.
 
-EXPERT: Yeah. It learns from the conversation structure. If you always send results one at a time, Claude adapts and starts making sequential requests. So always bundle your results.
+EXPERT: You add the tool to your request, specify some configuration -- maybe limit it to certain domains, set a max number of searches -- and Claude just... goes and searches the internet.
 
-HOST: That's... kind of fascinating, actually. It's learning from how you structure the API calls.
+HOST: And the results come back with citations?
 
-EXPERT: Right? I mean, these models are pattern-matching machines.
+EXPERT: Always, for web search. It links response text back to the source URLs. And there's this really clever security constraint on web fetch that I love.
 
-HOST: Okay, so — I'm curious about something. You mentioned earlier that your code has to execute the tools and return results. What does that actually look like?
+HOST: Oh?
 
-EXPERT: So, the basic loop is: you send a message, Claude responds with a tool_use block, you extract the tool name and parameters, execute the function, and send back a tool_result block with the output.
+EXPERT: Claude can only fetch URLs that have already appeared in the conversation. Either the user provided them, or they came up in search results. It cannot construct a URL from scratch and go fetch it.
 
-HOST: And that goes back to Claude?
+HOST: So you can't say "Hey Claude, go fetch the HTML from my competitor's website" out of nowhere?
 
-EXPERT: Yep. Then Claude continues generating its response using that data. It's a turn-by-turn conversation.
+EXPERT: Nope. The URL has to have appeared earlier. And the reason is data exfiltration prevention. If Claude could construct arbitrary URLs, a malicious prompt could trick it into encoding sensitive data into URL parameters and sending it to an attacker's server.
 
-HOST: Does the SDK help with this?
+HOST: I mean, think about it -- you've got tool results in the conversation that might contain private data. If Claude could just ping any URL it wanted...
 
-EXPERT: Oh yeah. Anthropic has a tool runner in the SDK that handles the whole loop for you. You just decorate your Python functions with a @beta_tool decorator, pass them to the runner, and it automatically executes tools and feeds results back until Claude is done.
+EXPERT: Exactly. So this URL validation rule is a fundamental security guardrail, not just a limitation.
 
-HOST: That sounds way easier than managing it yourself.
+HOST: What about the code execution tool? Because that one feels like it opens up a whole different world.
 
-EXPERT: It is. But if you're doing something custom — like you need to add logging, or handle errors in a specific way — you might want to implement the loop yourself.
+EXPERT: It really does. So the code execution tool gives Claude access to a sandboxed Linux container. It can run Bash commands, write and edit files, do data analysis with Python libraries like pandas and matplotlib. And it all runs in a container with no network access.
 
-HOST: Makes sense. What about errors? Like, what if a tool fails?
+HOST: No network at all?
 
-EXPERT: You can send back a tool_result with is_error set to true, and Claude will see that the tool failed. The important thing is to make your error messages instructive.
+EXPERT: Zero. Completely air-gapped. Five gigs of RAM, five gigs of disk, one CPU, and absolutely no ability to reach the internet. Which is exactly what you want when you're running untrusted code.
 
-HOST: What do you mean?
+HOST: So if Claude is analyzing a CSV you uploaded, it's doing it in this isolated sandbox. It can't phone home, it can't exfiltrate data.
 
-EXPERT: Don't just return "failed" or "error." Say what went wrong and give Claude a hint about how to recover. Like, "Rate limit exceeded. Retry after 60 seconds."
+EXPERT: Right. And the really powerful pattern is combining these tools. You can use web search to find information, web fetch to grab the full content, and then code execution to process it programmatically. Like, search for stock data, fetch the results, then write Python to plot a comparison chart.
 
-HOST: Oh, so Claude can adapt?
+HOST: That's three different tools working in sequence, each one building on the last.
 
-EXPERT: Yeah! Claude will usually retry 2-3 times with corrected parameters or a different approach. It's surprisingly resilient if you give it good error messages.
+EXPERT: And here's a cool detail -- when you use code execution alongside the newer versions of web search and web fetch, Claude can actually run code to filter search results before they enter the context window. So instead of dumping twenty search results into context, it processes them programmatically and keeps only the relevant ones.
 
-HOST: Huh. Okay, I want to switch gears for a second. There's this thing called tool_choice that I've seen in the docs. What is that?
+HOST: That's a token optimization thing?
 
-EXPERT: So tool_choice is how you control whether Claude must use a tool, can use a tool, or cannot use tools. It's got four modes: auto, any, tool, and none.
+EXPERT: Token optimization and accuracy. Less noise in the context means better answers.
 
-HOST: Okay, break those down.
+HOST: Okay, I want to make sure we talk about MCP because I think this is where the ecosystem is heading. What's the deal with the MCP Connector?
 
-EXPERT: Auto is the default — Claude decides whether to use a tool based on the query. Any means Claude must use at least one tool, but it picks which one. Tool means Claude must use a specific tool you name. And none means Claude can't use any tools.
+EXPERT: So MCP -- Model Context Protocol -- is this open standard that Anthropic created for connecting AI to external systems. And the analogy they use is USB-C, which I think is actually perfect.
 
-HOST: Why would you use any or tool?
+HOST: Because before USB-C you had like twelve different cables for every device.
 
-EXPERT: So, tool mode is perfect for structured data extraction. Like, you want to classify support tickets into categories — billing, technical, general. You define a tool with an enum for categories, set tool_choice to force that specific tool, and boom — you get guaranteed JSON output matching your schema.
+EXPERT: Exactly! And before MCP, every tool integration was custom. You'd write bespoke code to connect Claude to your CRM, then different code for your calendar, different code for your database. MCP standardizes that. One protocol, any system.
 
-HOST: Oh! So it's like... forcing structured output?
+HOST: So the MCP Connector lets you plug into MCP servers directly from the API?
 
-EXPERT: Exactly. It's one of the most common use cases. Any mode is useful for things like SMS chatbots where every response has to go through a tool — like a send_message tool.
+EXPERT: Right. You add an mcp_servers configuration to your request pointing to a remote MCP server, and Claude handles the protocol negotiation, discovers what tools are available, and can invoke them. No separate MCP client needed.
 
-HOST: Because you don't want Claude generating text directly?
+HOST: That's... really clean. So someone builds an MCP server for, say, Google Calendar, and anyone using the Claude API can just connect to it?
 
-EXPERT: Right. You want everything to flow through your tool so you can control formatting, rate limiting, whatever.
+EXPERT: That's the vision. And they've got these nice configuration patterns. You can enable all tools from a server, or do an allowlist where you disable everything by default and explicitly enable only the safe ones, or do a denylist where everything's enabled except the dangerous stuff like delete_all or drop_database.
 
-HOST: That's clever. Are there gotchas with tool_choice?
+HOST: I appreciate that the example dangerous tool is literally called drop_database.
 
-EXPERT: Yeah, a big one: when you use any or tool mode, Claude doesn't generate natural language before the tool call. It just goes straight to the tool.
+EXPERT: I mean, if you're going to name it that, you're asking for trouble. But seriously, the security patterns here are important. You can connect to multiple MCP servers in a single request, each with their own access controls. And there's this defer_loading option that's clever.
 
-HOST: Wait, really?
+HOST: What does that do?
 
-EXPERT: Yeah. The API prefills the assistant's response to force tool usage. So if you want Claude to explain what it's doing before calling a tool, you have to use auto mode and explicitly ask for an explanation in the prompt.
+EXPERT: So if an MCP server exposes, like, fifty tools, you don't want all fifty descriptions crammed into Claude's context. That eats tokens and confuses the model. With defer_loading, the tool descriptions aren't sent to the model initially. Claude uses a tool search mechanism to find relevant tools on demand.
 
-HOST: Huh. That seems like something people would trip over.
+HOST: Oh, that's smart. It's like... lazy loading for tools.
 
-EXPERT: Oh, they do. All the time. You expect a conversational lead-in, but Claude just calls the tool immediately.
+EXPERT: Exactly. Load them when you need them, not upfront.
 
-HOST: Okay, so we've talked about tools that your application executes. But I know there are some tools that Claude can execute on its own, right? Like, server-side tools?
+HOST: So let me see if I can connect all of this together. You've got these layers. At the bottom, you have basic tool definitions -- the contract between your app and Claude. You've got tool choice to control when tools get used. Strict mode to guarantee the parameters are valid. Parallel execution to make it fast. Server-side tools for managed capabilities like search and code execution. And MCP to standardize how you connect to everything else.
 
-EXPERT: Oh yeah! This is where things get really powerful. Anthropic provides a few server tools: web search, web fetch, and code execution.
+EXPERT: And the thing I think people miss is that these all compose. You can have strict mode on your client tools, web search running as a server tool, an MCP connection to your internal systems, Claude making parallel calls across all of them, and tool choice set to auto so it picks intelligently. All in one request.
 
-HOST: Let's start with web search. How does that work?
+HOST: That's an agent right there. That's not a chatbot anymore.
 
-EXPERT: So normally, Claude's knowledge has a cutoff date — it doesn't know what happened yesterday or even last month. Web search gives Claude the ability to query the web and get real-time information.
+EXPERT: That's an agent. And when you add the execution loop -- where your code keeps calling the API as long as Claude keeps requesting tools -- you get this autonomous system that can reason, act, observe, and repeat.
 
-HOST: And Anthropic's servers handle the actual search?
+HOST: The thing that sticks with me is how much of the intelligence is in the plumbing. Like, the description quality, the error message quality, knowing when to use strict mode versus not, understanding which things can parallelize...
 
-EXPERT: Exactly. You just add the web_search tool to your tools array, and when Claude needs current information, it sends a server_tool_use block. Anthropic's backend runs the search and returns results automatically.
+EXPERT: Right. The model is only as good as the tools you give it. And I'd push back slightly on the framing -- it's not really plumbing. It's interface design. You're designing the interface between an AI and the world. And just like a badly designed UI makes a powerful app unusable, badly designed tool definitions make a powerful model useless.
 
-HOST: What do the results look like?
+HOST: So what should someone do if they're just getting started with all this?
 
-EXPERT: You get URLs, titles, page age, and snippets. And here's the cool part — Claude automatically cites its sources.
+EXPERT: Start with one well-defined tool. Write a really detailed description -- three or four sentences minimum. Use strict mode from day one so you never have to deal with malformed parameters. Get the basic loop working where you execute the tool and send results back. And then expand from there.
 
-HOST: Oh, that's huge for credibility.
+HOST: Don't try to build the entire agentic system on day one.
 
-EXPERT: Yeah! Every time Claude references something from a search result, it includes the citation with the source URL.
+EXPERT: Please don't. Get one tool working perfectly, then add the next one. And when you're ready for server-side tools, web search is the easiest on-ramp because Anthropic handles all the execution.
 
-HOST: What about web fetch? Is that different?
+HOST: You know what I keep coming back to? That constrained decoding thing. The idea that the guarantees aren't coming from "we prompted it really hard" -- they're coming from actual mathematical constraints on the token generation process. That feels like a fundamentally different approach to reliability.
 
-EXPERT: Yeah, web fetch retrieves the full content of a specific URL. So you can combine them — search for relevant articles, then fetch the most promising one and analyze it in detail.
+EXPERT: It is. And I think it points to where this whole field is going. The shift from "hope the model gets it right" to "make it structurally impossible to get it wrong." At least for the formatting layer. The content can still be wrong -- strict mode guarantees the JSON is valid, not that the values are accurate. But eliminating an entire class of errors at the generation level? That's huge.
 
-HOST: That's like a two-step research workflow.
+HOST: Which means your retry logic gets simpler, your error handling gets simpler, and you can focus on the actual application logic instead of babysitting the model's output format.
 
-EXPERT: Exactly. And web fetch supports PDFs too, so you can pull in research papers, documentation, all that.
+EXPERT: And that's really what tool use is about at the end of the day. It's about letting the model do what it's good at -- reasoning, language understanding, deciding what to do -- while your application handles the actual doing. The model is the brain, the tools are the hands. And the better the interface between them, the more capable the whole system becomes.
 
-HOST: Are there security concerns with giving Claude web access?
+HOST: The brain and the hands. I think that's going to stick with me. Because right now, we're in this moment where the brains are getting really good, and the hands -- the tool ecosystem -- are finally catching up. What happens when both sides are world-class?
 
-EXPERT: Oh, absolutely. Which is why there are domain controls. You can set allowed_domains and blocked_domains at the request level or the organization level.
+EXPERT: That's the question, isn't it? When you have a model that can reason through complex multi-step plans, tools that can reliably execute any operation, MCP servers connecting to every system in an enterprise... I mean, that's when AI goes from being a copilot to being a colleague. And I don't think we're as far from that as people think.
 
-HOST: So I could restrict Claude to only search specific sites?
+HOST: Something to sit with. Especially if you're designing those tool descriptions right now -- you're literally shaping how capable these systems can be. No pressure.
 
-EXPERT: Yep. Like, you could limit it to docs.aws.amazon.com and cloud.google.com for official documentation only.
-
-HOST: That's smart. What's the catch with web fetch?
-
-EXPERT: The big one is that Claude can't just fetch arbitrary URLs it generates. It can only fetch URLs that appear in the conversation — from user messages, previous tool results, or search results.
-
-HOST: Why?
-
-EXPERT: Security. To prevent data exfiltration. If Claude could construct and fetch URLs dynamically, it could potentially leak data by encoding it in URL parameters.
-
-HOST: Oh wow, I hadn't thought of that.
-
-EXPERT: Yeah, it's a subtle but important safeguard.
-
-HOST: Okay, what about code execution? That sounds... kind of scary?
-
-EXPERT: It's actually super well sandboxed. Claude can write and run code in an isolated container — no internet access, limited disk and memory. But within that sandbox, it can manipulate files, run calculations, generate visualizations.
-
-HOST: So it's like... Claude has a little computer it can play with?
-
-EXPERT: Basically, yeah. And the use cases are incredible. Data analysis is the big one.
-
-HOST: How so?
-
-EXPERT: You upload a CSV, tell Claude to analyze it. Claude loads the data, explores it, generates charts, identifies trends, and saves a report — all in one conversation.
-
-HOST: Wait, it can create files?
-
-EXPERT: Yep. You can upload files via the Files API, Claude processes them in the sandbox, and it can generate new files that you download.
-
-HOST: That's... okay, that's pretty wild. What's the sandbox environment like?
-
-EXPERT: Python 3.11, 5GB of RAM, 5GB of disk, 1 CPU. No network access. It's got pandas, numpy, matplotlib, all the standard data science libraries.
-
-HOST: What about multi-turn workflows? Like, can Claude remember files between requests?
-
-EXPERT: Yeah! Containers can persist across requests using a container ID. So you can upload data in one request, process it, then in a follow-up request, Claude still has access to the files it created.
-
-HOST: How long do containers last?
-
-EXPERT: 30 days. After that, they expire and you'd need to re-upload.
-
-HOST: Gotcha. Are there security implications with code execution?
-
-EXPERT: The sandbox is solid — network isolation, no host access. But it's not covered by Zero Data Retention agreements, so if you're working with sensitive data and need ZDR compliance, you can't use code execution.
-
-HOST: That's good to know. Is there a cost?
-
-EXPERT: It's free if you use it alongside web search or web fetch. Otherwise, it's five cents per hour after a generous free tier.
-
-HOST: That's... surprisingly affordable.
-
-EXPERT: Yeah, Anthropic's pricing on this is pretty reasonable.
-
-HOST: Okay, so — we've covered a lot. Tools you define, tools Anthropic provides. But there's one more thing I wanted to ask about: MCP. What is that?
-
-EXPERT: Oh, Model Context Protocol. So this is Anthropic's attempt to standardize how AI applications connect to external systems.
-
-HOST: Like a standard interface?
-
-EXPERT: Exactly. Think of it like USB-C for AI. Instead of every app building custom integrations, you use MCP servers that expose tools, data sources, and workflows in a consistent way.
-
-HOST: And Claude can talk to MCP servers directly?
-
-EXPERT: Yeah, through the MCP Connector. It's a beta feature where you just specify an MCP server URL in your API request, and Claude handles the protocol negotiation and tool discovery automatically.
-
-HOST: So I don't need to build an MCP client?
-
-EXPERT: Nope. The API does it for you. You just configure which MCP server to connect to, and optionally which tools to enable or disable.
-
-HOST: Why would you disable tools?
-
-EXPERT: Security. An MCP server might expose a mix of read-only and destructive operations. You can enable the safe ones and block the dangerous ones.
-
-HOST: That makes sense. Is there a catch?
-
-EXPERT: The MCP Connector only supports tools, not the other parts of MCP like resources and prompts. If you need those, you'd use the client-side SDK helpers instead.
-
-HOST: And I assume this requires HTTPS?
-
-EXPERT: Yep. Local servers need to be exposed through a tunnel or run via the SDK's local client helpers.
-
-HOST: Gotcha. So the MCP Connector is for remote, HTTPS-accessible servers.
-
-EXPERT: Exactly.
-
-HOST: Okay, so — stepping back. We've talked about tool definitions, parallel calls, strict mode, tool_choice, server tools, MCP. What's the big picture here? Like, why does all this matter?
-
-EXPERT: Because this is how you go from a chatbot to an agent. An LLM that can only generate text is impressive, but limited. The moment it can check a database, call an API, search the web, run code — now it's interacting with the real world.
-
-HOST: Right, but... isn't that kind of dangerous?
-
-EXPERT: It can be, if you're not careful. That's why all the guardrails exist — strict schemas, domain filtering, sandboxing, error handling. The tools are powerful, but you have to design them thoughtfully.
-
-HOST: What's the biggest mistake people make?
-
-EXPERT: Honestly? Vague tool descriptions. People assume the schema is enough, but Claude needs context to make good decisions. If your description doesn't explain when to use a tool, what it returns, and what the edge cases are, you're going to get unpredictable behavior.
-
-HOST: So it's like... the more explicit you are, the better?
-
-EXPERT: Yeah. And I mean, that applies to everything with LLMs, right? But with tools, the stakes are higher because you're executing code, hitting APIs, spending money.
-
-HOST: Fair point. What about the future of this? Like, where is tool use heading?
-
-EXPERT: I think we're going to see a lot more emphasis on reliability — strict mode is a step in that direction. But also, I think the MCP ecosystem is going to get really interesting. If you have a standard protocol, third parties can build integrations that just... work. You don't need custom code for every SaaS app.
-
-HOST: So like, plug-and-play integrations for AI?
-
-EXPERT: Exactly. And that unlocks a lot of use cases. Instead of spending weeks building connectors to Salesforce, Slack, your database, whatever — you just point Claude at an MCP server and go.
-
-HOST: That would be huge for developers.
-
-EXPERT: Yeah, it lowers the barrier to building sophisticated agents. Which I think is the whole point.
-
-HOST: Okay, last question. If someone's building their first AI agent with tool use, what's the one piece of advice you'd give them?
-
-EXPERT: Start simple. Don't try to give Claude 50 tools on day one. Start with one or two, get the loop working, understand how tool results flow back into the conversation. Then add complexity.
-
-HOST: Because it's easy to overcomplicate?
-
-EXPERT: Oh yeah. And when things break — and they will — it's way easier to debug if you've only got two tools instead of twenty.
-
-HOST: That's solid advice.
-
-EXPERT: Also, test your error handling. Like, actually break things on purpose. Disconnect your API, pass invalid parameters, hit rate limits. See how Claude responds.
-
-HOST: Because you want to know what happens when things go wrong?
-
-EXPERT: Exactly. The happy path is easy. The real test of your agent is how it handles failures. And if you've written good error messages and given Claude enough context, it's surprisingly good at recovering.
-
-HOST: Huh. So it's not just about making tools — it's about making resilient systems.
-
-EXPERT: Yeah. And I think that's the shift people need to make. You're not just prompting a model anymore. You're building an architecture.
-
-HOST: That's a good way to put it. Alright, I think we covered a ton here. Tool definitions, schemas, strict mode, parallel calls, tool_choice, server tools, MCP — this is basically the whole playbook, right?
-
-EXPERT: Pretty much. There's always more detail you can go into, but yeah, those are the core concepts.
-
-HOST: And the key takeaway is: tools turn text generation into action, but you have to be thoughtful about how you design them.
-
-EXPERT: Exactly. Because with great power comes great... you know.
-
-HOST: Responsibility?
-
-EXPERT: I was going to say "token costs," but sure, responsibility works too.
-
-HOST: Ha! Fair enough. Alright, this was fun. I feel like I actually understand this now.
-
-EXPERT: Yeah, same. It's one of those things that seems intimidating until you break it down, and then it's like, oh, okay, this is just structured API calls.
-
-HOST: Structured, intelligent API calls.
-
-EXPERT: Right. That can run code and search the web.
-
-HOST: No big deal.
-
-EXPERT: No big deal.
+EXPERT: No pressure at all.

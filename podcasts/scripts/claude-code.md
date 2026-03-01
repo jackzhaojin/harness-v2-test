@@ -1,423 +1,231 @@
-HOST: Okay, so I tried something yesterday that kind of blew my mind a little bit. I was debugging this gnarly API issue, right? And instead of switching between my terminal and my IDE and copy-pasting error messages—
+HOST: Okay, so here's a question for you. When was the last time you actually read documentation for a tool before you started using it?
 
-EXPERT: Let me guess. Claude Code?
+EXPERT: Honestly? Probably never. I just... install things and start clicking around.
 
-HOST: Yes! But here's the thing that got me—I wasn't even in an IDE. I was SSH'd into a server.
+HOST: Right, right, exactly. And that works fine for most tools. But there's this whole category of AI coding tools now where the difference between "I kinda use it" and "I actually understand what it can do" is just... massive. Like, night and day.
 
-EXPERT: Oh, that's the whole point! That's what people miss about Claude Code. Everyone thinks it's just, like, another Copilot or another AI coding assistant that sits in VS Code.
+EXPERT: You're talking about Claude Code.
 
-HOST: Right, right.
+HOST: I am absolutely talking about Claude Code. Because I think most people who've heard of it think it's just, like, another AI chatbot you can ask coding questions to. But it's so much weirder and more interesting than that.
 
-EXPERT: But it's fundamentally different because it lives in your terminal. Which means—
+EXPERT: It really is. So okay, for anyone who hasn't touched it yet -- Claude Code is Anthropic's agentic coding tool, and the key word there is "agentic." It doesn't just answer questions. It lives in your terminal. It reads your files, understands your project structure, runs commands, makes git commits--
 
-HOST: It works literally anywhere you have a command line.
+HOST: Wait, it makes git commits?
 
-EXPERT: Exactly. Remote servers, CI/CD pipelines, Docker containers, even those janky legacy systems where you can't install a fancy IDE.
+EXPERT: It makes git commits. It creates pull requests. You can literally say "commit my changes with a descriptive message" and it just... does it.
 
-HOST: Okay, but hold on. Let's rewind for people who haven't used this yet. What actually is Claude Code? Like, at the most basic level?
+HOST: That's... okay, I have feelings about that. But hold on, let me back up. You said it lives in the terminal. So this isn't a VS Code extension or anything like that?
 
-EXPERT: So at its core, it's an AI-powered coding assistant from Anthropic that you control entirely through your terminal. You install it, you type `claude`, and you just... talk to it. You can ask it to explain your codebase, refactor functions, write tests, fix bugs, create pull requests—all in plain English.
+EXPERT: Well, it actually supports both. There's IDE integrations for VS Code and JetBrains, there's a desktop app, it even works in Slack. But the terminal is the native experience, and honestly, that's where it gets interesting. Because the terminal means it works everywhere -- SSH sessions, remote servers, CI pipelines. You're not tied to a GUI.
 
-HOST: And it has actual access to your files.
+HOST: So you literally just type "claude" in your terminal and you're in?
 
-EXPERT: Yes. It reads your code contextually. So you don't have to manually feed it context like "here's my auth module, here's my database schema." It just... knows. It explores your project as it needs to.
+EXPERT: That's it. You type "claude" and you get an interactive session. You can ask it about your codebase, tell it to fix bugs, refactor things. And then when you're done, you exit. But here's the neat part -- your conversations are saved. So you can come back later and say "continue where I left off."
 
-HOST: That's kind of wild when you think about it. It's not just generating code in a vacuum.
+HOST: Oh, that's actually huge. Because the thing I hate about most AI tools is that every conversation starts from zero.
 
-EXPERT: Right! It's understanding your entire project structure. And here's where it gets interesting—it has this permission system built in. So before it modifies anything, it asks you.
+EXPERT: Exactly. And you can even name your sessions. So like, you're working on an authentication refactor, you name it "auth-refactor," go home, come back the next day, type "claude resume auth-refactor" and you're right back in it.
 
-HOST: Oh, so it's not just going rogue and rewriting your entire codebase?
+HOST: Okay, that's clever. But I want to talk about something that tripped me up the first time I read about this. The keyboard shortcuts are... different.
 
-EXPERT: Exactly. Every file change, every command it wants to run—it shows you what it's planning to do and asks for approval. You can review the diff right there in your terminal. You can say yes, no, or even enable "Accept all" mode if you trust it for that session.
+EXPERT: Oh, you mean the Ctrl+C thing?
 
-HOST: Huh. So there's this balance between automation and control.
+HOST: The Ctrl+C thing! So in basically every terminal tool in the history of computing, Ctrl+C means "stop what you're doing." In Claude Code, Ctrl+C means "goodbye forever, I'm closing the whole application."
 
-EXPERT: Precisely. And actually, there's this third mode that I think is super underrated—Plan Mode.
+EXPERT: Yeah, that catches everyone. You want Escape. Escape stops Claude mid-action but keeps your session alive. Ctrl+C just... exits. Gone. And I think that's a deliberate design choice because they want Escape to be the "gentle stop" and Ctrl+C to be the "I'm done" button, but it goes against decades of muscle memory.
 
-HOST: Wait, what's Plan Mode?
+HOST: Decades! My fingers have been trained since I was like twelve years old.
 
-EXPERT: Okay, so imagine you want to do a complex refactor. You don't want Claude to start making changes immediately, right? You want to understand the approach first. So you hit Shift+Tab twice—
+EXPERT: I know, I know. And there's another one -- Plan Mode. You'd think it's one toggle, right? Nope. You have to press Shift+Tab twice. First press gives you Auto-Accept mode, second press gets you to Plan Mode. And you have to look for a little indicator at the bottom of the terminal that says "plan mode on."
 
-HOST: Twice?
+HOST: Okay so what even is Plan Mode? Because that sounds really useful.
 
-EXPERT: Yeah, the first Shift+Tab turns on "Auto-Accept" mode, the second one activates Plan Mode. Look at the bottom of your terminal; it'll say "plan mode on." Now Claude can only read files and analyze code. It can't modify anything. It'll create a plan for you—like, "here's what I would do, here are the files I'd touch, here are the gotchas I see."
+EXPERT: It's basically read-only analysis. Claude looks at your code, thinks about it, creates a plan for what it would do, but it doesn't actually touch anything. It's perfect for when you're like, "I want to refactor this whole module but I'm scared."
 
-HOST: Oh! So it's like... thinking out loud before executing.
+HOST: So it's like... getting a second opinion before surgery.
 
-EXPERT: Exactly. And once you approve the plan, you can switch back to normal mode and actually implement it. It's perfect for when you're dealing with something high-stakes or you just want to explore options without committing to changes.
+EXPERT: That's a great analogy, actually. It's the consultation before the operation. And you can even press Ctrl+G to open the plan in your text editor, mark it up, hand it back. So it's genuinely collaborative.
 
-HOST: That's... actually kind of brilliant. Because I've had situations where I ask an AI tool to do something, and it just starts making changes immediately, and I'm like, "Wait, wait, that's not what I meant!"
+HOST: Alright, so that's the basics of using the tool. But here's where things get really interesting, and honestly this is the part that kind of blew my mind. The memory system.
 
-EXPERT: Right, right, right. And that brings up another thing—Claude Code has this concept of sessions. Every conversation is automatically saved.
+EXPERT: Oh, the memory system is where Claude Code goes from "neat tool" to "indispensable team member." So, okay, this is going to sound nerdy but--
 
-HOST: So you can come back to it later?
+HOST: Go for it.
 
-EXPERT: Yeah. You can do `claude --continue` to resume your most recent session, or `claude --resume` to pick from a list. And here's a pro tip: you can name your sessions using the `/rename` command. So if you're working on, say, an authentication refactor, you name the session "auth-refactor," and then later you can do `claude --resume auth-refactor` to jump right back in.
+EXPERT: Claude Code has this dual memory architecture. There's stuff you write for it, and stuff it writes for itself. And both get loaded every single time you start a conversation.
 
-HOST: Oh, that's nice. So it's not just throwaway conversations.
+HOST: Wait -- stuff it writes for itself?
 
-EXPERT: Not at all. It's persistent context. Which ties into something even more interesting—the memory system.
+EXPERT: Yeah! It's called auto memory. So let's say you correct Claude during a session. You say "hey, we use pnpm here, not npm." Claude goes "got it" and writes that down in its own memory file. Next session, it already knows. You never have to tell it again.
 
-HOST: Okay, tell me about this.
+HOST: That's... okay, that actually changes the game. Because the number one complaint I have with AI coding tools is repeating myself.
 
-EXPERT: So Claude Code has two ways of remembering things. The first is CLAUDE.md files—these are like onboarding documents you write for Claude.
+EXPERT: Same. And the stuff you write for it? That's the CLAUDE.md system. Think of it as an onboarding document. You know how when a new developer joins your team, you sit them down and say "here's our coding standards, here's how to run the tests, here's the architecture"?
 
-HOST: CLAUDE.md—that's a file I create?
+HOST: Yeah, and then they forget half of it by lunch.
 
-EXPERT: Yep. It's just a markdown file. You put it in your project root—or actually, you can put it in a few different places, we'll get to that—and you write down your project conventions, build commands, architecture decisions, coding standards.
+EXPERT: Right! Well, CLAUDE.md is that briefing document, except Claude actually reads it. Every. Single. Time. And there's this whole hierarchy to it that's really elegant. You've got your project-level file that the whole team shares through git. You've got a personal one that follows you across all your projects. And then there's a local one for your personal preferences on a specific project that doesn't get committed.
 
-HOST: So it's like briefing a new team member.
+HOST: So the team file says "we use TypeScript and four-space indentation" and my personal file says "I prefer verbose explanations" and those just... layer on top of each other?
 
-EXPERT: Exactly! You wouldn't expect a new developer to intuitively know that your team uses pnpm instead of npm, or that you have this weird custom testing setup. So you write it down once in CLAUDE.md, and now every Claude session starts with that context loaded.
+EXPERT: Exactly. And it goes even deeper. There's a rules directory where you can create modular instruction files that only apply to specific file patterns. So you can have rules that say "when you're working on anything in the API directory, follow these conventions" and totally different rules for the frontend.
 
-HOST: Wait, so every time I start a new conversation, it reads CLAUDE.md automatically?
+HOST: Oh, that's smart. So it's like... context-aware instructions. The rules change depending on what part of the codebase you're touching.
 
-EXPERT: Yep. Session start, it loads CLAUDE.md. No manual copying and pasting.
+EXPERT: Right. You use glob patterns in the YAML frontmatter. Like "src/api double-star slash star-dot-ts" and those rules only activate when Claude is working on TypeScript files in your API folder.
 
-HOST: That's... okay, that's really smart. Because I've used other AI tools where you have to re-explain your setup every single time.
+HOST: Okay, but here's the thing I want to push back on a little. You said Claude "reads" these files. But it's not enforcing them, right? It's guidance.
 
-EXPERT: Right, right. And here's where it gets even better—there's a hierarchy of these files. You can have a global CLAUDE.md in your home directory that applies to all your projects, a project-level one that your whole team shares via git, and a local one just for your personal preferences that you don't commit.
+EXPERT: That is a really important distinction, yeah. CLAUDE.md is guidance, not enforcement. Claude tries to follow it, and it does a pretty good job, but there's no guarantee. And here's the gotcha -- vague instructions don't work well. If you write "format code properly," that could mean anything. But "use two-space indentation and single quotes for strings"? That it can follow.
 
-HOST: Oh, so the local one is like... your personal overrides?
+HOST: So it's like managing a very capable but somewhat literal junior developer.
 
-EXPERT: Exactly. Maybe your team's CLAUDE.md says "use the staging server at staging.example.com," but you have a local dev environment at localhost:3001. You put that in CLAUDE.local.md, and it takes precedence.
+EXPERT: I love that. Yes. Be specific, be explicit, and you'll be happy. Be vague and you'll be frustrated.
 
-HOST: Got it. And you said there were two memory systems?
+HOST: And there's a limit on the auto memory too, right? Something about two hundred lines?
 
-EXPERT: Yeah, the second one is auto memory. This is where Claude writes notes for itself.
+EXPERT: Yeah, so the auto memory gets stored in a file called MEMORY.md, and only the first two hundred lines load at session start. But here's the thing people get confused about -- that limit only applies to the auto memory file. Your CLAUDE.md files load in full. Although, and this is important, if your CLAUDE.md is like five hundred lines long, it's eating into your context window and Claude's adherence to the instructions actually drops.
 
-HOST: Wait, it takes its own notes?
+HOST: So keep it tight.
 
-EXPERT: Yes! So as you work with Claude, it learns things. Maybe it discovers your build command, or you correct it on something, or it figures out a debugging pattern that works for your codebase. It can write these learnings to memory files that load automatically in future sessions.
+EXPERT: Keep it tight. Think of it as... you know how the best commit messages are like one sentence? Same energy. Dense, specific, actionable.
 
-HOST: Huh. So it's like... self-documenting its experience with my project.
+HOST: Alright, so we've got the CLI, we've got the memory system. Now I want to talk about skills, because this is where it starts to feel less like a tool and more like a platform.
 
-EXPERT: Exactly. And the key thing is, this is local to your machine. It's stored in `~/.claude/projects/`, not in your git repo. So it's your personal knowledge base that Claude builds up over time.
+EXPERT: Oh, skills are fascinating. So a skill is basically... a recipe. It's a set of instructions you write once, and then Claude can follow them over and over again. Every skill lives in a folder with a SKILL.md file, and that file has some YAML metadata at the top and then markdown instructions below.
 
-HOST: Okay, I have a question though. How much of this actually gets loaded? Like, if it's writing a bunch of notes over weeks and weeks, doesn't that get huge?
+HOST: And these evolved from something called custom commands?
 
-EXPERT: Great question. So there's a limit—the first 200 lines of the memory index file get loaded at session start. CLAUDE.md files load in full, but it's recommended to keep them concise. If they're too long, adherence actually drops.
+EXPERT: Yeah, so there used to be this commands system, and skills kind of absorbed it. The old command files still work, but skills are more powerful because you can bundle supporting files with them -- templates, scripts, examples. And they have this frontmatter where you can control all sorts of behavior.
 
-HOST: Interesting. So shorter, more focused instructions work better than a massive tome of rules.
+HOST: So give me a concrete example. What would I actually use a skill for?
 
-EXPERT: Exactly. Be specific, be concise. "Use 2-space indentation" works better than "format code properly."
+EXPERT: Okay, so imagine your team has a deployment process. It's like seven steps. Check this, build that, push to this, verify that. Instead of explaining it to Claude every time, you write a deploy skill. Now anyone on the team can just type slash deploy and Claude follows the exact same steps every time.
 
-HOST: Makes sense. Okay, so we've covered the basics—terminal-based, permission system, Plan Mode, sessions, memory. What else makes this thing powerful?
+HOST: Slash deploy. Like a slash command?
 
-EXPERT: Ooh, skills. This is where it gets really fun.
+EXPERT: Exactly like a slash command. You type forward-slash and the skill name. Or -- and this is the cool part -- Claude can invoke skills automatically if it thinks the task matches the skill's description.
 
-HOST: Skills?
+HOST: Wait, really? So it reads the descriptions and decides on its own?
 
-EXPERT: Yeah. So Claude Code supports this open standard called Agent Skills—
+EXPERT: Yeah, auto-invocation. The description field in the frontmatter is how Claude decides when to apply a skill. So if you have a skill called "api-conventions" with a description that says "API design patterns for this codebase," and then you ask Claude to write an API endpoint, it might just... pull in those conventions automatically.
 
-HOST: Wait, open standard?
+HOST: That's... okay, I can see how that's powerful, but I can also see how that could go sideways. What if it invokes the wrong skill at the wrong time?
 
-EXPERT: Yeah, it's called agentskills.io. The idea is that skills are portable across different AI tools, not just Claude. But basically, a skill is a way to extend Claude's capabilities by teaching it how to do specific tasks in a repeatable way.
+EXPERT: And this is where the description quality really matters. If your description is vague, you'll get inconsistent triggering. But there are also controls. You can set "disable-model-invocation: true" in the frontmatter, which means only a human can trigger it with the slash command. Or you can go the other way and set "user-invocable: false," which means only Claude can trigger it -- it's hidden from the menu entirely.
 
-HOST: Like... custom commands?
+HOST: Huh. So you can have skills that are human-only, Claude-only, or both.
 
-EXPERT: Exactly. In fact, they evolved from what used to be called custom commands. Now they've been merged into this skills system. And a skill is just a folder with a SKILL.md file inside.
+EXPERT: Right. And there's actually a known bug with the human-only setting that's kind of ironic. Sometimes when you set "disable-model-invocation: true," Claude interprets that as "I'm not allowed to use this skill at all" -- even when the user explicitly types the slash command.
 
-HOST: SKILL.md. So similar naming convention to CLAUDE.md.
+HOST: So it's being too obedient.
 
-EXPERT: Yep. And this file has YAML frontmatter at the top—metadata like the skill's name, description, what tools it's allowed to use—and then markdown instructions below.
+EXPERT: Too obedient! It reads "disable model invocation" and goes "well, I'm a model, so I guess I can't invoke this." Which is technically a correct reading but not the intended behavior.
 
-HOST: Okay, give me an example. What would you actually use a skill for?
+HOST: That's actually kind of funny. It's like telling your assistant "don't schedule meetings on your own initiative" and then they refuse to schedule one when you specifically ask them to.
 
-EXPERT: Let's say you have a specific deployment process. You need to run tests, build the app, push to your deployment target, verify it succeeded. You could write a skill called "deploy" that encodes all those steps. Then you just type `/deploy`, and Claude follows your instructions exactly.
+EXPERT: That's exactly what's happening. And there's another subtlety people miss. Skills aren't separate processes. They're injected instructions within your main conversation. So it's not like Claude spawns a little sub-program. It's more like someone hands Claude a recipe card in the middle of cooking.
 
-HOST: Oh! So it's like creating your own custom workflows.
+HOST: Oh, that changes how I think about them. So they're expanding the prompt dynamically.
 
-EXPERT: Exactly. Or here's another one—documentation fetching. Let's say you're working with a specific library, like Dexie.js, and you want Claude to have the most current documentation instead of relying on training data from months ago. You can create a skill that fetches the docs from the web first, then answers your question.
+EXPERT: Exactly. And that means there's a context budget. All your skill descriptions have to fit within two percent of the context window. If you create fifty skills with lengthy descriptions, some might get excluded.
 
-HOST: Wait, so the skill can fetch documentation on the fly?
+HOST: Two percent? That's it?
 
-EXPERT: Yeah. You use the `allowed-tools` field in the frontmatter to give the skill access to WebFetch. Then the skill instructions say "first fetch the docs from this URL, then answer the user's question based on those docs."
+EXPERT: That's it. You can check with the slash context command to see if any of your skills are getting dropped. And there's an environment variable to override it, but the default is pretty tight.
 
-HOST: That's... okay, that's actually really clever. Because you're working around the training cutoff problem.
+HOST: Okay, but here's the thing that really got me. There's this feature where skills can run shell commands to inject dynamic context before they even start. Tell me about that.
 
-EXPERT: Exactly! And skills can be auto-invoked or manual-only.
+EXPERT: Oh, the exclamation-mark backtick syntax. So in your SKILL.md, you can write something like "PR diff: exclamation-mark backtick gh pr diff backtick" and when the skill fires, it actually runs that command and injects the output into the context. So your skill gets live data from your environment.
 
-HOST: What's the difference?
+HOST: So you could have a PR summary skill that automatically fetches the diff and the comments and then summarizes them?
 
-EXPERT: So by default, Claude can decide to invoke a skill automatically if the task matches the skill's description. The description is key—that's how Claude knows when to use it. But if you set `disable-model-invocation: true` in the frontmatter, only you can trigger it manually with the slash command.
+EXPERT: That's literally the example in the docs. And it's powerful because the skill doesn't have stale information. It's pulling fresh data every time.
 
-HOST: So like, a deployment skill would probably be manual-only, because you don't want Claude randomly deciding to deploy your app.
+HOST: Alright, so we've covered the memory system and skills. Now let's talk about hooks, because this is where things get... I don't know, deterministic? Serious?
 
-EXPERT: Exactly! You want explicit control over that. But something like API conventions or code style guidelines—those could be auto-invoked whenever Claude's working on relevant code.
+EXPERT: This is where it gets serious. So here's the fundamental problem. CLAUDE.md is a suggestion. Skills are instructions. But none of that is guaranteed. Claude might forget. Claude might decide it knows better. Hooks? Hooks always run.
 
-HOST: This is making me think... where do skills live? Are they per-project or global?
+HOST: Always.
 
-EXPERT: Both! Same hierarchy as CLAUDE.md. You can put skills in `~/.claude/skills/` for all your projects, or `.claude/skills/` for just the current project. And there's even support for nested skills in subdirectories, which is great for monorepos.
+EXPERT: Always. Every single time the conditions match. No exceptions. Think of it this way -- CLAUDE.md is like a style guide on the wall. A hook is like a locked door.
 
-HOST: Okay, so you mentioned frontmatter. What else can you configure in there?
+HOST: Oh, that's a good way to put it. So what are hooks, mechanically?
 
-EXPERT: Oh man, there's a lot. You've got `name`, which becomes the slash command. `description`, which is how Claude decides when to use it. `argument-hint` for autocomplete. `allowed-tools` to restrict what the skill can do—super useful for safety.
+EXPERT: They're shell commands that fire at specific lifecycle points. Before a tool runs, after a tool runs, when a session starts, when Claude finishes responding. And they're configured in JSON settings files. You define the event, an optional matcher to filter when it fires, and then the command to run.
 
-HOST: What do you mean, for safety?
+HOST: Give me the most common use case.
 
-EXPERT: Well, imagine you have a skill that's just for reading and exploring code. You don't want it accidentally modifying files. So you set `allowed-tools: Read, Grep, Glob`. Now even if the skill's instructions somehow led to an edit, it physically can't execute that tool.
+EXPERT: Auto-formatting. So you set up a PostToolUse hook that matches on Edit or Write -- those are the tools Claude uses to modify files. Every time Claude writes or edits a file, boom, Prettier runs on it automatically. You don't have to ask Claude to format. You don't have to hope it remembers. It just happens.
 
-HOST: Oh, so it's like... permissions at the skill level.
+HOST: Every. Time.
 
-EXPERT: Exactly. And there's more—you can set `context: fork` to run the skill in an isolated subagent context.
+EXPERT: Every time. And the real power is in PreToolUse hooks, because those can block actions. You can write a script that checks if Claude is about to edit a protected file -- like your env file or package-lock -- and if it is, the hook returns exit code 2, which cancels the action entirely.
 
-HOST: Wait, what does that mean?
+HOST: Exit code 2 specifically?
 
-EXPERT: So normally, skills are injected into your main conversation. They see all the context you've been building up. But sometimes you want a clean slate—like, you're generating a pull request summary and you don't want the subagent to be biased by your conversation history. You set `context: fork`, and it runs in isolation.
+EXPERT: Yeah, and this is one of those details that trips people up. Exit 0 means proceed. Exit 2 means block. And when you block, only stderr matters. If you try to send a fancy reason through stdout, it gets ignored. You have to write to stderr.
 
-HOST: Huh. So it's like spawning a separate Claude instance just for that task.
+HOST: Oh no. That's the kind of thing you debug for an hour before you realize--
 
-EXPERT: Basically, yeah. And you can even specify which model or which agent type to use. Like, if it's a simple task, you might use the Haiku model to save on cost and latency.
+EXPERT: Before you realize you were writing to the wrong output stream. Yep. Been there.
 
-HOST: This is getting pretty sophisticated.
+HOST: And the matchers are case-sensitive, right?
 
-EXPERT: It is. And we haven't even talked about hooks yet.
+EXPERT: Case-sensitive! Capital B Bash, capital E Edit, capital W Write. Not lowercase. And this gets people because most of the tools in the ecosystem are lowercase by convention, but Claude Code's internal tool names are capitalized.
 
-HOST: Okay, you have to tell me about hooks because that sounds ominous.
+HOST: Okay, so there's one more thing about hooks that I think is genuinely scary in a fun way. The Stop hook.
 
-EXPERT: Hooks are... okay, so you know how CLAUDE.md files are like guidelines that Claude should follow, but there's no guarantee it always will?
+EXPERT: Oh, the infinite loop problem.
 
-HOST: Yeah, because it's an LLM. It's probabilistic, not deterministic.
+HOST: Tell me about the infinite loop problem.
 
-EXPERT: Exactly. Hooks are the deterministic counterpart. They're shell commands that run at specific points in Claude Code's lifecycle, and they execute every single time, no exceptions.
+EXPERT: So the Stop event fires when Claude finishes responding. And you can use it to, say, run tests and make Claude keep working if tests fail. Great idea, right? Except if your hook triggers continuation, Claude does more work, finishes again, fires the Stop hook again, which triggers continuation again, and--
 
-HOST: Oh. So they're like... enforced rules instead of suggestions.
+HOST: It just goes forever.
 
-EXPERT: Exactly! Think of CLAUDE.md as a style guide, and hooks as the linter that enforces it. You can't rely on Claude to always remember to format your code, but you can write a PostToolUse hook that runs Prettier after every file edit.
+EXPERT: Forever. You have to explicitly check for a field called "stop_hook_active" in the input JSON and bail out early if it's true. Otherwise you've created an infinite loop of Claude trying to satisfy a condition it can't.
 
-HOST: Wait, after every edit?
+HOST: That's like... setting an alarm that snoozes itself.
 
-EXPERT: Yep. Every time Claude successfully uses the Edit or Write tool, the hook fires. So you extract the file path from the hook input, pipe it to Prettier, and boom—your code is always formatted, no matter what.
+EXPERT: Ha! That's exactly what it is. An alarm that snoozes itself forever.
 
-HOST: That's... okay, that's kind of brilliant. What else can you do with hooks?
+HOST: Okay, there's another gotcha with hooks that I think is sneaky and I want to talk about it. The shell profile thing.
 
-EXPERT: Oh man, so much. You can block dangerous commands before they execute—like, prevent Claude from ever touching your .env file or your package-lock.json.
+EXPERT: Oh, this one is evil. So hooks run shell commands, right? And on macOS, your shell startup file -- your zshrc or whatever -- might print things. Like a welcome message, or conda activation output, or some cute ASCII art you put there three years ago and forgot about.
 
-HOST: How does that work?
+HOST: Oh no, I see where this is going.
 
-EXPERT: You write a PreToolUse hook with a matcher for Edit and Write. The hook receives JSON on stdin with the tool name and the file path Claude wants to modify. You check if the path matches any protected patterns, and if it does, you exit with code 2. That blocks the action entirely.
+EXPERT: That output gets prepended to your hook's stdout. So if your hook is returning carefully formatted JSON and your shell profile prints "Good morning, developer!" first, the JSON is corrupted. And Claude Code tries to parse it and just... chokes.
 
-HOST: And Claude gets a message saying "hey, you can't do that"?
+HOST: And you'd never think to check your shell profile as the source of the bug.
 
-EXPERT: Exactly. Whatever you write to stderr becomes Claude's feedback. So you might say "Blocked: .env files are protected." And Claude understands and tries a different approach.
+EXPERT: Never! You'd be staring at your hook script for hours. The fix is to wrap your zshrc's noisy stuff in an interactive shell check. Only print that stuff when you're actually sitting at a terminal, not when a script is running.
 
-HOST: Okay, that's actually really powerful. What are the other hook types? You said PreToolUse—
+HOST: So let me try to pull this all together, because I think there's a really interesting design philosophy here. You've got three layers. CLAUDE.md is the culture -- it's how you want things done. Skills are the playbook -- specific repeatable workflows. And hooks are the rules -- the things that must happen, no exceptions.
 
-EXPERT: Yeah, so there's PreToolUse and PostToolUse for tool execution, SessionStart for when a session begins or resumes, Stop for when Claude finishes responding, Notification for when it needs your attention... there's a whole lifecycle of events.
+EXPERT: And they layer on each other beautifully. Your CLAUDE.md says "we use Prettier for formatting." Your skill might include a code review checklist that mentions formatting. But your hook is the one that actually runs Prettier after every single edit. So even if Claude somehow forgets the instruction and the skill doesn't trigger, the hook catches it.
 
-HOST: And these are all configured in JSON?
+HOST: Defense in depth. For AI coding.
 
-EXPERT: Yep, in `.claude/settings.json` or `~/.claude/settings.json`. You define the event, a matcher pattern—like "Edit|Write"—and then the hook command.
+EXPERT: Defense in depth! That's exactly what it is. And I think that's the thing people miss when they first look at Claude Code. They see the chat interface and think "oh, it's another chatbot." But underneath, there's this whole system of persistent memory, composable skills, and deterministic hooks that makes it feel less like a conversation and more like... an operating system for AI-assisted development.
 
-HOST: So the matcher is like... filtering which tools trigger the hook?
+HOST: Okay, that's a bold claim. But I think you might be right. Because the thing that strikes me is how much of this is about trust. Like, the permission system asks you before it changes files. Plan Mode lets you preview without risk. Hooks enforce your boundaries. It's all about building enough trust that you can gradually hand over more control.
 
-EXPERT: Exactly. Without a matcher, the hook fires on every occurrence of that event. With a matcher, it only fires when the tool name matches the regex.
+EXPERT: And that's the journey, right? You start by approving every single file change. Then you move to auto-accept for a session because you trust the patterns. Then you set up hooks so the guardrails are automated. And eventually you're running it in headless mode in your CI pipeline with skip-permissions because you've got enough hooks and checks in place that you trust the system.
 
-HOST: Got it. And you said there are different types of hooks, not just command hooks?
+HOST: It's like... training a self-driving car. You start with your hands on the wheel.
 
-EXPERT: Yeah! Command hooks run shell scripts, but there are also prompt hooks and agent hooks.
+EXPERT: And eventually you're reading a book while it drives. But only because the safety systems earned your trust incrementally.
 
-HOST: What's a prompt hook?
+HOST: So here's what I keep thinking about. All of this -- the memory, the skills, the hooks -- it's really about encoding your team's engineering culture into a format an AI can follow. And that's... I mean, that's kind of a new discipline, isn't it? Prompt engineering for your entire development workflow.
 
-EXPERT: It's a single Claude API call for judgment-based decisions. Like, instead of writing shell logic to evaluate something complex, you just ask Claude. The hook sends a prompt to the API, gets a response, and uses that to decide whether to allow or block something.
+EXPERT: It is. And I think the teams that figure it out first are going to have a genuinely unfair advantage. Because it's not just about one developer being faster. It's about your entire team's AI assistants all following the same standards, catching the same mistakes, running the same checks. It's institutional knowledge that doesn't walk out the door when someone leaves.
 
-HOST: Huh. So you're using Claude to moderate Claude.
+HOST: Institutional knowledge that doesn't walk out the door. I think that might be the most interesting thing either of us has said in this entire conversation.
 
-EXPERT: Exactly! And agent hooks go even further—they spawn a whole subagent with tool access. So you could have a Stop hook that runs your entire test suite before allowing Claude to stop working.
+EXPERT: And it starts with a markdown file. That's the wild part. All of this power, and it starts with writing a good CLAUDE.md.
 
-HOST: Wait, that's... so if my tests fail, Claude can't stop?
+HOST: Which, let's be honest, most people are going to skip because who reads documentation, right?
 
-EXPERT: Well, you have to be careful with that because you can create infinite loops. But yeah, the idea is you can enforce quality gates. Like, "don't mark this task complete until the tests pass."
-
-HOST: Okay, I'm seeing the power here, but this also feels like it could get complicated fast. How do you know when to use hooks versus skills versus CLAUDE.md?
-
-EXPERT: Great question. So CLAUDE.md is for guidance—"here's how we do things on this project." Skills are for repeatable workflows you want to invoke—either manually or automatically when relevant. And hooks are for things that must always happen, no exceptions.
-
-HOST: So like... CLAUDE.md says "we prefer functional components in React," a skill might help you generate a component following that pattern, and a hook would auto-format the file after Claude writes it.
-
-EXPERT: Perfect example! And here's the thing—they all work together. Your CLAUDE.md sets the standards, your skills encode common tasks, and your hooks enforce the invariants you can't compromise on.
-
-HOST: This is making me think about team workflows. Like, if I'm working on a team, how much of this gets shared?
-
-EXPERT: So CLAUDE.md files at the project level get checked into git, so your whole team shares them. Same with project-level skills. But hooks and auto memory are local to your machine.
-
-HOST: Why isn't auto memory shared?
-
-EXPERT: Privacy and personalization. Auto memory includes things Claude learned from your specific sessions—maybe debugging approaches that worked for your local environment, or commands you frequently run. That's not necessarily relevant to your teammates.
-
-HOST: That makes sense. And if you want to share something you learned, you'd just add it to CLAUDE.md.
-
-EXPERT: Exactly. Auto memory is the scratchpad, CLAUDE.md is the published documentation.
-
-HOST: Okay, I want to go back to something you mentioned earlier—git integration. How does Claude actually work with git?
-
-EXPERT: So it understands git workflows natively. You can ask it to commit changes, create pull requests, even work with git worktrees.
-
-HOST: Wait, worktrees?
-
-EXPERT: Yeah, this is a cool feature. You can do `claude --worktree feature-auth`, and it creates a new git worktree with that branch and starts a Claude session in it. So you can work on multiple features in parallel without switching branches.
-
-HOST: Oh! So each worktree gets its own Claude session?
-
-EXPERT: Exactly. And they get separate auto memory, too, which makes sense because different branches might be in different states.
-
-HOST: Huh. I've never really used git worktrees, but that actually sounds useful.
-
-EXPERT: It's super handy for context-switching. And when you're ready to commit, you can either ask Claude explicitly or use the `/commit-push-pr` command that does the whole workflow—commit, push, create PR—in one go.
-
-HOST: And Claude writes the commit message?
-
-EXPERT: Yeah, it analyzes the diff and writes a descriptive message. And here's something cool—it looks at your recent commit history to match the style of your project.
-
-HOST: Oh, so if your team uses conventional commits or whatever, it picks up on that?
-
-EXPERT: Exactly. It's context-aware. And every commit gets a co-authored-by tag that says "Claude Sonnet 4.5" so it's transparent that AI was involved.
-
-HOST: I like that. It's honest about the collaboration.
-
-EXPERT: Yeah. And speaking of collaboration, there's this whole thing about installation and deployment that I think is worth mentioning because it's different from most tools.
-
-HOST: What do you mean?
-
-EXPERT: So the recommended installation method uses a native installer—curl for Mac and Linux, PowerShell for Windows. And this is important because native installations auto-update in the background.
-
-HOST: Okay, but you can also install via Homebrew, right?
-
-EXPERT: You can, but Homebrew and WinGet don't auto-update. You have to manually run the upgrade command. And sometimes Claude notifies you about updates before they're even available in the package manager, which is confusing.
-
-HOST: So the recommendation is to use the native installer?
-
-EXPERT: Yeah. Just curl the install script and run it. It's one line. And then you never have to think about updates again.
-
-HOST: What about access? Do you need a paid account?
-
-EXPERT: Yeah, you need Claude Pro, Max, Teams, Enterprise, or a Console account with credits. The free Claude.ai tier explicitly doesn't include Claude Code access.
-
-HOST: Gotcha. So there's a cost barrier to entry.
-
-EXPERT: Yeah, but if you're using it professionally, it's worth it. The time savings are real. And for enterprise users, there's also support for authenticating through Bedrock, Vertex, or Foundry if you're on those platforms.
-
-HOST: Okay, we've covered a lot of ground here. Let me see if I can synthesize this. Claude Code is a terminal-based coding assistant that contextually understands your codebase. It has a permission system for safety, Plan Mode for exploration, persistent sessions with memory, and extensibility through skills and hooks. It integrates with git, supports automation, and works anywhere you have a command line.
-
-EXPERT: That's a great summary. And I think the key thing people miss is that it's not trying to replace your IDE or your brain. It's trying to be a teammate that handles the tedious stuff so you can focus on the interesting problems.
-
-HOST: Right, like... it's not magic. It's automation and context.
-
-EXPERT: Exactly. And the context part is huge. The fact that it can read your entire project structure, remember your preferences across sessions, and apply learned patterns—that's what makes it feel less like a tool and more like a collaborator.
-
-HOST: Yeah. Although I will say, the learning curve seems real. Like, there's a lot to configure if you want to get the most out of it.
-
-EXPERT: For sure. But here's the thing—you can start simple. Install it, run `claude` in your project, ask it questions. You don't need to write CLAUDE.md files or create skills or set up hooks on day one.
-
-HOST: Just start with the interactive mode.
-
-EXPERT: Exactly. And as you use it more, you'll naturally hit friction points. Like, "oh, I keep having to tell Claude to use pnpm instead of npm." Okay, add that to CLAUDE.md. Or "I wish it would run Prettier automatically." Cool, write a PostToolUse hook.
-
-HOST: So it's progressive enhancement.
-
-EXPERT: Yeah, great way to put it. The baseline experience is already useful, and then you layer on customization as you discover what you need.
-
-HOST: What about debugging Claude itself? Like, what if something's not working the way you expect?
-
-EXPERT: There's a `claude doctor` command that diagnoses configuration issues. And you can toggle verbose mode with Ctrl+O to see Claude's internal thinking process.
-
-HOST: Oh, so you can see what it's actually considering before it responds?
-
-EXPERT: Yep. Sometimes that's helpful for understanding why it made a certain choice, or if it's getting stuck on something.
-
-HOST: And there's a `/help` command, I assume?
-
-EXPERT: Yeah, `/help` lists all the slash commands. And typing `?` shows you keyboard shortcuts. There's actually a bunch of shortcuts that aren't super obvious—like double-tapping Escape to see previous messages, or Tab for command completion.
-
-HOST: The Shift+Tab cycling through permission modes—that's the one that would trip me up. Normal, Auto-Accept, Plan Mode.
-
-EXPERT: Yeah, you have to press it twice to get to Plan Mode, which is a little unintuitive at first. But once you internalize it, it becomes muscle memory.
-
-HOST: Are there gotchas people should know about? Like, things that don't work the way you'd expect?
-
-EXPERT: Oh yeah, definitely. One big one is that Ctrl+C exits Claude entirely, not just cancels the current operation. You have to use Escape to stop Claude mid-action.
-
-HOST: Wait, really? That's... that's going to mess me up because every terminal tool uses Ctrl+C for cancellation.
-
-EXPERT: I know, it's counterintuitive. But they made that choice deliberately. Escape stops Claude, Ctrl+C exits the session.
-
-HOST: Okay, what else?
-
-EXPERT: Uhh, let's see... Windows users need Git for Windows even if they have WSL. Claude Code uses Git Bash internally. And WSL 1 doesn't support sandboxing, so you need WSL 2 if you want the enhanced security features.
-
-HOST: Sandboxing?
-
-EXPERT: Yeah, Claude Code can run commands in a sandboxed environment to prevent accidental damage. But that requires WSL 2 on Windows.
-
-HOST: Got it. What about the 200-line limit on auto memory—does that actually become a problem?
-
-EXPERT: It can if you're not curating it. The idea is that only the first 200 lines of the memory index file load at session start, so if important stuff gets pushed past line 200, Claude won't see it.
-
-HOST: So you have to occasionally go in and clean it up?
-
-EXPERT: Yeah, or restructure it. You can use the `/memory` command to browse and edit memory files directly from Claude.
-
-HOST: Okay. And you mentioned path-scoped rules earlier—how does that actually work?
-
-EXPERT: So you create rule files in `.claude/rules/` with YAML frontmatter at the top. You specify a `paths` field with glob patterns like "src/api/**/*.ts", and those rules only apply when Claude's working with files that match those patterns.
-
-HOST: Oh, so like... different rules for frontend versus backend code?
-
-EXPERT: Exactly. Your React components might have different conventions than your API endpoints, and you can encode that without cluttering up your main CLAUDE.md.
-
-HOST: That's smart. Keeps things modular.
-
-EXPERT: Yeah. And you can even import files into CLAUDE.md using @ syntax—like "@docs/git-workflow.md"—so you can keep your main instructions file short and reference detailed docs elsewhere.
-
-HOST: How deep can you nest imports?
-
-EXPERT: Five hops. So you can't go crazy with it, but it's enough for most use cases.
-
-HOST: Okay, last question. We've talked about a lot of features, but if you had to pick the one thing that makes Claude Code different from other AI coding tools, what would it be?
-
-EXPERT: Hmm. That's tough because it's really the combination of things. But if I had to pick one... I think it's the fact that it's built for workflows, not just code generation. The session persistence, the memory system, the git integration, the hooks—it's all designed around the idea that you're working on a project over time, not just asking one-off questions.
-
-HOST: So it's long-term context, not just short-term assistance.
-
-EXPERT: Exactly. Most AI coding tools are like "ask me a question, get an answer, done." Claude Code is more like "let's work on this project together over the next few weeks, and I'll remember what we learn along the way."
-
-HOST: That's a good distinction. It's less transactional.
-
-EXPERT: Yeah. And that's why the memory system matters so much, and why skills and hooks are important—because you're building up knowledge and automation that compounds over time.
-
-HOST: Okay, I'm sold. Where do people go to get started?
-
-EXPERT: code.claude.com. There's a quickstart guide, installation instructions, all the docs. And if you have a Claude Pro or higher subscription, you can just curl the install script and start immediately.
-
-HOST: And there's a GitHub repo?
-
-EXPERT: Yep, github.com/anthropics/claude-code. That's where you can file issues, see the changelog, all the usual open-source stuff.
-
-HOST: Cool. Alright, I think we covered everything. CLAUDE.md files, auto memory, skills, hooks, git workflows, Plan Mode, session management... this is a lot more than I expected when you first said "terminal-based coding assistant."
-
-EXPERT: Yeah, there's a surprising amount of depth here. And honestly, we didn't even get into MCP servers or some of the more advanced customization stuff.
-
-HOST: MCP servers?
-
-EXPERT: Model Context Protocol. It's a way to extend Claude with external integrations—like connecting to databases or APIs. But that's probably a whole other conversation.
-
-HOST: Yeah, let's save that for another episode. I think my brain is full.
-
-EXPERT: Fair enough. But seriously, if people are doing any kind of regular coding work, especially in the terminal, Claude Code is worth checking out. The learning curve pays off.
-
-HOST: Agreed. And the fact that it works over SSH alone makes it interesting. I can think of so many scenarios where that's useful.
-
-EXPERT: Right? Like, you're deploying something to a server and hit an error—just SSH in, run `claude`, paste the error, and ask what's wrong. No need to context-switch back to your laptop.
-
-HOST: That's actually what I did yesterday. The API issue I mentioned.
-
-EXPERT: And it worked?
-
-HOST: It did. I mean, I still had to understand the fix and apply judgment, but it got me to the solution way faster than I would have on my own.
-
-EXPERT: That's the sweet spot. It's not replacing your expertise; it's amplifying it.
-
-HOST: Exactly. Alright, I think that's a good place to leave it. Thanks for the deep dive.
-
-EXPERT: Anytime. This was fun.
+EXPERT: And we're right back where we started.

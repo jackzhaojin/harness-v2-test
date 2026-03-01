@@ -1,343 +1,219 @@
-HOST: Okay, so imagine you're building an AI assistant, right? And you want it to think through problems step-by-step, show its work, so users can see the reasoning. Sounds great, super transparent.
+HOST: So, okay, picture this. You build an AI agent, right? It can book your flights, it can send emails on your behalf, it can even approve purchase orders. And then one day it just... deletes a production database. Not because it's malicious. Because you asked it to "clean things up."
 
-EXPERT: Yeah, exactly. That's the whole appeal of extended thinking—you get to peek inside the black box.
+EXPERT: And the terrifying part is, that's not even a hypothetical. That's the kind of thing people are actively building guardrails against right now.
 
-HOST: Right, right. But then... what happens when the AI's internal monologue starts thinking through, I don't know, how to build a weapon? Or something equally bad?
+HOST: Which brings us to what I think is one of the most fascinating tensions in AI right now — this push and pull between letting AI systems actually do stuff autonomously and making sure they don't, you know, burn the house down in the process.
 
-EXPERT: Oh, that's—yeah, okay, so this is where it gets interesting. You've just described the exact problem that thinking redaction solves.
+EXPERT: Right, and it's not as simple as just saying "always ask permission." Because if your AI agent has to ask you to confirm every single action, you've basically built a really expensive clipboard.
 
-HOST: Wait, thinking redaction? That sounds very... spy novel.
+HOST: Ha! A clipboard with a subscription fee.
 
-EXPERT: It kind of is! So here's the thing. When Claude uses this extended thinking feature—which is only in Claude 3.7 Sonnet, by the way—it generates these internal reasoning blocks before giving you the final answer. And most of the time, you can see all of it. But sometimes, the safety systems flag parts of that thinking as potentially harmful.
+EXPERT: Exactly. So the real question becomes — how do you calibrate it? How do you decide which actions get the green light automatically and which ones need a human to say "yes, go ahead"?
 
-HOST: So what happens to it?
+HOST: Okay, so let's get into that. Because I know there's actually a formal name for when this goes wrong. OWASP — the security folks — they have a whole category for it now, right?
 
-EXPERT: It gets encrypted. Automatically. The system detects it, encrypts it, and sends it back as what's called a redacted thinking block instead of a normal thinking block.
+EXPERT: Yeah, so this is really interesting. OWASP — they're the ones who put out those big security vulnerability lists — they elevated something called "Excessive Agency" to their top ten list for large language model applications. It's LLM06, if you want the exact designation.
 
-HOST: Okay but hold on—if it's encrypted, how does the AI still use that reasoning? Like, doesn't it need to remember what it was thinking?
+HOST: Excessive Agency. That sounds like a bad spy movie.
 
-EXPERT: Yes! This is the clever part. So the encrypted block—it's just this opaque blob of data to you and me, right? We can't decrypt it. But when you send it back to the API in the next request, Anthropic's servers decrypt it on their end. So Claude maintains continuity, remembers the full reasoning chain, but the user never sees the dangerous parts.
+EXPERT: It kind of does, but the concept is dead serious. They break it down into three flavors. You've got excessive functionality — that's when the agent can do way more than it actually needs to for its job. Then excessive permissions — the agent's running with like admin-level credentials when it only needs read access. And then excessive autonomy — the agent just... goes and does high-impact stuff without checking with anyone.
 
-HOST: Huh. That's... actually kind of elegant? It's like the AI can still think the thought, it just can't say it out loud.
+HOST: So it's like giving your intern the keys to the CEO's office, the company credit card, and then telling them to "just handle things" while you go on vacation.
 
-EXPERT: Exactly. And this is crucial for multi-turn conversations, especially when you're using tool use. Because if Claude is reasoning through something that requires multiple steps—like, it thinks, then calls a tool, then thinks some more—you have to pass those thinking blocks back. Otherwise the whole context falls apart.
+EXPERT: That is... actually a perfect analogy. And the scary part is, a lot of deployed systems look exactly like that right now. There was a study — the 2025 AI Agent Index — that surveyed thirty deployed AI agent systems. Four out of thirty had no documented way to shut them down.
 
-HOST: Right, right, right. So you're basically saying the AI needs its own notes, even the redacted ones.
+HOST: Wait, wait, wait. Thirteen percent of deployed AI agents have no documented off switch?
 
-EXPERT: Yeah, exactly. And here's where developers sometimes run into trouble. You have to pass those blocks back exactly as you received them. No modifications. Because they're cryptographically signed.
+EXPERT: No documented off switch. And it gets worse. Twenty-five out of thirty disclosed no internal safety test results. Twenty-three out of thirty had no third-party testing.
 
-HOST: Wait, signed? Like a certificate?
+HOST: That's... actually kind of terrifying. We're just out here deploying autonomous systems and hoping for the best?
 
-EXPERT: Yeah. Each thinking block comes with this signature field—it's this big cryptographic token. And the API won't accept the block back unless the signature matches. So you can't edit it, you can't summarize it, you can't do anything. It has to be bit-for-bit identical.
+EXPERT: In a lot of cases, yeah. And that's why this whole idea of calibrated oversight has become so important. It's not just "add a confirmation dialog." It's about building a whole framework for deciding what gets confirmed, what gets auto-approved, and what gets blocked entirely.
 
-HOST: Okay, so let me make sure I'm following. The AI thinks. Sometimes those thoughts get flagged and encrypted. You can't read the encrypted parts, but you have to send them back anyway so the AI stays on track. And if you mess with them, the whole thing breaks.
+HOST: Okay, so walk me through that framework. How does this actually work in practice?
 
-EXPERT: Yep. That's it.
+EXPERT: So the way most people think about it is in risk tiers. At the top, you've got your critical actions — things like production system changes, financial transactions, deleting customer data, modifying permissions. Those always need a human in the loop.
 
-HOST: That feels like a lot of trust. Like, how do I know what's in there?
+HOST: Always. No exceptions.
 
-EXPERT: You don't. And that's by design. The whole point is that some reasoning is too dangerous to expose, but still functionally necessary for the model to do its job well.
+EXPERT: No exceptions. Then you've got a high-risk tier — accessing knowledge bases, config changes to non-production systems, bulk operations, anything that's outside of established precedent. Those should probably get confirmation, but there might be cases where you relax it.
 
-HOST: Hmm. I mean, I get it, but it's a little unsettling, right? Like, there's this part of the AI's brain I just can't see.
+HOST: And then at the bottom?
 
-EXPERT: Oh, totally. And Anthropic is actually pretty upfront about this. They even acknowledge that the visible thinking might not perfectly represent what's actually happening internally. Like, the model might make decisions based on factors that don't show up in the thinking output.
+EXPERT: Lower-risk stuff. Read-only queries, routine tasks with predictable outcomes, things that have been pre-authorized by policy. Those are your auto-approval candidates.
 
-HOST: Wait, really? So even the stuff I can see might not be the whole story?
+HOST: So it's almost like... you know when you go through airport security, and there's TSA PreCheck versus the regular line versus the extra screening? You're sorting actions into lanes based on how much scrutiny they need.
 
-EXPERT: Correct. They call it the "faithfulness" problem. The thinking you see is generally accurate, but it's not a perfect transcript of the model's internal state.
+EXPERT: That's exactly it. And just like at the airport, the goal isn't to make everyone go through extra screening. That would grind everything to a halt. The goal is to apply the right level of oversight to the right situations.
 
-HOST: That's... okay, that's kind of wild. So we're getting transparency, but with an asterisk.
+HOST: Okay, so here's what I want to understand. Mechanically, how does the agent actually pause and wait for a human? Like, what does that look like under the hood?
 
-EXPERT: Yeah. But here's the thing—this trade-off makes sense when you think about the alternative. Would you rather have full transparency and risk exposing dangerous reasoning? Or accept some opacity in exchange for safety?
+EXPERT: So this is where it gets really cool from an engineering perspective. Most modern frameworks use what's called an interrupt-based pattern. The agent is executing along, it hits a sensitive action, and it literally pauses its execution graph. It sends a message to a human saying "hey, I want to do this thing, here's the context, approve or reject?"
 
-HOST: I mean, when you put it that way... yeah, okay. Safety wins. But it does make me wonder—what kind of stuff actually triggers this? Like, what counts as too dangerous to show?
+HOST: And the human can just approve it, or...
 
-EXPERT: So the documentation mentions things like child safety, cyber attacks, dangerous weapons. Basically, topics where even the reasoning process could be harmful if someone read it and thought, "Oh, I could use this."
+EXPERT: Three options, actually. You can approve it as-is, you can edit the parameters — like, "yes send that email but change the subject line" — or you can reject it entirely and give feedback about why.
 
-HOST: Right. So it's not just about the final answer being bad—it's about the thinking itself being a how-to guide.
+HOST: Oh, that edit option is interesting. So you're not just rubber-stamping, you can actually adjust what the agent is about to do.
 
-EXPERT: Exactly. And here's a fun detail—there's actually a magic string you can use to test this in your own application.
+EXPERT: Yeah, but — and this is a gotcha — if you make significant modifications, the agent might re-evaluate its whole approach. The model sees the edited parameters and goes "oh wait, this is different from what I planned" and might end up executing the tool multiple times.
 
-HOST: A magic string? What, like a cheat code?
+HOST: Huh. So the edit option is powerful but you've got to be careful with it.
 
-EXPERT: Kind of, yeah! It's this long cryptographic-looking string that, if you send it as a prompt, it'll trigger a redacted thinking block. So you can test whether your code handles it correctly without actually asking about dangerous stuff.
+EXPERT: Exactly. It's like... you know when you're giving directions to someone driving, and you say "actually turn left instead of right here"? Sometimes that's fine, they just adjust. But sometimes that one change cascades and now the whole route is different.
 
-HOST: That's brilliant. Because otherwise you'd have to, like, ask the AI how to commit a crime just to see if your error handling works.
+HOST: Okay, and what about the state? Because if the agent pauses and waits for a human — and maybe that human is in a meeting or asleep or whatever — you need to save where the agent was, right?
 
-EXPERT: Right. Which would be both unethical and also probably get you flagged by the safety systems in a different way.
+EXPERT: Right, and this is a real engineering challenge. Some approval workflows might take hours. Days, even. You need to serialize the agent's entire state — everything it was doing, all its context — save it to a database, and then be able to reconstruct it later when the human finally responds.
 
-HOST: Okay, so we've got thinking redaction. The AI can think dangerous thoughts, but we encrypt them. Cool. But that's only half the safety story, right? Because we also have to worry about what the AI actually does.
+HOST: And I'm guessing there are gotchas there too.
 
-EXPERT: Oh, yeah. This is where we get into autonomy versus safety. And this is—okay, this is one of the hardest problems in AI deployment right now.
+EXPERT: Oh yeah. One that bites people: sensitive data like API keys gets excluded from serialized state by default. Which is actually a security feature — you don't want credentials sitting in a database — but if your code expects full state restoration, it'll break.
 
-HOST: How so?
+HOST: So many landmines.
 
-EXPERT: Alright, so think about it. The whole point of an AI agent is that it can do stuff autonomously. Book a meeting, send an email, approve a refund, whatever. But if you require human approval for every single action, you've basically just built a very expensive suggestion box.
+EXPERT: So many landmines. And here's another one that I think is genuinely alarming. There's this attack called "Lies in the Loop" — LITL.
 
-HOST: Ha! Yeah, that's fair.
+HOST: Lies in the Loop? Okay, I need to hear about this.
 
-EXPERT: But if you don't require any approval, you've got an AI that could, I don't know, accidentally delete your production database. Or send a confidential email to the wrong person. Or approve a million-dollar transaction.
+EXPERT: So the whole premise of human-in-the-loop is that a human reviews the action and makes an informed decision, right? The LITL attack says — what if the attacker doesn't try to bypass the human approval step? What if instead, they manipulate what the human sees?
 
-HOST: Okay, yeah, I see the problem. You need autonomy to make it useful, but autonomy is also terrifying.
+HOST: Oh no.
 
-EXPERT: Exactly. And this is so important that OWASP—the organization that tracks security vulnerabilities—made "Excessive Agency" one of their top 10 risks for AI applications.
+EXPERT: Yeah. So the confirmation dialog says "Send routine status update to team" but the actual action is "Send all customer data to external server." The human sees something innocent, clicks approve, and they've just authorized something catastrophic.
 
-HOST: Wait, OWASP? Like the web security people?
+HOST: That's... okay, that fundamentally changes how you think about these confirmation dialogs. It's not enough to just show a dialog. You need to verify that what the dialog shows is actually what's going to happen.
 
-EXPERT: Yeah, same folks who do the OWASP Top 10 for web apps. They have a separate list for LLM applications now, and Excessive Agency is number six.
+EXPERT: Exactly. The human is only as good as the information they're given. If the context is compromised, the human becomes a rubber stamp for malicious actions.
 
-HOST: So what counts as excessive agency?
+HOST: So the "human in the loop" isn't a silver bullet.
 
-EXPERT: Three things, basically. Excessive functionality—the AI has tools it doesn't actually need. Excessive permissions—it's running with way more access than necessary. And excessive autonomy—it's making high-impact decisions without any verification.
+EXPERT: Not even close. It's a necessary layer, but it has to be combined with other things — complete mediation, least privilege, audit trails. The human review is one checkpoint, not the only checkpoint.
 
-HOST: Okay, so it's like... the AI equivalent of giving someone root access when they only need to read a log file.
+HOST: I want to shift gears a little bit, because there's another whole dimension of this safety story that I find fascinating. And it's about what happens inside the model's own thinking process.
 
-EXPERT: Yes! It's the principle of least privilege, but applied to AI agents. And the scary part is how easy it is to mess this up. Like, you spin up an AI agent, you give it access to your calendar, your email, your CRM, and suddenly it's operating with the combined permissions of like five different systems.
+EXPERT: Oh, you're talking about thinking redaction.
 
-HOST: Oh god. Yeah, I can see how that gets out of hand fast.
+HOST: Yes! Okay, so for people who might not know — newer Claude models have this extended thinking feature where the model basically thinks out loud before giving you an answer. It shows you its reasoning process step by step.
 
-EXPERT: And here's the other thing—a lot of enterprise agents run under service accounts rather than individual user credentials. So now you've got an AI operating with shared, high-privilege access, and the audit trail doesn't even show who actually initiated the action.
+EXPERT: Right, and it's incredibly useful. You can see the model working through a problem, catch where it might be going wrong, understand why it reached a particular conclusion. It's a huge transparency win.
 
-HOST: That's bad.
+HOST: But here's where it gets interesting. Sometimes the model's internal reasoning touches on sensitive topics — things related to, you know, dangerous content categories. And Anthropic's safety systems catch that.
 
-EXPERT: That's really bad. Because if something goes wrong, you can't even trace it back.
+EXPERT: And when that happens, those portions of the thinking get encrypted. You get what's called a "redacted thinking" block instead of the normal thinking block. The model's actual reasoning is replaced with this opaque encrypted blob.
 
-HOST: So what's the fix? Like, how do you make this safe without losing all the benefits?
+HOST: So the model still does the reasoning — it still thinks through the problem fully — but you can't see that part of its work.
 
-EXPERT: The answer is risk-based calibration. You don't treat every action the same. Some things get automatic approval, some things require human confirmation, and you decide based on the risk.
+EXPERT: Exactly. And this is a really clever balance, right? Because the alternative would be to either show the potentially harmful reasoning — which is bad — or to prevent the model from reasoning about those topics at all, which would make it less capable.
 
-HOST: Okay, give me examples.
+HOST: Which would be like telling a doctor they can't think about diseases.
 
-EXPERT: Sure. So, reading a document? Probably fine, auto-approve. Sending a routine internal email? Maybe auto-approve, depending on your setup. But deleting customer data? Definitely needs confirmation. Approving a refund over a certain amount? Confirmation. Changing production system access? Hard confirmation.
+EXPERT: Right! The model needs to be able to reason about sensitive topics to give you a complete, accurate answer. The redaction just prevents the intermediate reasoning from being exposed.
 
-HOST: That makes sense. But how do you actually build this? Like, technically?
+HOST: Okay, but here's what I don't fully get. If parts of the thinking are encrypted, how does the model maintain continuity? Like, in a multi-turn conversation where it's using tools, how does it remember what it was thinking about?
 
-EXPERT: So most modern frameworks have this built in now. LangGraph, OpenAI's Agents SDK, Amazon Bedrock Agents—they all have what's called "human-in-the-loop" patterns.
+EXPERT: So this is actually really elegant. The encrypted blocks — the redacted thinking blocks — you pass them back to the API in your next request, completely unmodified. On Anthropic's servers, they get decrypted, and the model can access its full reasoning history. But on the client side, you never see what's inside.
 
-HOST: Human-in-the-loop. Okay.
+HOST: That's... huh. So it's like passing a sealed envelope back and forth. You're carrying it, but you can't open it.
 
-EXPERT: Yeah. The idea is that the agent's execution can pause at certain points, wait for human input, and then resume. So you can mark specific tools or actions as requiring approval, and when the agent tries to use them, it stops and asks.
+EXPERT: Great analogy. And there's a really important rule here — you cannot modify these blocks at all. Every thinking block has a cryptographic signature attached to it, and if you change even one character, the signature check fails and the API rejects it.
 
-HOST: So it's like a checkpoint system.
+HOST: So you can't tamper with the model's thoughts.
 
-EXPERT: Exactly. And in something like the OpenAI Agents SDK, you can even make it conditional. Like, send an email normally doesn't need approval, but send an email if the subject line contains "CONFIDENTIAL"—that needs approval.
+EXPERT: Can't tamper with them, can't peek inside them. And that signature is actually cross-platform compatible — it works across the Claude API, Amazon Bedrock, and Google's Vertex AI.
 
-HOST: Oh, that's smart. So you're not just saying yes or no to entire categories, you're looking at the actual context.
+HOST: Oh, that's interesting. So it's not just a Claude thing, it's baked into the protocol level.
 
-EXPERT: Right. And when the agent pauses, the human can do one of three things: approve it, edit it, or reject it.
+EXPERT: Yeah. And here's a gotcha that trips up a lot of developers. When you're doing multi-turn conversations with tool use and extended thinking, you have to pass back ALL the thinking blocks — both the regular ones and the redacted ones — at the start of each assistant turn. If you don't, you get this really confusing error about expecting a thinking block but finding text instead.
 
-HOST: Edit it?
+HOST: I can just imagine someone tearing their hair out over that error message.
 
-EXPERT: Yeah. Like, maybe the AI wants to send an email, but the tone is a little off. You can modify the message and then approve the modified version.
+EXPERT: Oh, it happens all the time. You build your tool use loop, everything works great, and then one day you hit a sensitive topic, a redacted block appears, and suddenly your whole pipeline breaks because you were filtering out blocks you didn't recognize.
 
-HOST: Huh. Although that seems dangerous, right? Like, what if you edit it in a way that confuses the AI?
+HOST: So the practical advice is — even if you don't understand what's in a block, pass it through unchanged?
 
-EXPERT: Oh, you're ahead of me. Yeah, there's actually a gotcha in the LangChain docs about this. If you make significant modifications to the arguments, it can cause the model to re-evaluate and potentially execute the tool multiple times.
+EXPERT: Exactly. Treat the model's response as sacred. Don't filter, don't modify, just pass the whole thing back.
 
-HOST: Wait, so you could accidentally trigger it twice?
+HOST: Now, I want to go back to something you mentioned earlier, because I think it connects to a bigger point. You said Claude 4 models handle this differently?
 
-EXPERT: Yeah. So editing is powerful, but you have to be careful.
+EXPERT: Yeah, this is actually a really significant change. Claude 4 models use what's called summarized thinking instead of showing the full thinking output. So instead of getting the raw chain of thought — with potential redacted blocks — you get a summary of the reasoning process.
 
-HOST: Okay, so we've got this approval workflow. But what about things that take a long time? Like, what if I need to wait for my manager to approve something, and they're out for the day?
+HOST: So the redacted thinking blocks just... go away?
 
-EXPERT: Good question. So you can set timeouts and save the state. The OpenAI SDK lets you serialize the agent's state—basically save it to a database—and then resume it later. Even days later.
+EXPERT: They don't exist in Claude 4. The summarization approach eliminates the need for them entirely. Which is elegant, but it introduces its own wrinkle.
 
-HOST: So you could have, like, a queue of pending approvals that people work through.
+HOST: Which is?
 
-EXPERT: Exactly. And you can configure things like escalation. If nobody approves within four hours, escalate to a different person. Or if it's been 24 hours, just cancel the whole thing.
+EXPERT: Billing. You get billed for the full thinking tokens — the actual amount of reasoning the model did internally — not the summary tokens that you see in the response. So you might look at a response and think "oh, this used a modest number of tokens" but your bill says otherwise.
 
-HOST: That's pretty sophisticated. I'm guessing you need audit trails for all this too.
+HOST: Oh, that's a sneaky one. You're paying for thinking you can't even see.
 
-EXPERT: Oh yeah, absolutely. Every approval decision should be logged. Who approved it, when, why. Immutable records. Because if something goes wrong, you need to be able to reconstruct what happened.
+EXPERT: Right. And it means code that was written for Claude 3.7 might need updates when you migrate to Claude 4, because the whole thinking block structure is different. You're not going to see redacted_thinking blocks anymore, but the way tokens are counted changes too.
 
-HOST: Right, right. Okay, so we've got thinking redaction on one side—controlling what the AI thinks about. And we've got human-in-the-loop on the other side—controlling what it does. These feel like two totally different safety mechanisms.
+HOST: Okay, so let me try to connect some dots here. Because I feel like there's a through-line between thinking redaction and the autonomy stuff we talked about earlier.
 
-EXPERT: They are. But they're both trying to solve the same underlying problem, which is: how do you get the benefits of AI reasoning and autonomy without the risks?
+EXPERT: Oh, I love where you're going with this.
 
-HOST: Yeah. And it seems like the answer in both cases is selective transparency and selective control.
+HOST: Both of them are about this fundamental tension between transparency and safety, right? With extended thinking, you want to show the model's reasoning — that's transparency — but sometimes the reasoning itself is dangerous to expose. With agent autonomy, you want the agent to act independently — that's the whole point — but sometimes the actions themselves are dangerous.
 
-EXPERT: Exactly. You don't need to see all the thinking, and you don't need to approve all the actions. You just need to intervene at the right points.
+EXPERT: Yes! And in both cases, the solution isn't binary. It's not "show everything or show nothing." It's not "approve everything or approve nothing." It's this carefully calibrated middle ground.
 
-HOST: But how do you know what the right points are?
+HOST: Calibrated based on risk.
 
-EXPERT: That's the million-dollar question. And honestly, it depends on your use case. Like, what's risky for a customer service bot is different from what's risky for a financial trading agent.
+EXPERT: Based on risk, based on reversibility, based on context. Can you undo this action? How bad is it if it goes wrong? Does the user have the expertise to evaluate what's happening?
 
-HOST: Right. Although I imagine there are some universal guidelines.
+HOST: And I think what strikes me is how much of this comes down to trust. Like, there's this progression. Early on, you keep tight controls. The agent proves itself, you start relaxing. But you never fully let go.
 
-EXPERT: Yeah. Reversibility is a big one. If an action is reversible, it's lower risk. Like, scheduling a meeting—you can always cancel it. But deleting a database record? That's permanent.
+EXPERT: That's actually formalized in some frameworks. They talk about the agent's "track record" as a factor in calibrating oversight. An agent that's been operating correctly for months in a well-bounded domain might earn lower oversight requirements for routine actions.
 
-HOST: Unless you have backups.
+HOST: Like a new employee building trust over time.
 
-EXPERT: Well, sure. But then you're relying on your backup strategy. It's not truly reversible in the same way.
+EXPERT: Exactly like that. And just like an employee, if they make a big mistake, you tighten things back up.
 
-HOST: Fair point. What else?
+HOST: There's one more thing I want to touch on, because I think it's the most provocative idea in all of this. Anthropic themselves acknowledge that the visible thinking — the stuff you CAN see — might not perfectly represent what the model is actually doing internally.
 
-EXPERT: Harm severity. Obviously, the worse the potential outcome, the more oversight you need. And user expertise—like, if you're an expert user who understands the system, maybe you need less hand-holding.
+EXPERT: Oh yeah, the faithfulness question. This is... honestly, this is one of the deepest problems in AI safety right now.
 
-HOST: So it's not just about the action, it's about the context.
+HOST: Because you're saying — even when the model shows you its thinking, you can't be a hundred percent sure that's actually why it made its decision?
 
-EXPERT: Exactly. And system maturity, too. When you first deploy an agent, you probably want more oversight. As it proves itself over time, you can relax some of the controls.
+EXPERT: Right. The model might surface reasoning that looks logical and coherent, but the actual internal computations that drove the decision might involve factors that never show up in the thinking output. It's like... okay, you know when someone gives you a really articulate explanation for why they made a choice, and it sounds great, but deep down the real reason was something they didn't even mention?
 
-HOST: That makes sense. Start cautious, get more confident.
+HOST: Post-hoc rationalization.
 
-EXPERT: Yeah. Although you have to be careful not to get too confident. Because there's this whole category of attack that targets the human-in-the-loop mechanism itself.
+EXPERT: Exactly. And with AI models, we don't even have a way to fully verify whether the thinking is faithful to the actual decision-making process. Which means extended thinking is a huge step forward for transparency, but it's not the whole picture.
 
-HOST: Wait, what? I thought human-in-the-loop was the safety mechanism.
+HOST: So even our best transparency tool has limits.
 
-EXPERT: It is. But it's not invulnerable. There's something called a "Lies-in-the-Loop" attack, or LITL.
+EXPERT: Yeah. And I think that's actually... look, it might sound discouraging, but I think it's actually the most important thing to internalize. Safety isn't a destination. It's not like you implement these features and you're done. It's layers. It's defense in depth.
 
-HOST: Okay, that's an amazing name. What is it?
+HOST: You've got redaction handling sensitive reasoning, you've got human-in-the-loop catching risky actions, you've got least privilege limiting what's possible in the first place, you've got audit trails creating accountability...
 
-EXPERT: So the idea is this: the attacker doesn't need to bypass the approval system. They just need to manipulate what the human sees when they're making the approval decision.
+EXPERT: And none of them are sufficient alone. But together, they create a system that's robust enough to deploy responsibly.
 
-HOST: Oh. Oh no.
+HOST: I think what's going to stick with me from this conversation is that "Lies in the Loop" attack. Because it flips the whole mental model. We tend to think of the human in the loop as the ultimate safeguard — the final check that makes everything okay. But if you can manipulate what the human sees...
 
-EXPERT: Yeah. Like, imagine the AI presents you with a confirmation dialog: "Do you want to send this email to Bob?" And you approve it. But what actually gets sent is completely different, because the attacker manipulated the preview.
+EXPERT: Then the human becomes the vulnerability instead of the safeguard.
 
-HOST: That's... wow. So the human thinks they're providing meaningful oversight, but they're actually rubber-stamping something they never saw.
+HOST: Which means the real question isn't just "did a human approve this?" It's "did that human have accurate, complete information when they approved it?"
 
-EXPERT: Exactly. And this is why you can't just bolt on a confirmation dialog and call it safe. You need to make sure that what's being presented for approval is actually what's going to be executed.
+EXPERT: And that's a much, much harder problem to solve.
 
-HOST: Okay, so how do you defend against that?
+HOST: So here's what I keep coming back to. We're building these incredibly powerful autonomous systems, and every safety mechanism we create — human oversight, thinking transparency, permission controls — each one is genuinely important but also genuinely limited. And the art of doing this well is understanding exactly where each mechanism breaks down and layering them so the gaps don't align.
 
-EXPERT: Complete mediation. You implement authorization at the execution point, not at the presentation layer. So even if the attacker manipulates the dialog, the downstream system still enforces access control.
+EXPERT: It's like Swiss cheese. Any single slice has holes. But if you stack enough slices with the holes in different places...
 
-HOST: So defense in depth.
+HOST: Nothing gets through. I love that. Although now I'm going to think about Swiss cheese every time I review an AI agent's permission model.
 
-EXPERT: Yeah. Never rely on a single layer of protection.
+EXPERT: You know what, there are worse things to think about. At least you'll be thinking about it. Because the real danger? It's the teams that deploy these systems and don't think about it at all.
 
-HOST: This is making me realize how much trust is baked into these systems. Like, we're trusting the AI to present accurate information. We're trusting the framework to enforce approvals correctly. We're trusting that the encrypted thinking is actually what it says it is.
+HOST: And with four out of thirty deployed agents lacking a documented off switch... there are clearly teams not thinking about it.
 
-EXPERT: Yeah. And that's why transparency is so important. Although, here's a depressing stat: according to a 2025 survey of deployed AI agents, 25 out of 30 agents disclosed no internal safety results. And 23 out of 30 had no third-party testing information.
+EXPERT: Which is why conversations like this matter. The more people understand these tradeoffs — the autonomy-safety balance, the transparency-security tension, the limits of every individual safeguard — the better the systems we'll build.
 
-HOST: Wait, seriously?
+HOST: And honestly, the thing that gives me the most hope? It's that the frameworks are getting smarter about this. The fact that you can declaratively say "this tool needs approval, this one doesn't, this one needs conditional approval based on context" — that's a huge improvement over where we were even a year ago.
 
-EXPERT: Yeah. So most deployed agents, we just don't know how safe they actually are. It's trust all the way down.
+EXPERT: Oh, absolutely. The tooling is catching up to the problem. We just need the culture to catch up to the tooling.
 
-HOST: That's... not great.
+HOST: So I guess the question I'll leave everyone with is this — if you're building with AI agents right now, have you actually mapped out which of your agent's actions are reversible and which aren't? Because that distinction — reversible versus irreversible — might be the single most important design decision you make. And if you haven't thought about it... maybe start there.
 
-EXPERT: No. And it gets worse. The same survey found that 4 out of 30 agents don't even have documented stop options.
-
-HOST: Meaning you can't shut them down?
-
-EXPERT: Meaning there's no reliable way to halt execution if things go wrong. Which is insane, right? Like, the first thing you should build into an autonomous system is a big red stop button.
-
-HOST: Yeah, that seems like Safety 101.
-
-EXPERT: You would think. But it's not universal. And that's concerning, especially as these agents get more capable.
-
-HOST: Okay, so we've got gaps in transparency, gaps in shutdown mechanisms. What else should people be worried about?
-
-EXPERT: Billing surprises, actually.
-
-HOST: Billing? That's a safety issue?
-
-EXPERT: Well, it's not a safety issue in the traditional sense, but it catches people off guard. With extended thinking, you're billed for the full thinking tokens, not just what you see.
-
-HOST: Oh. So if half of the thinking is redacted, I'm still paying for all of it?
-
-EXPERT: Yep. And with Claude 4 models, it's even trickier because they return summarized thinking. So the visible token count doesn't match the billed output tokens.
-
-HOST: Wait, so I could see, like, 500 tokens of thinking summary, but actually be billed for 5,000 tokens?
-
-EXPERT: Potentially, yeah. The summary is much shorter than the actual thinking that happened.
-
-HOST: Huh. That's good to know. Although I guess it makes sense—the work still got done, even if I'm only seeing the cliff notes.
-
-EXPERT: Right. But it's one of those things where if you're not expecting it, your AWS bill gets weird.
-
-HOST: Ha, yeah. Okay, so let me try to synthesize this. We've got these two big safety mechanisms. Thinking redaction, which controls the reasoning we see. And human-in-the-loop, which controls the actions the AI takes. And both of them are about finding the right balance.
-
-EXPERT: Exactly.
-
-HOST: Because too much control and you lose the benefits. Too little control and you lose sleep at night worrying about what your AI is doing.
-
-EXPERT: Yeah. And the calibration is hard because it's context-dependent. There's no universal setting.
-
-HOST: Right. Although it sounds like the frameworks are getting better at making this easier to implement.
-
-EXPERT: They are. Like, five years ago, you would have had to build all of this from scratch. Now it's mostly configuration.
-
-HOST: So what's still hard?
-
-EXPERT: Knowing what to configure. Like, deciding which actions are risky, how long timeouts should be, whether to allow editing or just approve/reject. Those are judgment calls.
-
-HOST: And presumably they depend on the domain, the users, the stakes.
-
-EXPERT: Yeah. A customer service agent has different risk profiles than a financial trading agent. Or a healthcare agent. Or a code deployment agent.
-
-HOST: Right, right. And I'm guessing the regulations are going to start catching up too. Like, we'll probably see compliance requirements around this stuff.
-
-EXPERT: Oh, for sure. Especially in regulated industries like healthcare and finance. I would not be surprised if we see mandatory human-in-the-loop requirements for certain types of decisions.
-
-HOST: Yeah. Although that raises the question—if you're required to have human approval, are you really using AI autonomy anymore? Or are you just using a very expensive recommendation engine?
-
-EXPERT: That's the tension, right? And I think the answer is that it depends on how you structure the approval. If the human is just rubber-stamping everything, then yeah, it's theater. But if the human is providing genuine oversight at critical decision points, and the AI is handling everything else autonomously, then you're still getting value.
-
-HOST: So it's about choosing the right checkpoints.
-
-EXPERT: Exactly. And making sure those checkpoints are actually meaningful, not just CYA.
-
-HOST: Okay, last question. Where is this all headed? Like, do you think we're going to get better at this, or is it always going to be this tightrope walk between autonomy and safety?
-
-EXPERT: I think we're going to get better tools, but the fundamental tension isn't going away. Because at the end of the day, you're trying to deploy a system that makes decisions, and decisions have consequences.
-
-HOST: Right.
-
-EXPERT: So the question is always: who's accountable when things go wrong? And the answer can't be "the AI," because the AI doesn't have skin in the game. It's always going to be a human or an organization.
-
-HOST: So these safety mechanisms are really about making sure the humans stay in the loop in the ways that matter.
-
-EXPERT: Yeah. And being honest about the risks. Like, thinking redaction is not perfect. Human-in-the-loop is not perfect. But they're both better than the alternative, which is just hoping for the best.
-
-HOST: Hope is not a strategy.
-
-EXPERT: Exactly. And I think as these systems get more powerful and more widely deployed, we're going to see a lot more emphasis on things like audit trails, rollback mechanisms, and sandboxing.
-
-HOST: Treating AI agents like we treat other critical infrastructure.
-
-EXPERT: Yeah. Because that's what they're becoming. When an AI agent has access to your CRM, your email, your financial systems—it's infrastructure. It's not a toy.
-
-HOST: And infrastructure needs safety rails.
-
-EXPERT: Always. Although here's the thing that keeps me up at night: the survey I mentioned earlier, where most agents don't publish safety testing results? That's happening now, while these systems are still relatively limited. What happens when they're way more capable and we still have the same transparency gaps?
-
-HOST: Yeah. That's... that's a good question. And kind of a scary one.
-
-EXPERT: Right. So I think the message for anyone building or deploying these systems is: take safety seriously now. Build in the approval workflows, the audit trails, the shutdown mechanisms. Because it's a lot harder to retrofit safety than to build it in from the start.
-
-HOST: And don't trust that just because a framework has a human-in-the-loop feature, it's automatically safe.
-
-EXPERT: Exactly. You have to actually think through the risks, configure the system appropriately, test it, and monitor it in production.
-
-HOST: And be honest about what you don't know.
-
-EXPERT: Yeah. That faithfulness problem with thinking—like, we don't fully understand what's happening inside these models. And that's okay, as long as we're honest about it and we build in safeguards accordingly.
-
-HOST: Right. Assume there might be surprises, and plan for them.
-
-EXPERT: Yeah. Defense in depth, reversibility by design, and never assume anything is foolproof.
-
-HOST: Okay. This has been kind of sobering, but also really clarifying. Like, I feel like I understand the trade-offs better now.
-
-EXPERT: Good. Because that's the key thing—understanding that there are trade-offs, and being intentional about how you make them.
-
-HOST: Rather than just letting defaults decide for you.
-
-EXPERT: Exactly. Because the defaults might not match your risk tolerance or your use case.
-
-HOST: And if you get it wrong, the consequences are real.
-
-EXPERT: Yeah. Whether that's exposing dangerous reasoning, or having an AI accidentally delete something important, or just eroding user trust because the system behaves unpredictably.
-
-HOST: Trust is fragile.
-
-EXPERT: Very fragile. And easy to lose, hard to rebuild.
-
-HOST: Alright. So if people take one thing away from this, what should it be?
-
-EXPERT: Safety and autonomy are not opposites. They're both necessary, and you can have both if you're thoughtful about where and how you apply controls. Don't skip the hard work of figuring out what's risky and what's not. And test your assumptions, because what you think is safe might not be.
-
-HOST: And maybe check if your AI agent has a stop button.
-
-EXPERT: Ha! Yeah, that too. Definitely that too.
+EXPERT: And check if your system has a documented off switch. Seriously. You'd be surprised.

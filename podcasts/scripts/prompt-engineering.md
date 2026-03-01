@@ -1,455 +1,251 @@
-HOST: Okay, so I tried something last night with Claude that completely blew my mind. I was asking it to analyze this massive earnings report, right? Like, 80 pages. And at first, it kept giving me these... weird, vague summaries that honestly felt made up.
+HOST: Okay, so here's a question that's been bugging me. You know how everyone talks about prompt engineering like it's this art form, right? Like you need to whisper the exact right incantation to the AI or it won't do what you want?
 
-EXPERT: Oh no, you got hallucinated.
+EXPERT: Yeah, I hear that all the time. "Just ask it nicely." "Say please." Like it's a genie in a bottle.
 
-HOST: Right, right. But then I restructured how I asked the question. Same document, different prompt structure—totally different results. Like, night and day. And that's when I realized... I have no idea what I'm actually doing when I write prompts.
+HOST: Right! But then you actually start digging into the research on what works and what doesn't, and it's... it's way more systematic than people think. And also way weirder.
 
-EXPERT: Okay but here's the thing—most people don't. They treat prompts like Google searches. Type some words, hope for magic.
+EXPERT: Oh, the weird stuff is the best part. Like, did you know that telling a model "you are an idiot" can sometimes get you better answers than telling it "you are a genius"?
 
-HOST: Guilty.
+HOST: Wait. No. You're going to have to explain that one.
 
-EXPERT: But prompts aren't searches. They're more like... programming? Except instead of writing Python, you're writing instructions in English. And English is way more ambiguous than Python.
+EXPERT: I will, I promise. But let's build up to it because the foundations are actually fascinating on their own. So, okay, here's the thing — the single most impactful technique in prompt engineering is probably the most boring-sounding one.
 
-HOST: So that's what prompt engineering is? Making English less ambiguous?
+HOST: Hit me.
 
-EXPERT: That's actually a pretty good way to put it. The whole field is about being precise with language models. Because here's what's wild—these models are incredibly capable, but they're also incredibly literal in weird ways.
+EXPERT: Structure. Just... structuring your prompt clearly.
 
-HOST: What do you mean by that?
+HOST: That's it? That's the big reveal?
 
-EXPERT: Okay, so, imagine I tell you, "Write a brief summary." What does "brief" mean to you?
+EXPERT: I know, I know. But hear me out. When you throw a wall of text at a language model — your instructions, your context, some examples, the actual data you want processed — the model has to figure out which parts are which. And it often guesses wrong.
 
-HOST: I mean... a few sentences? Maybe a paragraph?
+HOST: So it might look at your example output and think that's what you're asking it to produce, instead of understanding it's just a demonstration?
 
-EXPERT: Right. But to a language model, "brief" could mean three sentences, or twelve sentences, or a bulleted list, or— you get the idea. It's subjective. So one of the fundamental principles of prompt engineering is to replace subjective terms with specific, measurable instructions.
+EXPERT: Exactly. And this is where XML tags come in, and — okay, this is going to sound nerdy, but Claude models were actually trained to recognize XML as an organizational tool. So when you wrap your instructions in tags like "instructions," your context in "context" tags, your examples in "example" tags...
 
-HOST: So instead of "brief," I should say... what, "exactly three sentences"?
+HOST: You're basically putting up road signs.
 
-EXPERT: Exactly! Or "under 50 words" or "three bullet points, each under 20 words." Give it something concrete to aim for.
+EXPERT: That's a great way to put it. You're saying "this section is the instructions, this section is the context, don't mix them up." And the performance difference is real. Especially as your prompts get more complex.
 
-HOST: Huh. That's... that actually makes so much sense. Because I've definitely had the experience where I ask for a quick answer and get, like, an essay.
+HOST: So like, if I'm doing a simple one-liner — "summarize this paragraph" — I probably don't need tags. But the moment I'm feeding it multiple documents and saying "analyze these against each other, but only look at financial data, and format it as a table"...
 
-EXPERT: Oh yeah. And the flip side is also true—if you say "don't use bullet points," there's a decent chance it'll use bullet points anyway.
+EXPERT: Yeah, that's where structure becomes essential. And there's a really specific pattern that works well. You put your long documents at the top, then your context, then your role definition, and your actual instruction goes last.
 
-HOST: Wait, seriously?
+HOST: Huh. Last? That's counterintuitive. I would have thought you'd lead with the instruction.
 
-EXPERT: Seriously. Negative instructions are notoriously unreliable with LLMs. The model performs way better when you tell it what to do, not what not to do.
+EXPERT: I know, right? But think about it — if you put the instruction at the end, the model's attention is focused on executing it right as it starts generating. It's like... you know when someone gives you driving directions and they say the most important turn last? "Go straight for three miles, past the gas station, and then — this is the crucial part — take the LEFT, not the right." That final positioning makes it stick.
 
-HOST: So instead of "don't use jargon," I should say—
+HOST: Oh, that actually makes sense. The recency effect.
 
-EXPERT: "Use simple language" or "explain this like you're talking to someone without a technical background." Positive framing.
+EXPERT: Exactly. And this connects to something called the "lost in the middle" effect, which is — so modern models can handle enormous contexts, right? Claude can do 200K plus tokens. GPT-4.1 handles a million.
 
-HOST: Okay, this is already changing how I think about writing prompts. But you mentioned structure earlier. What does that actually look like?
+HOST: A million tokens. That's like multiple novels.
 
-EXPERT: So this is where it gets really interesting. Have you ever used XML tags in your prompts?
+EXPERT: Right. But here's the catch — just because a model can accept all those tokens doesn't mean it pays equal attention to all of them. Information that's buried in the middle of a really long prompt gets less attention than stuff at the beginning or the end.
 
-HOST: XML? Like... the markup language from, I don't know, 2003?
+HOST: So it's like... okay, imagine you're at a dinner party and someone tells you a ten-minute story. You remember the opening, you remember the punchline, but that thing they said at minute five? Gone.
 
-EXPERT: I know, I know, it sounds weirdly retro. But especially with Claude, XML tags are kind of a superpower. Claude was specifically trained to recognize XML as an organizational tool.
+EXPERT: That is a perfect analogy. And this has real practical implications. If you're building a document Q&A system and you've got twenty documents stuffed into the prompt, the model might just... overlook the ones in the middle.
 
-HOST: Okay, walk me through this. Why would I use XML tags in a prompt?
+HOST: So what do you do about that?
 
-EXPERT: Think about a complex request where you're mixing multiple things—like, you've got instructions, you've got context, you've got examples, and you've got the actual input data. Without structure, the model has to guess which is which. "Is this sentence an instruction, or is it an example, or is it the thing I'm supposed to analyze?"
+EXPERT: A couple things. First, put your most critical documents near the top. Second, use what's called a "quote grounding" pattern — you explicitly tell the model to extract relevant quotes from the documents before it answers. It forces the model to actually go find the evidence first.
 
-HOST: And XML tags make that explicit.
+HOST: Oh, like making it show its work.
 
-EXPERT: Exactly. You wrap your instructions in `<instructions>` tags, your examples in `<example>` tags, your context in `<context>` tags. Now there's zero ambiguity. The model knows exactly what each piece of the prompt is for.
+EXPERT: Exactly. Like telling a student, "Don't just give me the answer. Show me which passages you're basing this on." And it dramatically reduces hallucination because the model anchors itself in the actual source material instead of just... generating something that sounds plausible.
 
-HOST: So it's like... semantic boundaries?
+HOST: That's clever. Okay, so we've got structure, we've got document placement. But I want to come back to something you mentioned earlier — role prompting. Because I feel like that's the one everyone does first, right? "You are a helpful expert in..."
 
-EXPERT: Yes! That's a great way to think about it. You're creating clear boundaries so nothing gets conflated.
+EXPERT: Oh yeah. It's the most popular technique and also, honestly, the most misunderstood.
 
-HOST: Okay, but—sorry, go back to that for a second—are there specific tag names I have to use? Like, is there a canonical list of "these are the magic tags"?
+HOST: How so?
 
-EXPERT: This is one of the gotchas, actually. There are no magic tags. What matters way more than the tag name is consistency.
+EXPERT: So the idea is simple — you tell the model "you are a senior Python developer" or "you are a board-certified cardiologist" and it adjusts its behavior to match that persona. And it does work... for certain things.
 
-HOST: Wait, really?
+HOST: Like tone and style?
 
-EXPERT: Really. You could use `<ctx>` or `<context>` or `<background>`—it doesn't matter, as long as you pick one and stick with it throughout your prompt. The model cares about the structure, not the specific vocabulary.
-
-HOST: Huh. So it's not like HTML where `<div>` means something specific. It's more about creating consistent patterns.
-
-EXPERT: Exactly. Although, I will say, descriptive tag names help you as the human reading and maintaining these prompts. `<context>` is clearer than `<ctx>` when you're debugging six months later.
-
-HOST: Fair point. So let's say I'm using XML tags. How do I actually organize everything? Like, what's the... the architecture of a good prompt?
-
-EXPERT: Okay, this is going to sound counterintuitive. If you've got a long document or a bunch of data—let's say 20,000 tokens or more—you put that at the top.
-
-HOST: At the top? Not at the bottom after the instructions?
-
-EXPERT: I know, it feels backwards. But there's research showing that when you put the documents first and the instructions last, you can get up to 30% better performance on complex tasks.
-
-HOST: Wait, wait, wait—30%? That's huge. Why does that work?
-
-EXPERT: It has to do with how transformer models process context. When the instructions come last, they're, like, fresh in the model's "mind" as it starts generating. The directive is the last thing it read before it has to perform the task.
-
-HOST: That's actually kind of wild. So the order is: long documents at the top, then context, then role definition, and the actual directive last?
-
-EXPERT: Yep. Think of it as: "Here's the stuff you need to know, here's who you are, now here's what I want you to do."
-
-HOST: Okay but hold on. You mentioned role definition. Is that the "You are a helpful assistant" thing?
-
-EXPERT: Sort of, but way more specific. Role prompting is when you assign the model a persona—like "You are a senior software engineer" or "You are a tax attorney speaking to a non-technical client."
-
-HOST: And that actually changes how it responds?
-
-EXPERT: It changes the tone and communication style, for sure. Whether it changes accuracy... that's complicated.
-
-HOST: Uh oh. I feel like there's a "but" coming.
-
-EXPERT: Okay, so here's the thing. Role prompting works great for creative writing, for matching a specific tone or style, for adjusting vocabulary to an audience. But if you're expecting it to make the model more accurate or more knowledgeable—
-
-HOST: It doesn't?
-
-EXPERT: Not really. Telling the model "You are a world-renowned expert" doesn't give it access to more information. It just changes how it presents the information it already has.
-
-HOST: Huh. So it's more about communication style than factual improvement.
-
-EXPERT: Exactly. And actually, there's some hilarious research on this. There was a study where they tested different personas on reasoning tasks, and sometimes the "You are an idiot" persona outperformed the "You are a genius" persona.
-
-HOST: Get out of here. Seriously?
-
-EXPERT: I'm serious. Which suggests that these role labels don't function the way you'd intuitively expect. It's not like the model is role-playing in a human sense. It's doing something weirder and more statistical.
-
-HOST: So when should I use role prompting, and when should I skip it?
-
-EXPERT: Use it when you need a specific tone or style. Skip it—or keep it minimal—when you're trying to maximize accuracy or reasoning. For those tasks, explicit behavioral instructions work better than vague roles.
-
-HOST: What's an explicit behavioral instruction?
-
-EXPERT: Instead of "You are a financial advisor," try "Analyze this portfolio focusing on risk tolerance and long-term growth potential. Flag any high-risk positions and explain why they're risky."
-
-HOST: Oh, I see. You're telling it exactly what to do, not just who to pretend to be.
-
-EXPERT: Right. Modern models—especially Claude 4, GPT-4, GPT-5—they're sophisticated enough that you often get better results by just saying what you want instead of assigning elaborate personas.
-
-HOST: That's... actually kind of a relief. I always felt weird writing "You are a renowned expert in—"
-
-EXPERT: Yeah, it can feel cringey. And the research backs up that feeling. Less can be more.
-
-HOST: Okay, so we've covered structure, we've covered roles. What about examples? Like, when I give the model examples of what I want.
-
-EXPERT: Oh, this is one of my favorite techniques. Few-shot prompting.
-
-HOST: Few-shot. Meaning, like, a few examples?
-
-EXPERT: Exactly. You give the model two to five examples of input-output pairs, and it learns the pattern from those examples and applies it to new inputs. No fine-tuning, no training—just in-context learning.
-
-HOST: And that actually works?
-
-EXPERT: It works shockingly well. Especially for things like output format, tone, or structure. If you want the model to respond in a very specific way, show it three examples of that exact format, and it'll nail it almost every time.
-
-HOST: So it's like... teaching by demonstration.
-
-EXPERT: Perfect analogy. And the key word there is "teaching." You want your examples to be, like, pedagogically sound. Diverse scenarios, edge cases, clear patterns.
-
-HOST: What's an edge case in this context?
-
-EXPERT: Let's say you're building a sentiment classifier. You'd include an obvious positive example, an obvious negative example, and then—this is the edge case—something ambiguous. Like, "Not what I expected, but actually better!"
-
-HOST: Oh, because that starts negative but ends positive.
-
-EXPERT: Exactly. If you only show the model clear-cut cases, it might stumble on the nuanced ones. But if you include a tricky example in your few-shot set, the model learns to handle that ambiguity.
-
-HOST: How many examples should I give? Like, is there a sweet spot?
-
-EXPERT: Three to five is the magic range for most tasks. Two or three if it's simple, five if it's complex. Beyond that, you hit diminishing returns pretty fast.
-
-HOST: What happens if I give it, like, ten examples?
-
-EXPERT: You're wasting tokens, and you might actually degrade performance. More examples means more noise, more chance of conflicting patterns, more opportunity for the model to latch onto superficial features instead of the actual pattern you want.
-
-HOST: Wait, superficial features? What do you mean?
-
-EXPERT: Okay, so let's say all your examples happen to be short sentences. The model might learn "ah, I should give short answers," even if the actual pattern you wanted was about sentiment or classification or something else entirely.
-
-HOST: Oh no. So the examples can accidentally teach the wrong lesson.
-
-EXPERT: Exactly. That's why diversity matters. Vary the length, the structure, the specific words—everything except the pattern you're trying to teach.
-
-HOST: This is starting to feel like... there's a lot of ways to accidentally mess up a prompt.
-
-EXPERT: Oh, there are. But here's the good news: there are also really reliable patterns you can fall back on.
-
-HOST: Like what?
-
-EXPERT: So one pattern that works great for document analysis is what I call "quote grounding." Before the model answers your question, you explicitly tell it to extract relevant quotes from the document first.
-
-HOST: Why does that help?
-
-EXPERT: Because it forces the model to anchor its reasoning in the actual source material. Instead of just generating a plausible-sounding answer, it has to find evidence first, then reason from that evidence.
-
-HOST: Oh, that's smart. So it's like... showing your work in math class.
-
-EXPERT: Perfect analogy. And it dramatically reduces hallucination, especially for high-stakes domains like legal analysis or medical records.
-
-HOST: So the structure would be, like, "First extract quotes in these tags, then provide your analysis in these other tags"?
-
-EXPERT: Exactly. You can use a `<quotes>` section and then an `<analysis>` section. Or `<thinking>` and `<answer>`. The specific tag names don't matter—what matters is the two-phase structure.
-
-HOST: Okay, that's useful. But I want to go back to something you mentioned earlier about that earnings report I was analyzing. You said I restructured my prompt and got way better results. What specifically did I probably do wrong the first time?
-
-EXPERT: Without seeing it, I'd guess you dumped the whole document in and then asked a vague question like "Summarize the key points."
-
-HOST: ...That's exactly what I did.
-
-EXPERT: Right. So the model has this massive blob of text with no structure, and an instruction that's completely subjective. "Key points" according to who? A CFO? An investor? A regulator? And "summarize" how? Three bullets? A paragraph? A full report?
-
-HOST: Okay, okay, I see where this is going. So what should I have done?
-
-EXPERT: Wrap the document in `<document>` tags. Maybe add a `<source>` tag with the filename. Then, in your instructions—which go after the document, remember—be super specific. "Extract the three most significant financial risks mentioned in this report. For each risk, provide: the risk description in one sentence, the page number where it's mentioned, and the potential financial impact if stated."
-
-HOST: Oh, wow. That's, like, ten times more specific.
-
-EXPERT: And you'd get results that are ten times more useful. Because now the model knows exactly what you're looking for, exactly how many items to return, and exactly what format to use.
-
-HOST: What if the document is huge, though? Like, beyond what I can comfortably fit in one prompt?
-
-EXPERT: Then you've got a few options. One is to chunk it into sections with clear labels—like `[Section 1 – Executive Summary]`, `[Section 2 – Financials]`. That way the model can navigate it more easily.
-
-HOST: And I'd tell it to reference sections by name when it answers?
-
-EXPERT: Exactly. "According to Section 2, the revenue grew by..." That kind of thing.
-
-HOST: What if I have multiple documents?
-
-EXPERT: Oh, then you definitely want XML structure. You'd use a nested hierarchy: `<documents>` as the outer wrapper, then individual `<document>` tags with index numbers and source metadata.
-
-HOST: So each document would have, like, `<document index="1">` and then `<source>annual_report.pdf</source>` and then `<document_content>`?
-
-EXPERT: You've got it. And when the model needs to attribute information, it can say "In document 2" or "According to annual_report.pdf" instead of making vague references.
-
-HOST: This is making so much sense now. But I want to circle back to something. You mentioned JSON earlier in a different context. What about when I actually want the model to output JSON?
-
-EXPERT: Ah, structured outputs. This is where things get really powerful.
-
-HOST: Is that different from just asking the model to "respond in JSON"?
-
-EXPERT: Very different. When you just ask for JSON, you get syntactically valid JSON most of the time, but the schema might be wrong. Fields might be missing, data types might be off, the structure might not match what you need.
-
-HOST: Okay, so what's the better approach?
-
-EXPERT: Structured outputs with schema enforcement. You define a JSON schema—like, exactly what fields you want, what types they should be, which ones are required—and the model is forced to follow that schema. It literally cannot generate invalid output.
-
-HOST: Wait, it can't? How does that work?
-
-EXPERT: It's called constrained decoding. At each token generation step, the system masks out any token that would violate the schema. So the model can only choose from valid continuations.
-
-HOST: That's... okay, that's actually kind of brilliant.
-
-EXPERT: It's game-changing for production systems. No more parsing errors, no more retry logic, no more "oh the model decided to add an extra field that breaks my code."
-
-HOST: Is this available in all the APIs?
-
-EXPERT: OpenAI has it, Claude has it, Cohere has it. The syntax is a little different between providers, but the concept is the same. You pass in a JSON schema, enable strict mode, and you get guaranteed compliance.
-
-HOST: What are the limitations? Because this sounds almost too good to be true.
-
-EXPERT: There are a few. First, not all JSON schema features are supported. No recursive schemas, no external references, and you typically can't use numerical constraints like minimum or maximum values.
-
-HOST: Wait, I can't enforce that a number is between 0 and 100?
-
-EXPERT: Not with the constrained decoding itself. You'd have to validate that in your application code after you get the response.
-
-HOST: Okay, what else?
-
-EXPERT: All fields usually have to be required. If you want optional fields, you have to use union types with null—like, the type would be `["string", "null"]` instead of just `"string"`.
-
-HOST: That's a little awkward, but I can see why.
-
-EXPERT: Yeah, and there's a performance consideration. The first time you use a schema, there's extra latency—like, 100 to 500 milliseconds—because the system has to compile the schema into a grammar. But then it gets cached for 24 hours.
-
-HOST: So subsequent requests are fast?
-
-EXPERT: Yep. Unless you change the schema, in which case you invalidate the cache and pay the compilation cost again.
-
-HOST: Okay, so we've covered a lot of ground here. Structure, roles, examples, JSON outputs. Is there, like, a unifying principle tying all of this together?
-
-EXPERT: I mean... yeah. The unifying principle is: be explicit.
-
-HOST: Be explicit.
-
-EXPERT: Don't hope the model will infer what you want. Don't rely on subjective terms. Don't assume it'll figure out the format or the tone or the level of detail. Just tell it. Directly. With structure, with examples, with measurable constraints.
-
-HOST: So it's almost like... treat the model as incredibly capable but also incredibly literal?
-
-EXPERT: That's a really good way to put it. It can do amazing things, but only if you give it clear, unambiguous instructions.
-
-HOST: Okay, but there's got to be gotchas, right? Like, things that seem like they should work but don't?
-
-EXPERT: Oh, so many. One of my favorites is the emphasis gotcha.
-
-HOST: Emphasis?
-
-EXPERT: Yeah, like, people think if they bold something or put it in all caps or use italics, the model will pay more attention to it.
+EXPERT: Right, right, right. If you say "you are a witty tech blogger," the output sounds different than "you are a formal legal analyst." The communication style shifts. Vocabulary changes. That part works great. But here's what most people get wrong — they think assigning an expert role makes the model more knowledgeable or more accurate.
 
 HOST: And it doesn't?
 
-EXPERT: Research shows it has surprisingly little effect. Structural guidance—like headings, numbered lists, XML tags—works way better than typographic emphasis.
+EXPERT: Not really. The model doesn't suddenly gain access to more medical knowledge because you called it a doctor. It changes how it talks, not what it knows. Research consistently shows that role prompting has minimal impact on factual accuracy.
 
-HOST: Huh. So if I want to emphasize something, I should put it in its own section with a heading, not just bold it?
+HOST: So it's like putting on a lab coat. You look like a scientist, but you don't actually know more chemistry.
 
-EXPERT: Exactly. Or repeat it. Or place it strategically at the end of the prompt where the model reads it right before generating.
+EXPERT: That's... actually a really good analogy. And here's where it gets wild. Ready for the idiot paradox?
 
-HOST: What about the word "think"? I feel like I've heard that's special somehow.
+HOST: I've been waiting for this.
 
-EXPERT: Oh yeah. In some Claude models, using the word "think" can activate extended reasoning modes. Like, the model will go into this verbose, chain-of-thought style response.
+EXPERT: Okay so, in controlled experiments — actual research studies — they tested different persona assignments on reasoning tasks. "You are a genius." "You are an expert." "You are an idiot." And "you are an idiot" sometimes outperformed "you are a genius."
 
-HOST: And if I don't want that?
+HOST: Get out of here. Seriously?
 
-EXPERT: Use "consider" or "evaluate" instead. Or just restructure the sentence to avoid triggering that pattern.
+EXPERT: I'm serious. And the reason is that these simple labels don't work the way you'd intuitively expect. The model's behavior depends on complex interactions with its training data, not literal role interpretation. Calling it a genius might actually make it overconfident and verbose, while calling it an idiot might... I don't know, maybe activate patterns associated with being more careful?
 
-HOST: That's such a weird specific thing.
+HOST: That's... actually kind of wild. So what's the takeaway? Don't bother with roles?
 
-EXPERT: Right? It's one of those quirks you only learn through experience or reading the gotchas documentation.
+EXPERT: Ehh, I'd push back on that a little. Roles are still useful for tone and style. But if you want accuracy, you're better off with explicit behavioral instructions. Instead of "you are a financial advisor," say "analyze this portfolio, focusing on risk tolerance and long-term growth potential." Tell it what to do, not who to be.
 
-HOST: Are there other model-specific quirks like that?
+HOST: So it's like the difference between casting an actor and giving them a detailed script. The script matters more.
 
-EXPERT: Oh yeah. Claude loves XML tags—we've talked about that. GPT-4 tends to prefer markdown and numbered instruction lists. GPT-3.5 used to work better with JSON-formatted prompts, though that's less relevant now since everyone's on GPT-4 or newer.
+EXPERT: Yes. And modern models — Claude 4, the latest GPTs — they're sophisticated enough that heavy role prompting is often just... unnecessary. They perform well with clear, direct instructions.
 
-HOST: So I have to tailor my prompting style to the specific model I'm using?
+HOST: Okay, so this brings me to something I find really interesting — few-shot prompting. Because to me, that feels like it bridges the gap between "just tell it what to do" and "give it enough context to actually do it well."
 
-EXPERT: If you want optimal results, yeah. Although the good news is that the core principles—clarity, structure, specificity—those work across all models.
+EXPERT: Oh, few-shot is one of my favorite topics. So the idea is simple — instead of just describing what you want, you show the model. You give it two to five examples of input-output pairs, and it learns the pattern in context.
 
-HOST: What's one gotcha that people run into all the time that's super avoidable?
+HOST: Like teaching by demonstration.
 
-EXPERT: Example-instruction mismatch.
+EXPERT: Exactly. And it's incredibly powerful for things like getting consistent output formats, matching a specific tone, or handling domain-specific tasks where a description alone doesn't quite capture what you need.
 
-HOST: What's that?
+HOST: How many examples do you typically need?
 
-EXPERT: It's when your explicit instructions say one thing, but your examples demonstrate something else. Like, your instructions say "provide 3 to 5 bullet points," but all your examples show exactly 7 bullet points.
+EXPERT: Research says three to five is the sweet spot. Two to three for simple tasks, up to five for complex stuff. But — and this is important — more than about eight examples actually starts hurting performance.
 
-HOST: Oh no. And then the model picks up on the examples instead of the instructions?
+HOST: Wait, more examples makes it worse?
 
-EXPERT: Sometimes. Or it gets confused and does something inconsistent. The fix is simple: make sure your examples perfectly match your stated rules.
+EXPERT: Yeah. You start introducing noise, or the examples might have subtle inconsistencies that confuse the model. There's real diminishing returns after five or so.
 
-HOST: That seems like the kind of thing that's obvious in retrospect but easy to miss when you're writing the prompt.
+HOST: Huh. So quality over quantity.
 
-EXPERT: Completely. That's why prompt engineering is weirdly iterative. You write a prompt, you test it, you see where it breaks, you refine.
+EXPERT: Absolutely. And here's something that genuinely blew my mind when I first read it. The ordering of your examples — the sequence you present them in — can swing performance from near state-of-the-art all the way down to basically chance level.
 
-HOST: Is there tooling for this? Like, frameworks or libraries that help you structure prompts correctly?
+HOST: The same examples? Just in a different order?
 
-EXPERT: Yeah, there are a bunch now. DSPy is a big one—it treats prompts as programs and lets you optimize them systematically. There are also schema generators that take Pydantic models or Zod schemas and auto-generate the JSON schema definitions.
+EXPERT: Same examples. Different order. Totally different results. The reason is something called recency bias — the model weights the last examples more heavily. So if your last couple of examples happen to all be negative sentiment, the model starts leaning toward negative for everything.
 
-HOST: Wait, so I could define my data structure in Python using Pydantic, and it'll automatically create the JSON schema?
+HOST: That's... okay, that's both fascinating and terrifying if you're building production systems.
 
-EXPERT: Exactly. And some SDKs even have helper methods like `client.messages.parse()` that validate the response against your Pydantic model automatically.
+EXPERT: Right? And it gets even wilder. There was a paper by Min and colleagues that showed — okay, get this — even if you give the model examples with random, incorrect labels...
 
-HOST: That's really nice. It means I'm not hand-writing JSON schemas.
+HOST: Like telling it a positive review is negative?
 
-EXPERT: Right. And you get type safety in your code for free. The response comes back as a typed object instead of a raw dictionary.
+EXPERT: Exactly. Even with wrong labels, the model still picks up on the format and the general structure of the task. The label accuracy mattered less than people expected. Now, correct labels do perform better, but the fact that random labels still partially work tells you something profound about how in-context learning actually functions.
 
-HOST: Okay, I want to go back to long contexts for a second, because you mentioned something earlier that I don't think we fully explored. You said there's this "lost in the middle" effect?
+HOST: It's learning the shape of the task more than the content of the examples.
 
-EXPERT: Oh yeah. So even though models like Claude can handle 200,000 tokens and GPT-4.1 can handle a million tokens, they don't treat all those tokens equally.
+EXPERT: That's a beautiful way to put it. The format, the label space, the general structure — those matter more than perfect label accuracy.
 
-HOST: What do you mean?
+HOST: Okay, but this connects to something else I want to talk about, because if the model is learning the "shape" of what you want, then structured outputs take that to the extreme, right?
 
-EXPERT: Information at the beginning and the end of the context gets more attention than information in the middle. So if you bury something important deep in a long document, there's a real risk the model will overlook it.
+EXPERT: Oh, absolutely. So structured outputs are — this is where things get really technical and really cool. When you need the model to return valid JSON that exactly matches a specific schema, you can't just say "please return JSON" and hope for the best.
 
-HOST: That's... actually kind of alarming if you're relying on it to analyze long documents.
+HOST: Because it'll forget a field, or use the wrong type, or...
 
-EXPERT: It is. That's why document structuring is so important. You put critical context near the top, and you put your instructions at the end. And for really long contexts, you might even repeat key instructions in both places—like a bookend pattern.
+EXPERT: Exactly. Old-school "JSON mode" just guarantees syntactically valid JSON. It might give you valid JSON that's completely wrong structurally — missing fields, wrong data types, extra properties you didn't ask for.
 
-HOST: So you'd say the instruction once at the beginning and once at the end?
+HOST: So how do you actually guarantee schema compliance?
 
-EXPERT: For critical tasks, yeah. "Remember, only use information from the provided documents" at the top, and then again at the bottom right before the model starts generating.
+EXPERT: This is the cool part. It's a technique called constrained decoding. At every single step when the model is generating tokens — every word, every character — the system masks out any tokens that would violate the schema. So invalid outputs literally cannot be produced.
 
-HOST: Does that actually help?
+HOST: Wait, wait, wait — you're saying the model physically can't generate a wrong structure? It's not like "please try to match this schema." It's "you are mathematically incapable of violating this schema."
 
-EXPERT: It does. Especially in prompts with 20,000+ tokens. The model's attention can drift in long contexts, so reminders help keep it on track.
+EXPERT: A hundred percent. The schema gets compiled into something like a finite state machine, and at each step, only tokens that continue a valid path through that machine are available. OpenAI reported perfect scores on their benchmarks with this approach, compared to under forty percent without it.
 
-HOST: What about if I'm building something like a Q&A system over a bunch of documents? Should I just throw everything into the prompt, or is there a smarter approach?
+HOST: Under forty percent. So four out of ten times, the old way just... gives you broken JSON.
 
-EXPERT: If you can fit everything in the context window comfortably, and it's well-structured, that can work. But often a better approach is retrieval-augmented generation—RAG.
+EXPERT: For complex schemas, yeah. And think about what that means for production systems. If you're building an agent that calls external APIs, and it needs to pass correctly typed parameters every single time...
 
-HOST: Which is... retrieving relevant chunks first, then putting just those chunks in the prompt?
+HOST: You can't have it fail forty percent of the time.
 
-EXPERT: Exactly. You use embeddings or keyword search to find the most relevant passages, then you feed only those to the model. Saves tokens, reduces latency, and often improves accuracy because you're not diluting the context with irrelevant information.
+EXPERT: Right. So you define your tool schema with strict mode enabled, and the model is guaranteed to produce valid arguments. No retry logic needed. No error handling for malformed parameters.
 
-HOST: So it's like a two-stage process. Retrieval, then generation.
+HOST: That's... actually kind of elegant. But I'm guessing there's a catch.
 
-EXPERT: Yep. And in the generation step, you'd still use all the techniques we've been talking about—XML tags, quote grounding, explicit instructions.
+EXPERT: Of course there's a catch. First, there's a latency hit. The first time you use a new schema, the system has to compile it into that grammar. That adds a few hundred milliseconds. After that it's cached, but if you change the schema, the cache invalidates.
 
-HOST: This is starting to feel like there are layers to this. Like, basic prompting, then structured prompting, then long-context prompting, then RAG systems...
+HOST: So don't be changing your schema every request.
 
-EXPERT: Oh yeah, it's absolutely a progression. And then beyond that you've got agentic systems where the model is calling tools and making decisions and iterating.
+EXPERT: Exactly. And there are real limitations on schema complexity. You can't use recursive schemas, you can't use numerical constraints like minimum or maximum values, and — this one trips people up — every single property in your objects has to be marked as required. Optional fields have to be handled through union types with null.
 
-HOST: Wait, tools? Like function calling?
+HOST: That's a weird constraint.
 
-EXPERT: Exactly. You define functions the model can call—like "search the web" or "query a database" or "book a flight"—and the model decides when to use them based on the conversation.
+EXPERT: It is. And here's a gotcha that I think is really important — structured outputs guarantee format, not truth. The model can hallucinate a perfectly schema-valid response. Like, it can return a price of $99.99 in a perfectly formatted JSON object, and the actual price is $149.
 
-HOST: And structured outputs matter there too, right? Because the model has to provide the right arguments to the function?
+HOST: So you still need validation on the content side.
 
-EXPERT: Exactly. That's actually one of the primary use cases for strict mode. When `strict: true` is enabled on a tool, the model is guaranteed to provide correctly-typed arguments every single time.
+EXPERT: Always. Schema compliance and content accuracy are completely orthogonal concerns.
 
-HOST: So no more "oops, the model passed a string where I needed an integer"?
+HOST: Okay so this is a good segue because — all of this stuff we've been talking about, the XML structuring, the few-shot examples, the structured outputs — they all connect to this broader problem of controlling how the model communicates. And there's one aspect that I think is super underappreciated.
 
-EXPERT: Nope. The schema enforcement prevents that at the token level. It's beautiful.
+EXPERT: Verbosity control?
 
-HOST: Okay, so let's say I'm building an agent that uses tools. What does the prompt structure look like?
+HOST: Yes! How do you get the model to just... shut up when you need it to?
 
-EXPERT: You'd have your system prompt defining the agent's role and behavioral guidelines. Then you'd define your tools with strict schemas. And then the conversation flows—user message, model decides to use a tool, you execute the tool and return results, model processes results and responds to the user.
+EXPERT: Oh man, this is one of the most practical topics in all of prompt engineering. Because left to their own devices, models are verbose. They add preambles like "Great question!" They over-explain. They summarize things you didn't ask them to summarize.
 
-HOST: And each tool call is guaranteed to have valid parameters because of strict mode?
+HOST: The "helpful assistant" syndrome.
 
-EXPERT: Exactly. No more retry logic, no more parsing errors. It just works.
+EXPERT: Exactly. And here's the thing that surprises people — just saying "be brief" or "be concise" doesn't work well. Those are subjective terms and the model interprets them inconsistently.
 
-HOST: That's... honestly kind of game-changing for building reliable systems.
+HOST: So what does work?
 
-EXPERT: It really is. Before structured outputs and strict mode, you'd spend so much time on error handling and validation. Now you can focus on the actual business logic.
+EXPERT: Measurable constraints. "Respond in exactly three bullet points, each under twenty words." "Maximum two sentences." "No preambles, no sign-offs, just the answer." You have to be specific.
 
-HOST: So if I'm building something in production, I should basically always use structured outputs when I need predictable formats?
+HOST: It's like managing a chatty employee. "Keep it under five minutes" works better than "keep it short."
 
-EXPERT: Pretty much, yeah. The only time you wouldn't is if you genuinely want freeform text—like a chatbot response or creative writing. But for data extraction, tool calling, classification, anything where format matters—always use structured outputs.
+EXPERT: And there's this really counterintuitive thing about negative instructions. If you tell a model "don't use markdown" or "don't include headers" — it often ignores you.
 
-HOST: What's the cost? Like, are there downsides?
+HOST: Why?
 
-EXPERT: The main one is that first-request latency I mentioned. And there are some schema complexity limits—like, you can't have too many optional parameters or too many union types in a single schema.
+EXPERT: Because models handle positive instructions better than negated ones. Instead of "don't use jargon," say "use simple everyday language." Instead of "don't format as bullet points," say "write in flowing prose paragraphs." Tell it what to do, not what to avoid.
 
-HOST: How many is too many?
+HOST: That's like the parenting advice of "walk in the hallway" instead of "don't run in the hallway."
 
-EXPERT: The documentation says around 20 strict tools per request, 24 optional parameters, and 16 union types. Those are pretty generous limits for most use cases.
+EXPERT: Exactly that principle, yeah. And there's another fascinating finding — the style of your prompt influences the style of the output. If you write your prompt using heavy markdown with lots of headers and bullet points, the model is more likely to respond with heavy markdown.
 
-HOST: Yeah, if I'm hitting 20 tools in a single agent, I probably have bigger design problems.
+HOST: So the prompt itself is a kind of implicit example.
 
-EXPERT: Exactly.
+EXPERT: Right! Style mirroring. If you want prose, write your prompt in prose. If you want terse output, write terse instructions. It's like the model picks up on your vibe, not just your words.
 
-HOST: Okay, I want to wrap up with something practical. If someone's listening to this and they want to immediately improve their prompts today, what's the one thing they should do?
+HOST: Oh! And you know what that reminds me of? The few-shot thing we talked about earlier — how the model learns the shape of the task more than the literal content. It's the same principle, just applied to style instead of structure.
 
-EXPERT: Add structure. Even if you don't do anything else—even if you don't use examples or roles or strict mode—just wrap your different prompt components in XML tags. `<instructions>` for instructions, `<context>` for context, `<input>` for the actual user data.
+EXPERT: That's a really sharp connection. It is the same underlying mechanism. The model is always doing in-context learning, whether you're explicitly giving it examples or just implicitly demonstrating a communication style through your prompt.
 
-HOST: And that alone will make a difference?
+HOST: Okay, I want to pull something together here because I think there's a throughline we haven't made explicit. Every technique we've talked about — XML tags, document placement, few-shot examples, role prompting, structured outputs, verbosity control — they're all about the same fundamental thing.
 
-EXPERT: Night and day difference. Especially if you're working with complex prompts that mix multiple types of content.
+EXPERT: Reducing ambiguity.
 
-HOST: What's the second thing?
+HOST: Yes! You're taking the guesswork away from the model. Instead of saying "here's a blob of text, figure out what I want," you're saying "here are the boundaries, here's the format, here's what good looks like, and here's exactly how I want you to respond."
 
-EXPERT: Be specific about output format. Not "summarize this," but "summarize this in exactly three bullet points, each under 20 words, focusing on financial risks."
+EXPERT: And the more complex your task, the more that matters. A simple "what's the capital of France" prompt doesn't need any of this. But the moment you're doing multi-document analysis, or building agentic pipelines, or deploying customer-facing chatbots...
 
-HOST: Quantify everything.
+HOST: Every percentage point of consistency matters.
 
-EXPERT: Exactly. Replace subjective terms with measurable constraints.
+EXPERT: Every percentage point. And here's what I think is the most underappreciated thing about all of this — these techniques compound. XML structuring plus few-shot examples plus quote grounding plus explicit verbosity constraints... when you layer them together thoughtfully, the improvement is more than additive.
 
-HOST: And the third thing?
+HOST: It's like... each technique removes a different source of ambiguity, and the model just has fewer ways to go wrong.
 
-EXPERT: Put long documents first, instructions last. If you're working with substantial context, that ordering can genuinely improve performance by double-digit percentages.
+EXPERT: That's exactly right. And I think the word "think" thing is a perfect example of how subtle these interactions can be.
 
-HOST: Those are all really actionable. I feel like I could go implement those right now.
+HOST: Oh, the "think" trigger. Yeah, tell me about this.
 
-EXPERT: You should. And then once you've got those down, start experimenting with few-shot examples. That's when things get really fun.
+EXPERT: So in some Claude models, if you use the word "think" in your prompt — like "think about this problem" — it can accidentally activate extended reasoning mode. The model goes into this deep chain-of-thought process when all you wanted was a quick answer.
 
-HOST: Because you're teaching by demonstration instead of just giving instructions?
+HOST: So the fix is what, just say "consider" or "evaluate" instead?
 
-EXPERT: Right. And you start to see patterns in what works and what doesn't. Like, you'll discover that three diverse examples outperform five redundant ones. Or that including edge cases in your examples makes the model way more robust.
+EXPERT: Yeah, just swap the word. It's a tiny thing, but it shows how much the specific language you use matters. It's not just about the meaning of your instructions — the exact words carry weight.
 
-HOST: This has been... honestly, this has completely reframed how I think about working with AI.
+HOST: And that brings us back to positive framing, right? The specific words you choose, whether they're positive or negative, whether they accidentally trigger behaviors...
 
-EXPERT: That's the thing about prompt engineering—it sounds like this niche technical skill, but it's really about understanding how to communicate clearly with a very capable but very literal system.
+EXPERT: It all matters. Every word in a prompt is a signal. And I think that's the key mindset shift for anyone getting serious about prompt engineering. It's not about finding magic words. It's about being precise, being structured, and understanding that the model is processing every single token you give it.
 
-HOST: And the better you get at it, the more you can unlock from these models.
+HOST: So where does this go from here? Because we've talked about what works today, but these models keep changing. The "idiot persona" thing probably works differently on different model versions. Prefilled responses used to be a technique and now they're deprecated in Claude 4.6.
 
-EXPERT: Exactly. Same model, same API, but wildly different results depending on how you structure your prompts.
+EXPERT: That's such an important point. Techniques that work today might not work tomorrow. Which is why the principle matters more than the specific trick. The principle is always: be explicit, be structured, reduce ambiguity. The specific implementation — XML versus markdown, three examples versus five — that's going to evolve.
 
-HOST: So the technology is powerful, but the interface—the prompt—is where the magic happens.
+HOST: So it's less about memorizing a playbook and more about developing an intuition for how these models process information.
 
-EXPERT: Couldn't have said it better myself.
+EXPERT: And testing. Always testing. What works for one model family might not work for another. Claude loves XML tags. GPT models might prefer markdown. The only universal truth is that specificity beats vagueness, every single time.
+
+HOST: I love that. Specificity beats vagueness. That might be the most useful sentence anyone's ever said about prompt engineering.
+
+EXPERT: And honestly? It's pretty good life advice too.
+
+HOST: Ha. Fair point. You know what I keep coming back to, though? That stat about example ordering — same examples, different order, and you go from state-of-the-art performance to basically random. That just sits with me. Because it means that the difference between a great prompt and a terrible one might be something you'd never even think to check.
+
+EXPERT: Which is exactly why prompt engineering is an engineering discipline and not just a writing exercise. You need to test, iterate, measure. Treat your prompts like code — version them, A/B test them, track performance metrics.
+
+HOST: And maybe don't call the AI an idiot. Unless that happens to work for your specific use case.
+
+EXPERT: Honestly? Test it. You might be surprised.

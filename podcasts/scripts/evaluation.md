@@ -1,471 +1,243 @@
-HOST: Okay, so I have to tell you about this conversation I had with a friend last week. She's building this AI customer support agent, right? And she's like, "I think it's ready to deploy." And I'm like, "How do you know?" And she goes—I swear—she goes, "Well, I've tested it a bunch of times and it seems pretty good."
+HOST: So okay, here's something that's been bugging me. You build this amazing AI agent, right? It can write code, it can answer questions, it can draft emails. And someone asks you, "Is it good?" And you just... stare at them.
 
-EXPERT: Oh no.
+EXPERT: Because you don't actually know.
 
-HOST: Right? "Seems pretty good." That's the bar we're clearing here.
+HOST: You don't know! You ran it a bunch of times, it seemed fine, you showed it to a couple people, they said "yeah, looks good." And that's your entire evaluation strategy.
 
-EXPERT: That's what's called—and this is the technical term—a vibe-based eval.
+EXPERT: You've just described what the industry lovingly calls "vibe-based evals."
 
-HOST: Wait, that's actually what it's called?
+HOST: Vibe-based evals. I love that term and I hate it at the same time.
 
-EXPERT: That's actually what it's called. Vibe-based evals. Which is just, you know, vibing with your model. Feeling it out. Seeing if the energy is right.
+EXPERT: It's painfully accurate though. And here's the thing — a shocking number of teams in production right now are still doing exactly this. They're shipping AI systems where the evaluation process is basically "I ran it ten times and it felt right."
 
-HOST: I mean, to be fair, when I'm cooking, that's kind of how I know if something needs more salt.
+HOST: Which is wild when you think about it, because we would never do that with regular software. Like, you wouldn't ship a payment system and say "yeah, it processed the last few transactions correctly, ship it."
 
-EXPERT: Okay, but here's the thing—when you under-salt your pasta, you eat a mediocre dinner. When you deploy an AI agent based on vibes, it might leak customer data, give wrong information to thousands of users, or just... completely fail in ways you never imagined.
+EXPERT: Right, right, right. And it gets worse. Because with traditional software, at least when it breaks, it breaks the same way every time. With LLMs, you get this whole other dimension — the same input can give you different outputs across runs.
 
-HOST: Right, right, right. Slightly higher stakes.
+HOST: Okay so let's fix this. Where do you even start? Because the problem feels kind of overwhelming. Like, how do you even define "good" for something that generates open-ended text?
 
-EXPERT: Slightly. So this is why evaluation and testing for AI systems is, like, maybe the most important thing nobody talks about enough.
+EXPERT: So this is actually where everything begins — defining success criteria. And there's a framework people use called SMART. Specific, Measurable, Achievable, Relevant, Time-bound. And I know, I know, it sounds like corporate buzzword territory—
 
-HOST: Okay, so walk me through this. Because I feel like most people think, "Oh, I'll just run some tests." But it's not that simple, is it?
+HOST: It sounds like something from a management seminar, yeah.
 
-EXPERT: It's so much more complicated than people think. Here's the fundamental problem: when you're building a traditional software application, testing is relatively straightforward. Does the function return the right value? Does the button do what it's supposed to do? Binary outcomes.
+EXPERT: It does! But stick with me. The reason it matters is because it forces you to go from "the agent should handle calendar requests" to something like "the agent should successfully create calendar events with the correct time and attendees in under two seconds, with 95% accuracy."
 
-HOST: Pass or fail.
+HOST: Oh, that's a totally different statement. One you can actually test against.
 
-EXPERT: Exactly. But with AI systems—especially language models—you're not dealing with deterministic outputs anymore. You ask the same question twice, you might get two different answers. Both might be correct! Or one might be better in a way that's hard to quantify.
+EXPERT: Exactly. And what's interesting is that success criteria aren't one-dimensional. A customer support agent isn't just measured on "did it resolve the ticket?" It also needs to do it within a reasonable number of turns, maintain the right tone, not leak sensitive information—
 
-HOST: Oh, that's... yeah, that's a whole different beast.
+HOST: Wait, not leak sensitive information? That's a success criterion?
 
-EXPERT: Right? So the first thing you have to do—and I mean, this is step zero, you cannot skip this—is define what success actually means.
+EXPERT: Privacy compliance is huge. And this is where it gets really interesting, because these dimensions often conflict with each other. Like, optimizing for speed might mean the agent gives shorter, less thorough answers.
 
-HOST: Okay, but like, success is when it works, right?
+HOST: It's like... you know when you're at a restaurant and the waiter is trying to be fast but also attentive but also not hovering? Those are competing objectives.
 
-EXPERT: See, that's exactly the trap. What does "works" mean? Let's say you're building a calendar agent. Someone says, "Schedule a meeting with Bob tomorrow at 2pm." Does "works" mean it creates a calendar event? Sure. But what if it creates the event at 2am instead of 2pm? What if it invites the wrong Bob? What if it takes 45 seconds to respond?
+EXPERT: That's a great analogy. And so what the research suggests is this five-dimension framework where you prioritize in a specific order. Safety first — that's non-negotiable, zero tolerance. Then correctness. Then reliability. Then efficiency. And finally user experience, things like tone and clarity.
 
-HOST: Okay, I see where you're going. You need to be, like, annoyingly specific.
+HOST: So safety is always the floor, not a nice-to-have.
 
-EXPERT: Annoyingly specific is perfect. There's actually a framework for this—SMART criteria. Specific, Measurable, Achievable, Relevant, Time-bound.
+EXPERT: Always. And here's where I think people get tripped up. They'll say "well, our agent is 98% accurate." Great. But what about the other 2%? If that 2% includes cases where it leaks someone's medical records, your 98% accuracy number is meaningless.
 
-HOST: Oh, like from business school.
+HOST: Huh. I never thought about it that way. So you need to test both the things it should do AND the things it shouldn't.
 
-EXPERT: Exactly! It's the same idea. So instead of saying "the agent should handle calendar requests," you say: "The agent should successfully create calendar events in under 2 seconds with 95% accuracy, using appropriate confirmation tone, and never double-booking."
+EXPERT: Yes! Balanced test design. You need positive test cases — "schedule a meeting with Bob at 2pm" and verify it creates the right event. But you also need negative cases — "delete all my contacts" and verify it refuses politely.
 
-HOST: That's... yeah, that's a totally different sentence.
+HOST: Okay so we've got our criteria defined. Now here's where I think it gets really gnarly. How do you actually measure this stuff? Because some of these dimensions — like tone — that's not something you can just write a unit test for.
 
-EXPERT: And now you can actually test it. You can measure it. You know what failure looks like.
+EXPERT: So this is where we get into the different grading methods, and there are essentially three tiers. First tier, the foundation: automated metrics. Code-based, deterministic, fast. Second tier: LLM-as-a-judge. You use a model to evaluate another model. Third tier: human evaluation. Gold standard, but slow and expensive.
 
-HOST: Okay, so you've got your success criteria. Now what? How do you actually test this thing?
+HOST: Let's start at the bottom. The automated stuff. What does that actually look like?
 
-EXPERT: So this is where it gets interesting. There are basically three big approaches: automated evaluation, LLM-based grading, and human evaluation.
+EXPERT: Okay so the simplest one is exact match. Did the output match the expected answer character for character? It sounds basic, and it is basic, but it's incredibly useful for things like classification tasks or extractive QA where there's one right answer.
 
-HOST: Let's start with automated. That sounds like the easy one.
+HOST: But it's also kind of fragile, right? Like "42" versus "42 period" would fail.
 
-EXPERT: It is the easy one! Automated evaluation is basically code-based grading. You're using deterministic algorithms to check outputs. The simplest version is exact match—does the output match the reference answer character-for-character?
+EXPERT: Super fragile! You always want to normalize — strip whitespace, lowercase everything, handle punctuation. But even then, the fundamental limitation is that "Paris" and "The capital of France is Paris" — those fail exact match even though they convey the same information.
 
-HOST: Like, if I ask "What's the capital of France?" and it says "Paris," that's a match.
+HOST: So you need something smarter.
 
-EXPERT: Right. And if it says "The capital of France is Paris," that's not a match.
+EXPERT: Which brings us to ROUGE scores. And okay, this is going to sound nerdy but I actually find these really elegant. ROUGE stands for Recall-Oriented Understudy for Gisting Evaluation—
 
-HOST: Wait, but that second answer is also correct!
+HOST: That is the most academic acronym I've ever heard.
 
-EXPERT: Exactly! This is the limitation. Exact match is great for classification tasks, multiple choice questions, things with clear-cut categorical answers. But it completely falls apart for anything open-ended.
+EXPERT: It really is. But what it does is straightforward — it measures the overlap of n-grams between what the model generated and a reference answer. ROUGE-1 looks at individual words, ROUGE-2 looks at word pairs, and ROUGE-L looks at the longest common subsequence.
 
-HOST: So what else is there in the automated bucket?
+HOST: The longest common what now?
 
-EXPERT: So you've got string matching metrics like ROUGE and BLEU. These come from traditional NLP—they were originally designed for machine translation and text summarization.
+EXPERT: Subsequence. So imagine the reference is "the cat sits on the floor" and the model says "the cat on the floor sits." ROUGE-1 would score those pretty similarly because they share most of the same words. But ROUGE-L catches that the word order is different, because the longest sequence of words that appear in the same order is shorter.
 
-HOST: I've heard of BLEU scores. That's like, how similar two pieces of text are, right?
+HOST: Oh! So it's capturing structure, not just vocabulary.
 
-EXPERT: Sort of. BLEU measures n-gram precision—basically, how much of your generated text appears in the reference text. ROUGE is similar but emphasizes recall instead—how much of the reference appears in your generation.
+EXPERT: Exactly. And then there's BLEU, which comes from machine translation—
 
-HOST: Okay, you're going to have to translate that, because I just heard word salad.
+HOST: I always mix up ROUGE and BLEU. Which one does what?
 
-EXPERT: Fair. Let me give you an example. Say the reference answer is "The cat sits on the mat." And your model says "The cat is on the mat."
+EXPERT: Great question and this trips people up all the time. ROUGE is recall-oriented — how much of the reference shows up in the output? BLEU is precision-oriented — how much of the output appears in the reference? Think of it this way: ROUGE asks "did you cover everything important?" and BLEU asks "did you avoid making stuff up?"
 
-HOST: Okay, similar but not identical.
+HOST: Oh, that's actually a clean way to think about it. So for summarization you'd want ROUGE because you care about coverage.
 
-EXPERT: Right. So ROUGE-1 looks at individual words. You've got "the," "cat," "on," "mat" in common. "Sits" is missing, "is" is extra. It calculates precision, recall, and F1 score based on that overlap.
+EXPERT: Right. And for translation you'd want BLEU because you care about the output being correct. But here's the gotcha that I think is really important — and honestly this kind of blew my mind when I first learned it.
 
-HOST: And F1 is... I should know this.
+HOST: Go on.
 
-EXPERT: F1 is the harmonic mean of precision and recall. Precision is "how many of the words I generated were relevant?" Recall is "how many of the relevant words did I generate?" F1 balances both.
+EXPERT: These metrics have no semantic understanding whatsoever. "The cat ate the dog" and "the dog ate the cat" — those get identical ROUGE-1 scores.
 
-HOST: Okay, so these metrics give you a score between zero and one, and higher is better?
+HOST: Wait. Seriously?
 
-EXPERT: Exactly. But here's the thing—and this is a huge gotcha—these metrics don't understand meaning.
+EXPERT: Same exact words, same n-gram overlap. ROUGE-1 can't tell the difference. And it gets worse — a hallucinated response that happens to share vocabulary with the reference can score well even though it's completely wrong.
 
-HOST: What do you mean?
+HOST: That's... actually kind of terrifying. So you could have a model that's confidently making stuff up and your evaluation metric is giving it a thumbs up.
 
-EXPERT: Okay, so: "The cat ate the dog" versus "The dog ate the cat." Those score identically on ROUGE-1.
+EXPERT: Which is exactly why you can't rely on any single metric. And there's this wild statistic from ACL 2023 — 76% of academic papers that cite ROUGE are referencing software packages that have known scoring errors. And only 5% of those papers even list their configuration parameters.
 
-HOST: Oh. Oh, that's bad.
+HOST: So people are evaluating their models with broken tools and not even documenting which version of the broken tool they used.
 
-EXPERT: Right? Same words, completely different meaning. So these automated metrics are fast, they're cheap, they're reproducible. But they're kind of dumb.
+EXPERT: Welcome to the state of NLP evaluation. It's... not great.
 
-HOST: So when would you actually use them?
+HOST: Okay, I'm starting to see why just using these automated metrics isn't enough. So that brings us to this LLM-as-a-judge idea, which — I'll be honest — when I first heard about it, it sounded a little circular. You're using AI to judge AI?
 
-EXPERT: They're great for baseline measurements. They're great for regression testing—making sure you didn't break something that was working. And they're great for structured outputs where exact match makes sense. But for anything nuanced? You need something smarter.
+EXPERT: I totally get that reaction. And you're right to be skeptical. But here's why it actually works better than you'd expect. The judge model is typically more capable than the model being evaluated. And you give it a very specific rubric — not just "is this good?" but "here are the exact criteria, here's what each score means, reason through it step by step."
 
-HOST: Which brings us to... LLM-based grading?
+HOST: So it's less like asking a student to grade their own homework and more like asking a professor to grade the student's homework.
 
-EXPERT: Yes! Okay, this is where things get really interesting. LLM-as-a-Judge.
+EXPERT: That's the idea. And the numbers back it up — LLM-as-a-judge evaluations can hit over 80% agreement with human preferences in side-by-side comparisons. And in some tasks like extractive QA, the correlation with human scores is something like 0.85.
 
-HOST: Wait, wait, wait. You're using an AI to grade an AI?
+HOST: How does that compare to the automated metrics we were just talking about?
 
-EXPERT: I know how it sounds.
+EXPERT: Exact match gets a correlation of 0.17. F1 scores get 0.36.
 
-HOST: It sounds like we've created a closed loop of robot judgment.
+HOST: Point-one-seven?! That's basically random!
 
-EXPERT: I mean, kind of. But here's why it actually works: a really capable language model—like Claude Sonnet or GPT-4—can make nuanced judgments that simple string matching can't. You can give it a rubric, show it an output, and ask, "Is this good?"
+EXPERT: It's not great. And that's the whole argument for LLM-based grading — it bridges this massive gap between cheap-but-dumb automated metrics and expensive-but-accurate human evaluation.
 
-HOST: Okay, but doesn't that have the same problem? Different answers each time?
+HOST: So how does it actually work in practice? Like, what does the prompt look like?
 
-EXPERT: That's where the rubric comes in. You give the judge model very specific criteria. Not "is this helpful," but "does this response include the required information X, avoid mentioning capability Y that the system doesn't have, and stay under 2 sentences?"
+EXPERT: The core pattern is: you give the judge the original question, the model's response, and a rubric with explicit score definitions. Then — and this part is key — you tell it to explain its reasoning first, before giving a score. Chain-of-thought evaluation.
 
-HOST: So you're moving the specificity from code to the prompt.
+HOST: Why does the order matter?
 
-EXPERT: Exactly. And the research on this is actually pretty compelling. LLM judges can achieve over 80% agreement with human preferences. And in some tasks, they correlate with human judgment way better than exact match or F1 scores.
+EXPERT: This is actually a fascinating finding from the research. When you ask for the score first and explanation second, the model kind of anchors on a number and then rationalizes it. But when you force it to reason through the criteria first, the scores end up much more aligned with human judgment.
 
-HOST: Okay, so you write a good rubric, you send it to the judge model, and it gives you a score.
+HOST: So it's like... if I asked you "rate this restaurant 1 to 5" versus "tell me about the food, the service, the atmosphere, and then give me a rating." The second one is going to be more thoughtful.
 
-EXPERT: Yeah. And there are a bunch of different scoring approaches. You can do binary—correct or incorrect. You can do Likert scales, like one to five. You can do pairwise comparison, where you show it two responses and ask which is better.
+EXPERT: Perfect analogy. And there's another trick — evaluating one dimension at a time. Instead of asking "how good is this response overall?" you ask "how accurate is it?" then separately "how clear is it?" then "how relevant is it?" Each evaluation is tighter and more consistent.
 
-HOST: Which one's best?
+HOST: Okay but I have to ask about the biases. Because if ROUGE can't tell the difference between "the cat ate the dog" and "the dog ate the cat," surely LLM judges have their own blind spots.
 
-EXPERT: It depends! Binary is most reliable but gives you less information. Likert gives you gradation but can be inconsistent. Pairwise is actually really strong for certain use cases because it's easier for the model to say "A is better than B" than to assign an absolute score.
+EXPERT: Oh, they absolutely do. And some of them are sneaky. The big three are position bias, verbosity bias, and self-preference bias.
 
-HOST: Huh. That's actually kind of how I make decisions too. Like, I can't tell you how good a restaurant is on an absolute scale, but I can definitely tell you if I like it more than another restaurant.
+HOST: Break those down for me.
 
-EXPERT: Exactly! Our brains are wired for relative comparison.
+EXPERT: Position bias — when you show the judge two responses side by side and ask which is better, it will tend to prefer whichever one comes first. And we're not talking about a tiny effect. Swapping the order can shift the accuracy by ten percent or more.
 
-HOST: Okay, so this sounds great. What's the catch?
+HOST: Ten percent?! Just from the order?
 
-EXPERT: Oh, there are so many catches.
+EXPERT: Just from the order. The fix is to either randomize which response goes first, or actually run the evaluation twice with both orderings and take the consensus.
 
-HOST: I knew it.
+HOST: That doubles your cost though.
 
-EXPERT: Okay, first: position bias. In pairwise comparisons, the model often favors whichever response comes first.
+EXPERT: It does. Tradeoffs everywhere. Verbosity bias is the next one — LLM judges tend to prefer longer, more detailed responses even when the shorter one is actually better.
 
-HOST: You're kidding.
+HOST: Oh, I've seen that in humans too. You show someone a longer answer and they assume it's more thorough.
 
-EXPERT: I'm not. Some studies show it can shift accuracy by 10% or more depending on order. So you have to randomize the order, or run both orderings and aggregate.
+EXPERT: Same instinct, basically baked into the model. The fix there is to explicitly tell the judge to penalize unnecessary length. And then self-preference bias — an LLM evaluating its own outputs tends to give itself higher scores.
 
-HOST: That's so weird. Why does that happen?
+HOST: That one seems obvious in retrospect but I bet people still do it.
 
-EXPERT: Probably the same reason humans have primacy bias. The first thing you see sets a reference point. But yeah, it's a real problem.
+EXPERT: All the time. The best practice is to always use a different model as your judge, or at minimum, a different prompt configuration. And honestly, for high-stakes stuff like medical or legal domains, LLM judge agreement with human experts drops to the 60-68% range.
 
-HOST: What else?
+HOST: So you really do still need humans in the loop for some things.
 
-EXPERT: Verbosity bias. LLM judges love long answers.
+EXPERT: For some things, absolutely. This is where the multi-grader architecture comes in, and I think this is actually the most practical thing we'll talk about today.
 
-HOST: Oh no.
+HOST: Okay, hit me.
 
-EXPERT: Yeah. Longer responses tend to get higher scores regardless of actual quality. You have to explicitly tell the judge to penalize unnecessary length.
+EXPERT: So instead of relying on any single evaluation method, you combine multiple graders. Imagine this: you have a code-based grader that checks functional correctness — did the output match the expected format? That gets a weight of, say, 40%. Then an LLM rubric grader checks tone — is it polite, concise, helpful? That gets 20%. A latency check — did it respond under two seconds? Another 20%. And then a binary safety check that must pass regardless of everything else.
 
-HOST: Okay, what about self-preference bias? Because that seems obvious.
+HOST: The safety one being pass-fail is smart. Like, you don't get to average your way out of a safety violation.
 
-EXPERT: Oh, absolutely. If you use Claude to evaluate Claude's outputs, it's going to be biased. So best practice is to use a different model as the judge. Or at minimum, a totally different configuration.
+EXPERT: Exactly. "You were so helpful in all these other ways" doesn't matter if you leaked someone's social security number. The safety grader has what they call a "required: true" flag — everything else can be a weighted score, but safety is a hard gate.
 
-HOST: So you can't just have the AI grade itself on a curve.
+HOST: This is making me think about pass-at-k versus pass-to-the-k. I saw that distinction somewhere and it kind of melted my brain.
 
-EXPERT: Correct. Although honestly, that would be kind of hilarious. "I give myself an A+."
+EXPERT: Oh this is good. Okay so pass-at-k asks: if I run the system k times, does it succeed at least once? That's great for exploratory tools — like a coding assistant where you might generate five solutions and pick the best one.
 
-HOST: So with all these biases, is LLM-as-a-Judge even worth it?
+HOST: Right, you only need one good answer.
 
-EXPERT: Oh, totally. You just have to know the limitations. The big win is that it scales. You can evaluate thousands of outputs without hiring an army of human graders. And for a lot of tasks—like evaluating tone, or helpfulness, or whether a response is polite—it genuinely works well.
+EXPERT: But pass-to-the-k, or pass-hat-k, asks: if I run it k times, does it succeed every single time? And that's the production reliability metric. Because if your customer support bot fails one out of five times—
 
-HOST: Okay, so we've got automated metrics for the simple stuff, LLM judges for the nuanced stuff. What about actual humans?
+HOST: That's 20% of your customers having a bad experience.
 
-EXPERT: Human evaluation is the gold standard. Especially for subjective criteria—like, is this creative? Is this contextually appropriate? Is this empathetic?
+EXPERT: Right! And it's not like they're going to say "well, four out of five times it works great." They're going to remember the one time it didn't.
 
-HOST: But it's expensive.
+HOST: Okay, so let me see if I can put this whole picture together. You start by defining very specific success criteria — not "be helpful" but exactly what helpful means for your use case. You prioritize safety above everything, then correctness, then reliability.
 
-EXPERT: And slow. And it doesn't scale. So the pattern that's emerged is: use human evaluation for calibration. You have humans grade a sample set, then you use that to calibrate your LLM judges or your automated metrics. And then you use the automated stuff for ongoing evaluation.
+EXPERT: Right so far.
 
-HOST: So humans set the bar, and then the machines maintain it.
+HOST: Then for actually measuring those criteria, you layer your approaches. Automated metrics like exact match and ROUGE for the stuff that has clear right answers. LLM-as-a-judge for the nuanced stuff like tone and relevance. Humans for calibration and high-stakes edge cases.
 
-EXPERT: That's a great way to put it.
+EXPERT: And you don't just test once — you maintain two separate evaluation suites.
 
-HOST: Okay, I want to go back to something you mentioned earlier. You said there are different dimensions you need to evaluate. It's not just "did it work?"
+HOST: The capability evals and the regression evals.
 
-EXPERT: Right. So there's this framework I really like—the Five Dimension Framework. It prioritizes evaluation criteria in order.
+EXPERT: Yes! Capability evals test the new stuff. Pass rates start low and you're trying to push them up. Regression evals test the stuff that already works — those should stay near 100%. If a regression eval starts failing, you know you broke something.
 
-HOST: I'm ready. Hit me.
+HOST: It's like... capability evals are your aspirations and regression evals are your promises.
 
-EXPERT: One: Safety. This is absolute. No negotiation. The system cannot leak sensitive data, it cannot cause harm, it cannot violate regulations.
+EXPERT: Oh, I like that. I'm stealing that.
 
-HOST: That's the "do no evil" layer.
+HOST: Go ahead. But here's what I keep coming back to — the thresholds. When you say 95% accuracy or response under two seconds, how do you even pick those numbers? Isn't that just... a guess?
 
-EXPERT: Exactly. If you fail safety, nothing else matters. Two: Correctness. Does it actually do the thing it's supposed to do?
+EXPERT: It is a guess! And I think that's actually the most honest and important thing to acknowledge. The research is very clear on this — threshold setting is iterative. Your first threshold is an educated guess. You set it, you run your evals, you look at the results, and you adjust.
 
-HOST: The fundamental value proposition.
+HOST: So the thresholds are living documents.
 
-EXPERT: Right. Three: Reliability. Does it do the thing consistently? Not just once in a while when the stars align.
+EXPERT: They have to be. Because here's what happens if you don't treat them that way — you either set the bar too low and ship a crappy product, or you set it too high and never ship anything. And there's another gotcha here that I think is really sneaky.
 
-HOST: Okay, this is interesting. Because I feel like a lot of people stop at correctness.
+HOST: What's that?
 
-EXPERT: They do! And then they deploy, and it works great in testing, and then in production it fails 30% of the time and they're like, "What happened?"
+EXPERT: Over-optimization. If you optimize purely for one metric — say, task completion rate — the agent might start developing these weird behaviors. Like, it might start completing tasks that it really shouldn't complete. "Delete all my contacts" — well, technically completing that request would boost the completion rate.
 
-HOST: So reliability is basically, can you count on it?
+HOST: Oh no. So the eval is technically passing but the agent is doing something terrible.
 
-EXPERT: Exactly. And this is where metrics like pass-at-k versus pass-to-the-k come in.
+EXPERT: Which is why you need those balanced test cases we talked about earlier. The positive cases AND the negative cases. And honestly, this is where the whole "start with 2-3 metrics, not 20" advice really shines.
 
-HOST: Okay, you're going to have to explain that because it sounds like you just said the same thing twice.
+HOST: The five-metric rule thing?
 
-EXPERT: I know, the notation is confusing. Pass-at-k—with "at"—measures the probability that at least one attempt succeeds out of k tries. Pass-to-the-k—that's an exponent—measures the probability that all k attempts succeed.
+EXPERT: Yeah — one or two custom metrics for your specific domain, two or three generic ones for the common stuff like relevance, safety, latency. Don't track metrics you won't act on, because every additional metric adds evaluation cost and interpretation complexity.
 
-HOST: Oh, so one is "did I get lucky?" and the other is "can I count on this?"
+HOST: That's a good principle. If you're not going to change your behavior based on the metric, why measure it?
 
-EXPERT: Perfect. Exactly right. Pass-at-k is fine for exploratory tools, like brainstorming. Pass-to-the-k is what you need for production reliability.
+EXPERT: Exactly. And that connects to something bigger that I think is the real takeaway from all of this research. Evaluation isn't a phase you do at the end. It's not a checkbox before deployment. It's this ongoing, evolving discipline that starts on day one and never actually stops.
 
-HOST: Got it. Okay, what are dimensions four and five?
+HOST: Because the models change, the use cases change, the edge cases you discover in production surprise you.
 
-EXPERT: Four: Efficiency. Latency and resource usage. Even a perfect answer is useless if it takes five minutes to generate.
+EXPERT: And your understanding of "good" changes too. The criteria you set in week one are not going to be the criteria you care about in month six. You'll discover failure modes you never imagined, and you'll need to add evals for those.
 
-HOST: Yeah, I'm not waiting five minutes for an AI to schedule my meeting.
+HOST: So in a weird way, your evaluation suite becomes this living record of everything that's ever gone wrong.
 
-EXPERT: Right. And five: User Experience. This is tone, clarity, helpfulness. The vibes, basically.
+EXPERT: And everything you've decided matters. It's like... each eval is a lesson learned, encoded as a test.
 
-HOST: Wait, so vibes do matter, they're just last?
+HOST: There's something kind of beautiful about that, actually. Your test suite tells the story of what your system has been through.
 
-EXPERT: They matter! They're just not the first thing you check. If your system is unsafe or incorrect, being polite about it doesn't help.
+EXPERT: And here's what I think is the most counterintuitive part of all of this — the best evaluation systems aren't the ones with the most sophisticated metrics. They're the ones that start simple, iterate fast, and treat every production incident as a new test case.
 
-HOST: That makes sense. Okay, so you've got your dimensions, you've got your metrics. How do you actually set thresholds? Like, how do you know if 85% accuracy is good enough?
+HOST: So you don't need to build the perfect eval framework before you ship.
 
-EXPERT: Oh man, this is the part where I have to tell you something you're not going to like.
+EXPERT: You need to build one that's honest about what it can and can't measure, and that grows with your system. Start with exact match for the easy stuff, add an LLM judge when you need nuance, bring in humans when the stakes are high enough. But the key is to start. Because the alternative—
 
-HOST: Uh oh.
+HOST: Vibe-based evals.
 
-EXPERT: Thresholds are guesses.
+EXPERT: Vibe-based evals. And honestly, the scariest thing about vibe-based evals isn't that they're inaccurate. It's that they feel accurate. You run the system ten times, it works great, and you develop this false confidence.
 
-HOST: What?
+HOST: Until you hit that edge case in production that your ten examples never covered.
 
-EXPERT: Educated guesses, but guesses. You might say, "We need 90% correctness," and that sounds reasonable. But what if you get 87% and it turns out users are totally fine with that? Or what if you hit 92% but users hate the experience because it's too slow?
+EXPERT: And now I'll leave you with this thought. Think about the last AI system you worked with — not built, just used. How do you know it was evaluated well? What would it take for you to trust it with something that actually matters?
 
-HOST: So you just have to... try it and see?
+HOST: That's... yeah. That question's going to stick with me. Because the answer for most systems right now is "I don't know and I can't know," and that's a little unsettling.
 
-EXPERT: Basically. Thresholds are living documents. You set initial targets based on intuition and industry standards, then you refine them based on testing and production feedback.
+EXPERT: And maybe that's the most useful thing evaluation gives you — not certainty, but the ability to be specific about your uncertainty. Instead of "it works well," you can say "it completes this type of task correctly 94% of the time, responds in under two seconds, and has never failed a safety check across ten thousand test cases."
 
-HOST: That feels very unscientific for something that's supposed to be, you know, systematic testing.
+HOST: You still can't say it's perfect.
 
-EXPERT: I know. But think about it—what's the "right" response time for a web page? Some people say 200 milliseconds, some say 1 second. It depends on context, user expectations, what they're trying to do.
-
-HOST: Okay, fair. So you start with a hypothesis and iterate.
-
-EXPERT: Exactly. And this is why you need both capability evals and regression evals.
-
-HOST: Okay, what's the difference?
-
-EXPERT: Capability evals test new features. Things the agent struggles with. You expect low pass rates at first. The goal is to improve until it's ready to deploy.
-
-HOST: So those are aspirational.
-
-EXPERT: Right. Regression evals test proven capabilities. Things that should already work. They should maintain close to 100% pass rate.
-
-HOST: And if they don't?
-
-EXPERT: Then you broke something. That's why they're called regression tests—they catch regressions.
-
-HOST: Got it. Okay, so you're running all these evals. How do you combine the scores? Like, if I pass correctness but fail latency, what happens?
-
-EXPERT: This is where you need a multi-grader architecture. You define different graders for different dimensions, and you give them weights.
-
-HOST: Like, correctness is 40% of the score, tone is 20%, latency is 20%?
-
-EXPERT: Exactly. And then you can have different scoring modes. Weighted—where you average the weighted scores. Binary—where everything has to pass. Or hybrid—where some things are required and others are weighted.
-
-HOST: What do you mean, some things are required?
-
-EXPERT: Safety. Safety is always required. You can have perfect scores on everything else, but if you fail safety, the whole eval fails.
-
-HOST: Right. Because leaking someone's social security number is not offset by being really polite about it.
-
-EXPERT: Exactly.
-
-HOST: Okay, I want to talk about something that's been bugging me. You mentioned RAG systems earlier. What's different about evaluating those?
-
-EXPERT: Oh, good question. RAG—retrieval-augmented generation—has this extra retrieval step. So you're not just evaluating the generation quality, you're also evaluating the retrieval quality.
-
-HOST: Right, because it's going out and fetching information first.
-
-EXPERT: Exactly. So there are specific metrics for RAG. Faithfulness—does the generated answer stick to the retrieved context, or is it making stuff up?
-
-HOST: Hallucinating.
-
-EXPERT: Right. Context relevancy—did it retrieve the right information in the first place? And context recall—did it retrieve all the necessary information?
-
-HOST: Oh, so it's not enough to just get some relevant context. You need all the relevant context.
-
-EXPERT: Right. If it retrieves three documents but misses the fourth one that has the critical piece of information, that's a problem.
-
-HOST: And how do you measure that?
-
-EXPERT: For faithfulness, you typically use an LLM judge. You give it the context and the answer and ask, "Can this answer be deduced from this context?"
-
-HOST: So you're checking for extrapolation.
-
-EXPERT: Exactly. For context relevancy and recall, you can use a combination of automated metrics and LLM grading. It depends on whether you have ground truth data.
-
-HOST: Okay, so let's say I'm building an AI agent and I want to set up evaluation. Where do I even start?
-
-EXPERT: Start simple. Don't try to measure everything at once. There's this guideline called the 5-Metric Rule.
-
-HOST: Only five metrics?
-
-EXPERT: Start with two to three, actually. One or two custom metrics for your specific domain—like, are calendar events created correctly? And then two or three generic metrics—relevance, safety, latency.
-
-HOST: Why not more?
-
-EXPERT: Because more metrics means higher evaluation costs, more complexity in interpretation, and honestly, metrics you won't act on.
-
-HOST: What do you mean?
-
-EXPERT: If you're tracking ten different metrics, and seven of them never influence your decisions, why are you tracking them? Every metric should have a clear purpose.
-
-HOST: That's a good point. I feel like in software engineering generally, people love collecting metrics they never look at.
-
-EXPERT: Oh, absolutely. "We're very data-driven," and then nobody actually uses the data.
-
-HOST: Guilty. Okay, so I've got my five metrics, I'm running evals. How often should I be doing this?
-
-EXPERT: It depends on the stage. During development, constantly. Every time you make a change, run your regression evals. Make sure you didn't break anything.
-
-HOST: That's like CI/CD for AI.
-
-EXPERT: Exactly. Continuous integration, continuous evaluation. And then in production, you want to sample a percentage of traffic and evaluate it ongoing.
-
-HOST: Wait, you're evaluating live user interactions?
-
-EXPERT: Not all of them—that would be too expensive. But yeah, you sample maybe 10% of interactions and run evals on them. That's how you catch issues that didn't show up in testing.
-
-HOST: Huh. So it's like A/B testing meets quality assurance.
-
-EXPERT: That's actually a great analogy.
-
-HOST: Okay, I want to talk about failure modes. What are the biggest mistakes people make with evaluation?
-
-EXPERT: Oh, I have a list.
-
-HOST: Of course you do.
-
-EXPERT: Okay, number one: vague criteria. We talked about this already. "The agent should be helpful" is not a success criterion.
-
-HOST: Right, you need specificity.
-
-EXPERT: Two: only testing positive cases. People will test "schedule a meeting with Bob" but not "delete all my contacts."
-
-HOST: Oh, because you need to test refusals.
-
-EXPERT: Exactly! Your agent should appropriately refuse to do harmful or out-of-scope things. If you don't test that, you don't know if it's working.
-
-HOST: What else?
-
-EXPERT: Three: over-relying on ROUGE and BLEU for semantic tasks. These are lexical metrics. They're great for summarization benchmarks, but they're terrible for evaluating conversational quality or factual accuracy.
-
-HOST: Because they don't understand meaning.
-
-EXPERT: Right. Four: not accounting for LLM evaluator non-determinism. You run the same eval twice, you get different scores. You need to run multiple passes and aggregate.
-
-HOST: How much variance are we talking about?
-
-EXPERT: It depends on the task and the model, but it can be significant. This is why temperature zero is recommended for evaluation—it reduces randomness.
-
-HOST: Okay, what's number five?
-
-EXPERT: Five: treating thresholds as permanent. We talked about this. Your initial threshold of "90% accuracy" is a starting point, not gospel.
-
-HOST: It's a hypothesis to be tested.
-
-EXPERT: Exactly. And six—this is a big one—optimizing for a single metric without balance.
-
-HOST: What happens?
-
-EXPERT: You get pathological behavior. Like, if you optimize purely for task completion rate, your agent might develop shortcuts. It'll say "yes, I scheduled that" without actually doing it, just to boost the completion metric.
-
-HOST: Oh, that's like Goodhart's Law. "When a measure becomes a target, it ceases to be a good measure."
-
-EXPERT: Yes! Exactly. This is why you need multiple dimensions and negative test cases.
-
-HOST: Okay, so I've built my eval system, I'm running tests, I'm tracking metrics. But here's my question: how do I know the eval itself is correct?
-
-EXPERT: Oh man, that's the meta question.
-
-HOST: Right? Like, who evaluates the evaluator?
-
-EXPERT: So this is where human evaluation comes back in. You calibrate. You take a sample of outputs, have humans grade them, and then compare that to what your automated evals say.
-
-HOST: And if they disagree?
-
-EXPERT: Then you debug. Maybe your rubric is unclear. Maybe your threshold is wrong. Maybe the metric you chose doesn't actually measure what you think it measures.
-
-HOST: So evaluation is itself an iterative process.
-
-EXPERT: Everything is an iterative process. This is AI development—nothing is ever truly done.
-
-HOST: That's... kind of exhausting, actually.
-
-EXPERT: It is! But it's also kind of beautiful, right? Because you're building systems that improve over time. Your evals get better, your model gets better, your understanding of the problem gets better.
-
-HOST: Okay, I'm going to ask you a weird question. If you could only pick one metric to track, what would it be?
-
-EXPERT: Oh, that's tough. Gun to my head?
-
-HOST: Gun to your head.
-
-EXPERT: Probably... task completion rate on regression evals.
-
-HOST: Really? Not safety?
-
-EXPERT: I mean, safety is non-negotiable. But if your regression evals are passing, that means the thing you built still does what it's supposed to do. That's the baseline. If that starts dropping, everything else is irrelevant.
-
-HOST: So it's like a canary in a coal mine.
-
-EXPERT: Yeah. If your proven capabilities start failing, you know something fundamental broke. And you stop everything and figure out what happened.
-
-HOST: That makes sense. Okay, last question. Where is all this headed? Like, what's the future of AI evaluation?
-
-EXPERT: I think we're going to see more sophisticated hybrid approaches. Combining automated metrics with LLM judges with targeted human evaluation in smarter ways.
-
-HOST: What does that look like?
-
-EXPERT: Imagine an eval system that automatically identifies edge cases where the automated metrics disagree with the LLM judge. Those get flagged for human review. The human judgments then fine-tune the rubrics and thresholds.
-
-HOST: So it's like active learning, but for evaluation.
-
-EXPERT: Exactly. You're focusing human effort where it matters most. And over time, the system gets better at knowing when it's uncertain.
-
-HOST: That's actually really cool. Because right now it sounds like you either go all-in on automation and miss nuance, or you go all-in on human eval and go broke.
-
-EXPERT: Right. The future is figuring out the optimal blend.
-
-HOST: Okay, here's what I'm taking away from this. One: "vibes" is not an evaluation strategy, no matter how good your vibes are.
-
-EXPERT: Correct.
-
-HOST: Two: you need to be annoyingly specific about what success means before you start testing.
-
-EXPERT: Yes.
-
-HOST: Three: different approaches for different needs—automated for simple stuff, LLM judges for nuanced stuff, humans for calibration.
-
-EXPERT: Nailed it.
-
-HOST: Four: test both what should work and what should fail.
-
-EXPERT: Critical.
-
-HOST: And five: evaluation itself is iterative. Your metrics, your thresholds, your rubrics—they all evolve.
-
-EXPERT: That's exactly right.
-
-HOST: Okay, so here's my final thought. This whole conversation has been about measuring quality in systems that are fundamentally probabilistic. And that feels like this profound philosophical challenge, right? Like, how do you create certainty from uncertainty?
-
-EXPERT: You don't.
-
-HOST: What?
-
-EXPERT: You don't create certainty. You create confidence. You create bounds. You say, "I'm 95% confident this system will perform within these parameters." But there's always uncertainty.
-
-HOST: And that's okay?
-
-EXPERT: It has to be. Because the alternative is not deploying AI systems at all. Or deploying them based on vibes.
-
-HOST: Right. So the goal isn't perfection, it's informed confidence.
-
-EXPERT: That's a great way to end it. Informed confidence. You'll never know everything, but you can know enough to make good decisions.
-
-HOST: And that's the whole point of evaluation.
-
-EXPERT: That's the whole point of evaluation.
+EXPERT: You can never say it's perfect. But you can say exactly where you've looked and what you've found. And that's a completely different conversation to have with your stakeholders than "yeah, it seemed fine when I tried it."

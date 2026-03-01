@@ -1,349 +1,227 @@
-HOST: Okay, so I was looking at my API bills this month and I had this moment of panic where I'm like, wait, did we just get throttled in production? And it got me thinking—how do these systems even decide when to say "no, not right now"?
+HOST: Okay so here's a question for you. You're running a production app, everything's humming along, your AI features are getting great user feedback, and then at 2 AM your on-call engineer gets paged because everything just... stops. No errors in your business logic, no database issues, nothing wrong with your code. What happened?
 
-EXPERT: Oh, that's a fun rabbit hole. So here's the thing most people don't realize—when you hit a rate limit, it's not like the API is just counting "one, two, three, okay that's sixty requests, you're done." There's this whole algorithm running behind the scenes.
+EXPERT: Rate limits. Every single time. It's rate limits.
 
-HOST: Wait, it's not just counting?
+HOST: Every time! And the thing is, most developers I talk to treat rate limits as this afterthought, right? Like, "oh yeah, we'll handle that later." But in enterprise AI, this is like... this is the plumbing. If you get the plumbing wrong, nothing else matters.
 
-EXPERT: Nope! Most modern rate limiting uses something called the token bucket algorithm. And I know that sounds fancy, but the mental model is actually kind of brilliant. Picture a bucket that holds, I don't know, a thousand tokens.
+EXPERT: That's actually a perfect way to put it. And what makes it tricky is that rate limits aren't just one number. People think "oh, I can make 60 requests a minute, done." But you're actually being tracked on multiple dimensions simultaneously.
 
-HOST: Okay, I'm picturing a literal bucket.
+HOST: Wait, multiple dimensions? What do you mean?
 
-EXPERT: Good! So tokens are constantly dripping into this bucket at a fixed rate—let's say a hundred tokens per second. Every time you make a request, you reach into the bucket and grab however many tokens that request costs. If there are enough tokens, great, your request goes through. If not? 429 error, rate limit exceeded.
+EXPERT: So you've got RPM, which is requests per minute -- that's the obvious one. But then you've also got TPM, tokens per minute. And tokens are roughly four characters, about three-quarters of a word. So you could be well under your RPM limit but blowing past your token limit because you're sending massive documents in each request.
 
-HOST: Huh. So it's not like... it doesn't reset at the top of every minute?
+HOST: Oh, that's sneaky. So a tiny "hello world" prompt and a ten-thousand-token document both count as one request, but they're wildly different in token consumption.
 
-EXPERT: Exactly! That's the key difference. Old-school rate limiting used fixed time windows—like, you get sixty requests per minute, and at the stroke of the new minute, boom, the counter resets to zero. But that creates this vulnerability.
+EXPERT: Exactly. And it gets even more granular than that. Claude actually separates input tokens per minute and output tokens per minute -- ITPM and OTPM. Which, okay, sounds like more complexity, but it actually opens up some really clever optimization strategies.
 
-HOST: What do you mean, vulnerability?
+HOST: Like what?
 
-EXPERT: Okay so imagine you send sixty requests at 11:59:59, right at the very end of a minute. Then the clock ticks over to noon, and you immediately send another sixty requests at 12:00:01. Technically you're within your limits for each individual minute, but you just sent a hundred and twenty requests in two seconds. That's a boundary attack.
+EXPERT: Well, here's where it gets interesting. Claude's ITPM only counts uncached input tokens. So if you're using prompt caching -- say you've got a big system prompt or a long document that you're sending with every request -- and you're getting an 80% cache hit rate on a two-million ITPM limit...
 
-HOST: Oh! Oh, that's sneaky. I mean, I'm not saying I would do that, but—
+HOST: Okay, so you're saying the cached tokens just... don't count against your rate limit?
 
-EXPERT: Right, right, right. But the token bucket solves this because it's continuous. The bucket refills smoothly over time, so you can't game the system by clustering requests at window edges.
+EXPERT: Right! So your effective throughput becomes two million uncached tokens plus eight million cached tokens. You're effectively processing ten million input tokens per minute on a two-million limit.
 
-HOST: That's actually kind of elegant. But wait—doesn't that mean sometimes you can burst above your stated limit?
+HOST: That's... actually kind of wild. So prompt caching isn't just a cost optimization, it's a rate limit hack.
 
-EXPERT: Yes! And that's a feature, not a bug. If you've been quiet for a while, your bucket fills up to its max capacity. Then you can send a bunch of requests all at once, as long as you have enough tokens saved up. It's like... you know when you haven't used your phone all day and then you need to make a bunch of calls back-to-back? You can do that because you "saved" your capacity.
+EXPERT: It is! But -- and this is a gotcha that trips people up -- cached tokens still cost money. They're billed at ten percent of the base price. So don't confuse rate limits with pricing. You're saving on throughput but you're still paying, just less.
 
-HOST: Okay but here's where I get confused. I see these API docs that list like five different limits. Requests per minute, tokens per minute, sometimes there's a requests per day limit... are all of those using separate buckets?
+HOST: Right, right, right. Okay, so we've got these multi-dimensional limits. But what's actually happening under the hood when the system decides "nope, you've hit your limit"?
 
-EXPERT: Oh yeah, it gets messy. So you've got RPM—requests per minute—which is just counting API calls. A tiny "hello world" prompt counts the same as a massive 10,000-token document. Then separately, you've got TPM, tokens per minute, which is tracking the actual token usage.
+EXPERT: So most of these systems use something called the token bucket algorithm. And I love this one because it's actually really intuitive once you see it.
 
-HOST: And I'm guessing hitting any one of those limits kills your request?
+HOST: Okay, hit me with an analogy.
 
-EXPERT: Bingo. You could be well under your token limit but if you've made too many requests, you're still getting throttled. Or the opposite—you could make one giant request that blows through your entire token budget in a single call.
+EXPERT: Think of it like... you know those old arcade machines where you drop tokens in to play? Imagine you have a bucket that holds, say, a hundred tokens. And there's a little machine dripping new tokens into the bucket at a steady rate -- maybe one per second. Every time you make an API request, you have to toss some tokens from the bucket into the machine. If the bucket's empty, you can't play.
 
-HOST: That seems unnecessarily complicated.
+HOST: Oh! So the bucket fills up over time, which means you can burst -- you can use a bunch at once if you've been idle -- but you can't sustain that burst because the refill rate is fixed.
 
-EXPERT: I mean, kind of? But here's why it exists. RPM prevents you from hammering the API with thousands of tiny requests that could overload the routing infrastructure. TPM prevents you from sending huge compute-intensive prompts that would monopolize GPU resources. They're protecting different parts of the system.
+EXPERT: Yes! And this is why you sometimes see confusing behavior. Like, "my limit says 60 RPM, I sent 10 requests in one second, and I got throttled." Well, the rate might be enforced as one request per second, not sixty per minute.
 
-HOST: Okay, that makes sense. So if I'm building something in production, I need to track both of these myself?
+HOST: Huh. That's a subtle but really important distinction.
 
-EXPERT: Well, the smart APIs actually help you out. They send back response headers that tell you where you stand. Like, "you have 500 requests remaining" or "your token bucket resets at this timestamp."
+EXPERT: And it's different from what's called a fixed-window counter, which just resets at intervals. Those have their own problem -- you could theoretically send sixty requests at the end of one window and sixty at the start of the next, effectively doubling your rate at the boundary.
 
-HOST: Oh, so you can be proactive about it instead of just waiting to get smacked with errors.
+HOST: Okay so, someone hits the limit, they get throttled. What does that actually look like?
 
-EXPERT: Exactly. Although, okay, here's where it gets interesting. Let's say you do get rate limited. What do you do?
+EXPERT: You get a 429 error. HTTP 429 -- "Too Many Requests." And the response includes a retry-after header telling you when you can try again. Plus, most APIs return headers showing your remaining capacity -- how many requests you have left, how many tokens, when the limits reset.
 
-HOST: Uh... wait and try again?
+HOST: So the API is basically saying "hey, slow down, and here's exactly when you can come back."
 
-EXPERT: Yeah, but how long do you wait? If you retry immediately, you're just going to hit the same limit again. If you wait too long, you're wasting time. The standard approach is exponential backoff with jitter.
+EXPERT: Exactly. And the standard way to handle this is exponential backoff with jitter. You wait one second, then two, then four, then eight -- doubling each time. And you add a little random delay on top.
 
-HOST: I've heard that term but I'm not totally sure what the "exponential" part means.
+HOST: Why the random part? The jitter?
 
-EXPERT: So the idea is, after your first failure, you wait one second. Second failure, you wait two seconds. Third failure, four seconds. Then eight, sixteen, thirty-two—it doubles every time. You're exponentially increasing the wait time.
+EXPERT: Oh, this is such a good question. It's to prevent what's called the thundering herd problem. Imagine you have a hundred clients that all hit the rate limit at the same moment. Without jitter, they'd all retry at exactly the same time -- one second later, then two seconds later -- and just keep slamming the API in synchronized waves.
 
-HOST: And what's the jitter part?
+HOST: So the randomness spreads them out. That's clever.
 
-EXPERT: Oh, that's to prevent the thundering herd problem. Imagine a hundred clients all get rate limited at exactly the same moment. If they all use the same exponential backoff, they'll all retry at exactly the same moment too, and you just recreate the problem.
+EXPERT: But here's the thing I want to push on a little. Exponential backoff is reactive. You've already failed. A better pattern is proactive rate management. If your limit is 60 RPM, just space your requests one second apart. Don't wait for the 429 to tell you to slow down.
 
-HOST: Oh no.
+HOST: That's like... instead of driving until the engine overheats and then pulling over, just check your temperature gauge regularly.
 
-EXPERT: Right? So you add a random amount of jitter—like, instead of waiting exactly four seconds, you wait four seconds plus a random value between zero and one second. Now all those clients are spread out when they retry.
+EXPERT: I love that. Yes. And for high-volume stuff, batch APIs are your friend. You queue up a bunch of requests, the provider processes them from a separate pool with higher throughput limits, and you often get a fifty percent cost discount.
 
-HOST: That's... actually really clever. I wouldn't have thought of that.
+HOST: Wait, fifty percent? That's significant.
 
-EXPERT: It's one of those things that seems obvious in hindsight but absolutely wrecks you the first time you encounter it in production. Like, "why does my system keep oscillating between working and failing?" Oh, thundering herd.
+EXPERT: It is. The trade-off is latency -- you're not getting real-time responses. But for anything that doesn't need an immediate answer -- data processing, content generation at scale, classification tasks -- batch is almost always the right call.
 
-HOST: Okay so I'm tracking rate limits, I've got exponential backoff in place... but what if I just want to avoid hitting the limits in the first place? Is there like a proactive strategy?
+HOST: Okay, I want to shift gears a little because there's this whole organizational layer on top of rate limits that I think a lot of teams miss. Workspaces.
 
-EXPERT: Yeah! Instead of reacting to errors, you can pace yourself. If you know you've got a sixty RPM limit, just add a one-second delay between requests. Sixty requests, sixty seconds—perfect spacing, never hit the limit.
+EXPERT: Oh, this is the part that, honestly, when I first dug into it, I was like "why didn't I set this up from day one?" Because without workspaces, you're basically running everything in one big bucket.
 
-HOST: Wait, that's it? That seems almost too simple.
+HOST: One big bucket of chaos.
 
-EXPERT: I mean, it works! Obviously if you're doing something more complex with variable request sizes or multiple concurrent workers, you need fancier throttling. But for batch jobs? Yeah, just sleep for a second between calls.
+EXPERT: Right! All your API keys share the same rate limits, the same spend pool. Your development team running experiments can starve your production system. There's no way to track costs per project. It's a mess.
 
-HOST: Huh. Okay but here's something I don't get. I keep hearing about these "usage tiers" where your limits go up as you spend more money. How does that actually work?
+HOST: So workspaces are the solution. They're like... subdivisions within your organization?
 
-EXPERT: Okay so this is basically the API provider's way of saying "we trust you more once you've proven you're a real customer." When you first sign up, you're in Tier 1 with pretty conservative limits. As you spend money—like, forty bucks gets you to Tier 2, two hundred gets you to Tier 3—your rate limits scale up dramatically.
+EXPERT: Yeah, think of it like -- your organization is the building, and workspaces are individual offices. Each office has its own keys, its own budget, its own rules about who can come in.
 
-HOST: How dramatic are we talking?
+HOST: And each workspace gets its own rate limits?
 
-EXPERT: Let's look at Claude's tiers. Tier 1 gives you 50 requests per minute and 30,000 input tokens per minute. Tier 4? Four thousand requests per minute and two million input tokens per minute.
+EXPERT: Yes and no. This is where it gets really interesting and where people get tripped up. You can set per-workspace rate limits, but they're ceilings, not reservations.
 
-HOST: That's... that's an eighty-times increase on requests.
+HOST: Oh. Oh wait. So if I give my production workspace a limit of 30,000 input tokens per minute...
 
-EXPERT: Yeah, and like a sixty-seven-times increase on tokens. It's massive. The thing is, this isn't just about money—it's also about preventing abuse. If someone creates a hundred free accounts to bypass rate limits, they're not going to spend $400 on each one to reach Tier 4.
+EXPERT: It doesn't mean production is guaranteed 30,000. It means production can't exceed 30,000. But if your dev workspace is hammering the API and consuming the organization's total capacity, production could get squeezed.
 
-HOST: So it's anti-fraud basically.
+HOST: That's... honestly kind of scary. So it's not like reserved cloud instances where you've got guaranteed capacity.
 
-EXPERT: Yep. And it also means if you're launching a new product and you expect high traffic, you need to ramp up your spending gradually beforehand. You can't just go from zero to hero overnight.
+EXPERT: Exactly. It's a ceiling, not a floor. And this catches a lot of enterprise teams off guard. The typical pattern is to set up environment segmentation -- production gets maybe 80% of the org limit, staging gets 15%, dev gets 10%.
 
-HOST: Wait, so if I suddenly go viral, I'm screwed?
+HOST: And those add up to more than 100%, right? Because they're ceilings, not allocations.
 
-EXPERT: Well, there's usually a "contact sales" option for emergency tier bumps. But yeah, the tiers are designed to encourage steady, predictable usage growth. Sharp spikes can actually trigger additional throttling even if you're technically within your rate limits.
+EXPERT: Right, the workspace limits can actually add up to more than the org limit. But the org limit always wins. Every single request is evaluated against both the workspace limit and the organization limit.
 
-HOST: Okay that seems like a gotcha that would ruin my week.
+HOST: Got it. So what about that default workspace? I've heard there's something weird there.
 
-EXPERT: Oh, it gets better. Different API providers have different quirks. Like, OpenAI counts your max_tokens parameter against your TPM limit at request time, even if the model ends up generating way fewer tokens.
+EXPERT: So, every organization gets a default workspace that you cannot rename, you cannot archive, you cannot delete, and -- here's the kicker -- you cannot set limits on it.
 
-HOST: Why would they do that?
+HOST: Wait, you can't set limits on the default workspace? So if someone creates an API key in the default workspace...
 
-EXPERT: Because they need to reserve capacity. When your request comes in, they don't know how many tokens the model will actually generate. So they assume the worst case—whatever you set as max_tokens—and reserve that capacity.
+EXPERT: They get the full organization limits. No guardrails. Which is why the best practice is to basically treat the default workspace as "do not use" and immediately create purpose-specific workspaces.
 
-HOST: Whereas Claude...
+HOST: That's the kind of thing that should be in big red letters in the onboarding docs.
 
-EXPERT: Claude only counts actual output tokens. They have separate limits for input and output—ITPM and OTPM.
+EXPERT: There are a few more gotchas too. API keys are permanently bound to the workspace where they're created. You cannot move a key from one workspace to another. So if you create keys in the wrong workspace and realize it later, you have to create new keys and rotate.
 
-HOST: Oh, so with Claude I could set a huge max_tokens value without it hurting me?
+HOST: Speaking of rotation, what's the playbook there?
 
-EXPERT: Exactly! As long as the model doesn't actually generate that many tokens, you're fine. This is honestly one of my favorite design decisions because it means you're not penalized for being cautious with your max_tokens setting.
+EXPERT: Ninety-day rotation cadence. Create the new key, deploy it, monitor that the old key hits zero usage, then disable it -- don't delete it yet -- wait thirty days, and then delete. The disable step is your safety net in case some forgotten service is still using it.
 
-HOST: Okay, okay, so we've been talking about rate limits at the API key level, but what about when you have like a whole team or a whole company using these APIs? How do you manage that?
+HOST: And I assume archiving a workspace is a one-way trip?
 
-EXPERT: Ooh, this is where workspaces come in. So the idea is, you've got your organization at the top level—that's your company, your billing account, all of that. Then underneath, you create these isolated environments called workspaces.
+EXPERT: Completely irreversible. Archive a workspace, all its API keys die, and you cannot bring it back. I've seen teams archive a workspace not realizing a production service was still using a key from it.
 
-HOST: So like... one workspace per team?
+HOST: Oof.
 
-EXPERT: That's one pattern, yeah. Or one workspace per environment—like, you'd have a production workspace, a staging workspace, a development workspace. Each workspace gets its own API keys, its own spend limits, its own rate limits.
+EXPERT: And one more thing that people miss -- the Admin API. There's a completely separate type of API key for managing workspaces programmatically. It starts with "sk-ant-admin" instead of "sk-ant-api." Regular API keys cannot do any administrative operations. But here's the thing that drives people nuts -- you can use the Admin API to list and deactivate keys, but you can't create new keys through it.
 
-HOST: And those limits are separate from each other?
+HOST: What? So you have an Admin API that can't actually do one of the most basic admin tasks?
 
-EXPERT: Well, sort of. They're subsets of your organization's overall limit. So if your org has 40,000 tokens per minute, you might allocate 30,000 to production and 10,000 to development. The key is they're isolated—a runaway script in your dev workspace can't exhaust your production capacity.
+EXPERT: You have to go to the Console UI to create keys. Which, you know, makes automated key rotation a little awkward.
 
-HOST: Oh, that's smart. Because I've definitely had the experience where someone's test script hammers an API and then suddenly production is getting throttled.
+HOST: A little awkward. That's diplomatic.
 
-EXPERT: Right, right, right! This is the whole "noisy neighbor" problem. Workspaces solve that. And you can also use them for cost attribution—like, if you want to know how much each product team is spending on API calls, just give each team its own workspace and track it in your billing dashboard.
+EXPERT: I will say, the Admin API is great for auditing though. You can pull all keys in a workspace, check statuses, manage members. Just can't create new keys.
 
-HOST: So I could do like internal chargebacks.
+HOST: Okay, so we've talked about rate limits, workspaces, organizational structure. But here's the elephant in the room for a lot of enterprise teams -- they're not using the Anthropic API directly. They're going through AWS, or Google Cloud, or Azure.
 
-EXPERT: Exactly. Finance teams love this.
+EXPERT: Right, the third-party platform story. And this is where it gets really, um, it's actually kind of fascinating how different the implementations are while trying to achieve the same thing.
 
-HOST: Okay but I'm guessing there are constraints. Like, can I create a thousand workspaces for every little microservice?
+HOST: So break it down for me. AWS Bedrock, Google Vertex AI, Microsoft Foundry -- what's the deal?
 
-EXPERT: Nope, you're capped at a hundred workspaces per organization. So you need to be thoughtful about your hierarchy. Don't create a workspace for every single project—think bigger, like teams or environments.
+EXPERT: So the basic premise is the same across all three -- you get managed access to Claude models through your existing cloud provider. You use your existing cloud billing, your existing IAM, your existing compliance frameworks. No need to set up a separate Anthropic account if you don't want to.
 
-HOST: And once I create an API key in a workspace, I'm assuming it stays there?
+HOST: That's the appeal. You're already paying AWS a hundred thousand a month, you just add this to the bill.
 
-EXPERT: Yeah, it's permanently bound. You cannot move an API key between workspaces. So you need to plan your structure before you start issuing keys to production systems, because if you mess it up, you're regenerating keys and redeploying.
+EXPERT: Exactly. But the implementations diverge in important ways. Let's start with one of the biggest decisions you'll face on any platform -- global versus regional endpoints.
 
-HOST: That sounds like a fun Saturday.
+HOST: Oh, this is the data residency thing?
 
-EXPERT: Oh, and here's a fun gotcha—every organization has this "default workspace" that you can't rename, you can't delete, and you can't set limits on.
+EXPERT: Yeah. So starting with the newer models -- Sonnet 4.5 and later -- all three platforms offer both global and regional endpoints. Global endpoints dynamically route your requests across regions for maximum availability. Regional endpoints guarantee your data stays within a specific geography.
 
-HOST: Why does that exist?
+HOST: And there's a cost difference.
 
-EXPERT: I think it's mostly for backward compatibility. Like, when they first rolled out workspaces, everyone's existing API keys had to live somewhere. So they auto-created the default workspace. But because it has no limits, it's kind of a black hole. Best practice is to create new workspaces for everything and just ignore the default one.
+EXPERT: Ten percent premium for regional. Which, when you're processing millions of tokens, adds up. But if you're in healthcare, finance, government -- anywhere with data residency requirements -- you need those regional endpoints.
 
-HOST: Okay, so let's say I've got my workspaces set up, I've got my rate limits configured... but I want to manage all this programmatically. Is there an API for that?
+HOST: So it's not optional for a lot of enterprise use cases.
 
-EXPERT: Yes! There's the Admin API. But here's the weird part—you need a special API key for it.
+EXPERT: Not at all. And the way you specify it differs per platform. On Bedrock, you prefix the model ID -- "global dot anthropic dot claude" versus "us dot anthropic dot claude" or "eu dot." On Vertex, you just set your region parameter. On Foundry, it's based on where you deploy.
 
-HOST: Wait, my regular API key doesn't work?
+HOST: Speaking of Foundry, there's something different about how Azure handles this, right?
 
-EXPERT: Nope. Regular API keys start with `sk-ant-api...` and they're for calling the actual models. Admin API keys start with `sk-ant-admin...` and they're only for administrative operations—creating workspaces, managing members, listing API keys.
+EXPERT: Good catch. Yeah, Foundry is fundamentally different from Bedrock and Vertex in one way -- you have to actually deploy the model first. On Bedrock and Vertex, you're hitting shared model endpoints that are already running. On Foundry, you create a deployment, and then you reference that deployment name in your API calls.
 
-HOST: Can I use an admin key to call the models?
+HOST: So it's more like provisioning your own instance?
 
-EXPERT: No, they're completely separate. Which is actually good security design—if someone steals your admin key, they can't rack up your API bill by making a million model calls. They can just... reorganize your workspaces, which is bad, but less expensive.
+EXPERT: Sort of. And it's currently limited to just two regions -- East US 2 and Sweden Central. Compared to Bedrock and Vertex which have much broader regional availability.
 
-HOST: Okay fair. So what can I do with the Admin API?
+HOST: That's pretty limiting.
 
-EXPERT: You can create and archive workspaces, add and remove members, assign roles, configure rate limits... oh, but here's a weird limitation: you can't create API keys programmatically.
+EXPERT: It is for now. And there's another thing -- Foundry doesn't include the standard Anthropic rate limit headers in responses. So if you've built tooling that reads those headers to track capacity, it won't work on Azure.
 
-HOST: What? Why not?
+HOST: Oh no. So what do you use instead?
 
-EXPERT: I don't know! You can list them, you can deactivate them, but creating new ones requires going into the Console UI. It's one of those things where I assume there's a security reason but it's kind of annoying for automation.
+EXPERT: Azure Monitor. Which is fine, it works, but it's a different integration path. And this kind of thing is what I mean about the implementations diverging.
 
-HOST: Yeah that seems like an oversight.
+HOST: What about authentication? Because I imagine AWS IAM, Google Cloud credentials, and Azure AD are all completely different.
 
-EXPERT: Speaking of automation though, there's a whole other angle we haven't talked about, which is: what if you don't want to manage all this infrastructure yourself?
+EXPERT: Completely different. Bedrock uses the standard AWS credential chain -- access key, secret key, or IAM roles. Vertex uses Google's Application Default Credentials or service accounts. Foundry can use either an Azure API key or Entra ID tokens.
 
-HOST: Oh, like, what if I want someone else to deal with rate limits and billing and all that?
+HOST: And SDK support -- is it consistent across platforms?
 
-EXPERT: Exactly. This is where the cloud platforms come in—AWS Bedrock, Google Vertex AI, Microsoft Foundry. They all offer managed access to Claude models.
+EXPERT: Mostly, but with gaps. Python and TypeScript work everywhere. Java, Go, and C-sharp support all three. But Ruby doesn't work with Foundry. And PHP -- PHP only supports Bedrock.
 
-HOST: So I'm still calling Claude, but I'm going through AWS instead of Anthropic directly?
+HOST: So if you're a PHP shop looking at Vertex AI...
 
-EXPERT: Yep. The model runs as a serverless API on their infrastructure. You use your existing AWS credentials, it shows up on your AWS bill, it integrates with all your AWS security policies... same deal with Google Cloud or Azure.
+EXPERT: You're out of luck. Which, you know, check the SDK compatibility matrix before you commit to a platform. Not after.
 
-HOST: Okay, so when would I want that versus just using Anthropic's API directly?
+HOST: That's the kind of mistake you only make once. Okay, here's something I keep hearing about -- model version pinning. Why is this such a big deal?
 
-EXPERT: If you're already deep in one cloud ecosystem, it's way easier. Like, if you've got everything in AWS and you're using IAM for access control and CloudWatch for logging—just use Bedrock. You don't have to set up a whole separate billing relationship with Anthropic, you don't have to integrate a new auth system, all your monitoring tools just work.
+EXPERT: So imagine you're calling the model with an alias like just "sonnet" without specifying a version. The provider updates to a newer model version, your account hasn't been provisioned for it yet, and suddenly all your requests fail.
 
-HOST: That actually makes a lot of sense for enterprises.
+HOST: Even though you didn't change anything on your end.
 
-EXPERT: Yeah, and there's also the compliance angle. If you need data residency guarantees—like, "all our data has to stay within the EU"—you can use regional endpoints on these platforms.
+EXPERT: Exactly. In production, always specify explicit model IDs. Pin to a specific version. When you want to upgrade, do it deliberately -- test it, verify it, then update your configuration.
 
-HOST: Wait, so the models are deployed in specific regions?
+HOST: That's just good engineering hygiene, honestly.
 
-EXPERT: It depends. There are global endpoints that dynamically route your requests to wherever capacity is available. Super reliable, no pricing premium. Then there are regional endpoints that guarantee your data stays within a specific geography—US, EU, Asia-Pacific. Those cost 10% more but they're essential if you've got regulatory requirements.
+EXPERT: And one more thing that catches people -- feature rollout timing. New Claude capabilities -- tools, caching improvements, batch processing updates -- they appear first on Anthropic's direct API. The cloud platforms lag by weeks, sometimes months.
 
-HOST: So if I'm building something for a European customer that's subject to GDPR, I'd use the EU regional endpoint.
+HOST: So you could read the docs, get excited about a new feature, try to use it on Bedrock, and it's just not there yet.
 
-EXPERT: Exactly. And this applies across all three platforms—Bedrock, Vertex, and Foundry all support both global and regional endpoints as of the newer Claude models.
+EXPERT: Happened to me more than once. Check the platform-specific documentation, not just the Anthropic docs.
 
-HOST: How do the three platforms compare? Like, is one better than the others?
+HOST: Okay so let me try to connect all of this together because I think there's a bigger picture here that we've been building toward.
 
-EXPERT: They're surprisingly similar in terms of features. All three support the latest models—Opus 4.6, Sonnet 4.6, Haiku 4.5. They all support prompt caching, extended context windows, all the core features.
+EXPERT: Do it.
 
-HOST: So it's really just about which cloud you're already using?
+HOST: So you've got these layers, right? At the bottom, you've got the raw rate limits -- RPM, TPM, input versus output tokens. And those are governed by the token bucket algorithm, which explains why bursts work sometimes and not others. Then on top of that, you've got workspaces, which let you carve up your organization's capacity -- but they're ceilings not floors, which means you have to be smart about it. And then on top of all of that, you've got the platform layer -- Bedrock, Vertex, Foundry -- each with their own authentication, their own endpoint structure, their own SDK quirks.
 
-EXPERT: Pretty much. Although there are some weird quirks. Like, SDK support varies—PHP only works with Bedrock, Ruby doesn't support Foundry. And new features tend to appear on Anthropic's direct API first, then roll out to the cloud platforms a few weeks or months later.
+EXPERT: And the beautiful thing -- or the terrifying thing, depending on your perspective -- is that all of these layers interact. Your workspace limits sit under your org limits. Your org limits depend on your usage tier. Your platform choice affects which features you get and when. And your caching strategy can effectively multiply your throughput by five times without changing your tier.
 
-HOST: Oh, so if I need bleeding-edge capabilities I should stick with the direct API?
+HOST: So the teams that really nail this aren't just picking a model and calling the API. They're thinking about the whole stack -- where their data needs to live, how to segment their capacity, when to cache versus when to batch, how to rotate keys, which platform gives them the best combination of features and compliance.
 
-EXPERT: Yeah, or at least be aware of the lag. Also, Foundry has this weird thing where you have to create a deployment before you can use a model, whereas Bedrock and Vertex just let you hit shared endpoints.
+EXPERT: And here's what I think is the real takeaway -- all of this infrastructure work is invisible to the end user. Nobody using your AI-powered feature cares about your token bucket refill rate. But if you get it wrong, they definitely notice when the feature stops working at 2 AM.
 
-HOST: What does that mean, "create a deployment"?
+HOST: Which brings us right back to where we started.
 
-EXPERT: It's like... you're provisioning your own instance of the model? Not quite, it's still serverless, but you're giving it a name and configuring it. Then you reference that deployment name in your API calls instead of the model ID.
+EXPERT: Full circle. The engineer getting paged at 2 AM because nobody thought about the plumbing.
 
-HOST: That seems like an extra step.
+HOST: So I guess the question is -- for teams that are just starting to build on these APIs, if you had to pick one thing to get right first, before anything else, what would it be?
 
-EXPERT: It is! But I think the idea is it gives you more control over versioning and configuration. Like, you could have a "production-claude" deployment and a "staging-claude" deployment with different settings.
+EXPERT: Honestly? Workspace segmentation. Before you write a single line of application code, set up your workspaces. Separate prod from dev from staging. Set spend alerts. Because everything else -- the rate limit handling, the caching strategy, the platform choice -- all of that is recoverable. You can fix it later. But a runaway dev script that eats your production capacity at 2 AM on a Saturday? That's the one that keeps you up at night.
 
-HOST: Okay I can see the argument for that, but it definitely adds complexity.
+HOST: The one that makes you rethink your career choices.
 
-EXPERT: Yeah. And another gotcha—Bedrock has this thing with PDF analysis where if you use the Converse API, you're forced to enable citations for visual analysis. If you don't want that, you have to use the InvokeModel API instead.
+EXPERT: Just a little bit. Just a little.
 
-HOST: Why would that be a limitation?
+HOST: You know what's funny though? All this complexity, all these layers and gotchas and platform differences -- it's actually kind of a sign of how fast this space is moving. Like, two years ago, most of these problems didn't exist because nobody was running AI at enterprise scale.
 
-EXPERT: I have no idea! It's just one of those weird platform-specific quirks. Every platform has a few of them.
+EXPERT: And two years from now, I suspect half of this will be abstracted away. But right now? Right now is the messy, exciting part where the teams that understand these patterns have a genuine competitive advantage.
 
-HOST: Alright, so I want to ask about something that I think is secretly the most important part of all this, which is: how do I keep costs from spiraling out of control?
+HOST: The ones who understand the plumbing.
 
-EXPERT: Oh man, yeah. This is the thing that keeps CTOs up at night. You deploy some feature that uses an LLM API, it goes viral, and suddenly you're getting a five-figure bill.
-
-HOST: Has that actually happened to people?
-
-EXPERT: Oh yeah. I mean, not always because of virality—sometimes it's just a bug. Like, someone deploys a chatbot that gets stuck in a loop and makes ten thousand API calls before anyone notices.
-
-HOST: That's nightmare fuel.
-
-EXPERT: Right? So the first line of defense is workspace spend limits. You set a hard cap—like, "this workspace cannot spend more than $500 a month"—and when you hit it, the API keys just stop working.
-
-HOST: Isn't that kind of drastic? Like, if it's my production workspace and we hit the limit mid-month, my whole app goes down.
-
-EXPERT: Yeah, it's a tradeoff. You need to set the limit high enough that you won't hit it under normal circumstances, but low enough that a runaway process can't bankrupt you. And you should set up email alerts at 50%, 75%, 90% so you have time to react.
-
-HOST: Okay, so monitoring and alerts. What else?
-
-EXPERT: Prompt caching is huge for cost optimization. If you're sending the same system prompt or context documents over and over, you can cache them and only pay 10% of the normal price for cache reads.
-
-HOST: Wait, so if I'm sending the same 10,000-token system prompt a hundred times, I only pay full price once and then 10% for the other ninety-nine?
-
-EXPERT: Exactly! And it also makes your requests faster because the model doesn't have to re-process those tokens. You can see up to 85% latency reduction.
-
-HOST: That seems like a no-brainer. Why wouldn't everyone do this?
-
-EXPERT: Honestly, a lot of people don't realize it exists. Or they don't structure their prompts to take advantage of it. Like, the cached content has to be at the beginning of your prompt and it has to be identical across requests. If you're constantly tweaking your system instructions, caching doesn't help.
-
-HOST: So you need to stabilize your prompt structure.
-
-EXPERT: Yeah. And there's a TTL—time to live. By default, cached content expires after five minutes. You can extend it to an hour on some platforms, but if your requests are spread out over days, you're not going to get much benefit.
-
-HOST: Okay, so caching is great for high-frequency, repetitive workloads.
-
-EXPERT: Exactly. Like, if you're processing a queue of customer support tickets and they all use the same system prompt, perfect use case. If you're doing one-off research queries that are all unique, caching doesn't help much.
-
-HOST: What about batch APIs? I've seen those mentioned but I don't really understand what they're for.
-
-EXPERT: So the idea is, if you have a bunch of requests that don't need immediate responses—like, you're analyzing a thousand documents overnight—you can submit them as a batch. They go into a processing queue, and you get the results when they're done.
-
-HOST: And the advantage is...
-
-EXPERT: Throughput and cost. Batch APIs usually have higher rate limits because the provider can optimize scheduling. And they often come with a significant discount—like, 50% off compared to the synchronous API.
-
-HOST: Fifty percent?
-
-EXPERT: Yeah! Because you're giving the provider flexibility. They can run your batch during off-peak hours when they have spare capacity. It's a win-win.
-
-HOST: Okay, so for anything that's not user-facing and time-sensitive, I should be using the batch API.
-
-EXPERT: Pretty much. Although, you know, it's not available everywhere yet. Like, it might be on Anthropic's direct API but not rolled out to Bedrock or Vertex yet. You'd have to check.
-
-HOST: Right, the whole feature lag thing we talked about earlier.
-
-EXPERT: Exactly. Oh, and here's one more cost optimization trick that's kind of clever—multi-model fallback.
-
-HOST: What's that?
-
-EXPERT: So you define a priority list of models. You try to call your first-choice model—maybe that's Opus because you want the highest quality. If you get rate limited, you automatically fall back to Sonnet. If that's rate limited, fall back to Haiku or even a different provider like OpenAI.
-
-HOST: Oh, so you're trading quality for availability.
-
-EXPERT: Right. And you can get creative with it—maybe your first-choice model is expensive but high-quality, and your fallback is cheaper but still good enough for most queries. You only pay the premium price when you have capacity, and you degrade gracefully when you're under load.
-
-HOST: That's actually really smart. Although I imagine it's kind of complicated to implement?
-
-EXPERT: It's like twenty lines of code with a for-loop and a try-catch. The harder part is figuring out your fallback strategy—like, which queries can tolerate a lower-quality model? Do you need to adjust prompts for different models? That's more of a product decision than an engineering one.
-
-HOST: Yeah, I can see that. Okay, so I think we've covered a lot—rate limits, workspaces, cloud platforms, cost optimization. Is there anything we missed that's going to surprise people when they deploy this stuff in production?
-
-EXPERT: Oh, definitely. Here's one that gets everyone: shared limits across model families.
-
-HOST: What does that mean?
-
-EXPERT: So let's say you've got a rate limit for Claude Opus 4. That limit actually applies to all Opus 4 versions combined—4.6, 4.5, 4.1, whatever. If you're calling multiple versions, they're all drawing from the same bucket.
-
-HOST: Oh, so I can't like double my throughput by just calling two different models?
-
-EXPERT: Nope! They thought of that. Same deal with Sonnet, same deal with Haiku—the limit is per model family, not per specific version.
-
-HOST: Okay, that's good to know. What else?
-
-EXPERT: Cached tokens still cost money. This confuses people because we just talked about how cached tokens don't count toward your input token rate limit. But you're still billed for them, just at a 90% discount.
-
-HOST: So it's cheaper but not free.
-
-EXPERT: Exactly. Don't confuse rate limits with pricing—they're separate systems. Caching helps with rate limits and with cost, but it's not a magical free lunch.
-
-HOST: Right, right, right. Okay, what about the Azure thing you mentioned earlier? The ratio thing?
-
-EXPERT: Oh yeah, this is a weird one. On Azure OpenAI, the RPM limit is proportional to your TPM limit at a fixed ratio—six RPM per thousand TPM. So if you have a 10,000 TPM quota, you only get 60 RPM.
-
-HOST: That seems really low.
-
-EXPERT: It is! And it catches people off guard because on other platforms, RPM and TPM are independent. But Azure couples them, so if you're making a lot of small requests, you can hit the RPM limit way before you hit the token limit.
-
-HOST: So you'd have to batch your requests or something?
-
-EXPERT: Yeah, or just be aware of it when you're designing your application. Like, if you're doing real-time chat where every user message is a separate API call, you might hit that RPM limit with only a few concurrent users.
-
-HOST: Okay, last question. If someone's listening to this and they're about to deploy an LLM-powered feature in production, what's the one thing you'd want them to remember?
-
-EXPERT: Ooh. Um, I think it's this: rate limits are not failures, they're feedback. If you're hitting rate limits, it means you're either at the edge of your tier and you need to upgrade, or you've got a usage pattern that's inefficient and you need to optimize. Either way, it's information. Don't just slap exponential backoff on it and call it a day—actually look at why you're hitting the limit and decide if that's the system working as intended or if you need to change something.
-
-HOST: That's a good framing. Because I think the natural reaction is "oh no, errors, this is bad."
-
-EXPERT: Yeah, but a 429 isn't like a 500 where something broke. It's the system saying "you're asking for more than your current allocation allows." That's a scaling signal, not a failure signal.
-
-HOST: And if you're hitting it constantly, maybe it's time to spend forty bucks and get to Tier 2.
-
-EXPERT: Exactly! Or architect your system to use caching, or move to batch processing, or split traffic across multiple workspaces. You've got options.
-
-HOST: Alright, I think that's a good place to wrap. This was way more nuanced than I expected. I came in thinking "rate limits are just a number" and now I'm thinking about token buckets and thundering herds and workspace hierarchies.
-
-EXPERT: Yeah, it's one of those things where the surface is simple—"you can make sixty requests per minute"—but there's so much depth once you start deploying real systems.
-
-HOST: And a lot of gotchas.
-
-EXPERT: So many gotchas. But that's what makes it interesting, right? Every platform has its quirks, every use case has its optimal strategy. You've got to actually understand the system to use it well.
-
-HOST: Which is, I guess, what we've been trying to do here.
-
-EXPERT: Exactly. Alright, go forth and rate limit responsibly.
-
-HOST: That should be on a t-shirt.
+EXPERT: Always the plumbing.
