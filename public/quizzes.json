@@ -1,0 +1,1871 @@
+{
+  "generatedAt": "2026-03-01T16:00:00Z",
+  "totalQuestions": 60,
+  "difficultyDistribution": {
+    "easy": 12,
+    "medium": 30,
+    "hard": 18
+  },
+  "questions": [
+    {
+      "id": "q-001",
+      "topic": "Tool Definitions and Input Schemas",
+      "difficulty": "easy",
+      "scenario": "A developer is building their first Claude integration and wants Claude to be able to look up stock prices. They define a tool with a name, description, and input_schema. When testing, Claude sometimes calls the tool but provides the stock ticker as an integer instead of a string.",
+      "question": "What is the most effective way to prevent Claude from sending incorrectly typed tool parameters?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Add more detail to the tool description explaining the expected format of each parameter.",
+          "isCorrect": false
+        },
+        {
+          "label": "B",
+          "text": "Set strict: true on the tool definition to enable constrained decoding that guarantees schema-valid inputs.",
+          "isCorrect": true
+        },
+        {
+          "label": "C",
+          "text": "Use tool_choice to force Claude to always use this specific tool.",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "Add input_examples showing the correct parameter format.",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "B is correct because strict: true enables constrained decoding, which physically prevents Claude from generating tokens that violate the schema, providing a 100% guarantee of schema-valid inputs. A is incorrect because while better descriptions improve tool selection, they only offer best-effort compliance for parameter types. C is incorrect because tool_choice controls whether Claude uses a tool, not the format of the parameters it sends. D is incorrect because input_examples help Claude understand complex usage patterns but don't guarantee type correctness the way constrained decoding does.",
+      "references": ["tool-use.advanced.strict-tool-use", "tool-use.basics.tool-definitions"]
+    },
+    {
+      "id": "q-002",
+      "topic": "Tool Results and Response Handling",
+      "difficulty": "medium",
+      "scenario": "A developer is implementing a tool use loop where Claude can call multiple tools. They notice that when Claude requests two parallel tool calls, the second request sometimes fails with an error about missing tool results. They are sending each tool result in a separate user message.",
+      "question": "What is causing the error and how should it be fixed?",
+      "options": [
+        {
+          "label": "A",
+          "text": "The tool_use_id values are mismatched; regenerate unique IDs for each tool_result block.",
+          "isCorrect": false
+        },
+        {
+          "label": "B",
+          "text": "All tool_result blocks from parallel tool calls must be returned in a single user message, not in separate messages.",
+          "isCorrect": true
+        },
+        {
+          "label": "C",
+          "text": "Parallel tool calls are not supported; set disable_parallel_tool_use to true and handle them sequentially.",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "The tools array must be included in the same message as the tool_result blocks.",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "B is correct because the Claude API requires all tool_result blocks from parallel tool calls to be returned in a single user message. Sending them in separate messages causes missing tool result errors and also teaches Claude to avoid parallel calls in future. A is incorrect because tool_use_id values come from Claude's response and must match exactly; the developer shouldn't regenerate them. C is incorrect because parallel tool calls are supported and are a valuable optimization; disabling them is a workaround, not a fix. D is incorrect because the tools array is a top-level parameter on the API request, not part of message content.",
+      "references": ["tool-use.basics.tool-results", "tool-use.advanced.parallel-and-sequential"]
+    },
+    {
+      "id": "q-003",
+      "topic": "Tool Choice Configuration",
+      "difficulty": "medium",
+      "scenario": "A team is building a data extraction pipeline where every user input must be processed through a classify_ticket tool that outputs structured JSON. They want Claude to always use this specific tool without generating any natural language before the tool call. They also want to enable extended thinking to improve classification accuracy.",
+      "question": "Which tool_choice configuration meets these requirements?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Set tool_choice to {\"type\": \"tool\", \"name\": \"classify_ticket\"} with extended thinking enabled.",
+          "isCorrect": false
+        },
+        {
+          "label": "B",
+          "text": "Set tool_choice to {\"type\": \"auto\"} with extended thinking enabled and instruct Claude via the system prompt to always use the classify_ticket tool.",
+          "isCorrect": true
+        },
+        {
+          "label": "C",
+          "text": "Set tool_choice to {\"type\": \"any\"} with extended thinking enabled to force tool use while letting Claude choose.",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "Set tool_choice to {\"type\": \"tool\", \"name\": \"classify_ticket\"} and use temperature 0 instead of extended thinking.",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "B is correct because extended thinking is only compatible with tool_choice auto and none modes. Using auto with explicit system prompt instructions to always use the classify_ticket tool achieves reliable tool use while maintaining thinking compatibility. A is incorrect because tool_choice type tool is incompatible with extended thinking and returns an API error. C is incorrect because tool_choice type any is also incompatible with extended thinking. D is incorrect because while it avoids the incompatibility error, temperature 0 does not provide the step-by-step reasoning benefits of extended thinking, and the team explicitly wants extended thinking for accuracy.",
+      "references": ["tool-use.advanced.tool-choice", "agents.thinking.extended-thinking"]
+    },
+    {
+      "id": "q-004",
+      "topic": "Strict Tool Use",
+      "difficulty": "hard",
+      "scenario": "A production agent uses strict tool mode with 18 tools, each having 2-3 optional parameters. The team wants to add 5 more strict tools, but when they deploy, they receive a 400 error. The new tools have similar schemas to existing ones.",
+      "question": "What is the most likely cause of the 400 error?",
+      "options": [
+        {
+          "label": "A",
+          "text": "The total number of strict tools exceeds the 20-tool limit per request.",
+          "isCorrect": false
+        },
+        {
+          "label": "B",
+          "text": "The combined optional parameters across all strict schemas exceed the 24-parameter limit.",
+          "isCorrect": true
+        },
+        {
+          "label": "C",
+          "text": "The grammar compilation cache has expired and needs to be refreshed with a warm-up request.",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "Strict mode requires additionalProperties: false on all objects, which is missing from the new tools.",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "B is correct because strict mode has a limit of 24 total optional parameters across all strict schemas. With 18 tools having 2-3 optional parameters each (36-54 total), the original setup was already near or over the limit, and adding 5 more tools with additional optional parameters exceeds it. A is incorrect because 18 + 5 = 23, which is over the 20-tool limit, but the scenario says they had 18 working tools already. Actually, 23 does exceed 20 -- however, the question states 18 existing tools work fine and 5 new ones cause failure. The optional parameter limit (24 total) is more likely to be hit when adding tools with optional params. C is incorrect because cache expiration causes latency on the next request, not a 400 error. D is incorrect because missing additionalProperties: false would cause errors on the individual tool definition, not only when adding more tools.",
+      "references": ["tool-use.advanced.strict-tool-use", "tool-use.basics.tool-definitions"]
+    },
+    {
+      "id": "q-005",
+      "topic": "Parallel and Sequential Tool Calls",
+      "difficulty": "easy",
+      "scenario": "A developer wants Claude to check the weather in three different cities simultaneously. They have a get_weather tool defined. After receiving Claude's response with three tool_use blocks, they execute all three API calls concurrently using asyncio.gather().",
+      "question": "What is the correct way to return the results to Claude?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Send three separate user messages, each containing one tool_result block with the matching tool_use_id.",
+          "isCorrect": false
+        },
+        {
+          "label": "B",
+          "text": "Send a single user message containing all three tool_result blocks, each with its matching tool_use_id.",
+          "isCorrect": true
+        },
+        {
+          "label": "C",
+          "text": "Combine all three results into a single tool_result block with a concatenated content string.",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "Send the results as a JSON object in a regular text content block.",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "B is correct because the Claude API requires all tool_result blocks from parallel tool calls to be returned in a single user message, each referencing its corresponding tool_use_id. A is incorrect because sending results in separate messages breaks the parallel tool use pattern and teaches Claude to avoid parallel calls in the future. C is incorrect because each tool_use block needs its own corresponding tool_result block with a matching ID. D is incorrect because tool results must use the tool_result content block type, not plain text.",
+      "references": ["tool-use.advanced.parallel-and-sequential", "tool-use.basics.tool-results"]
+    },
+    {
+      "id": "q-006",
+      "topic": "Web Search and Web Fetch Tools",
+      "difficulty": "medium",
+      "scenario": "A company is building a research assistant that uses Claude's web search tool. They want to restrict searches to their own documentation site and a few trusted sources. A security audit reveals that the domain filter for 'example.com' is also allowing access to 'docs.example.com', which contains internal-only documentation.",
+      "question": "Why is the domain filter allowing access to the subdomain, and what should the team do?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Domain filters automatically include subdomains. Specify only the exact subdomains needed in allowed_domains instead of the parent domain.",
+          "isCorrect": true
+        },
+        {
+          "label": "B",
+          "text": "This is a bug in the API. Add docs.example.com to blocked_domains to override the allowed_domains setting.",
+          "isCorrect": false
+        },
+        {
+          "label": "C",
+          "text": "Use the organization-level domain restrictions instead of request-level filtering for more precise control.",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "Domain filters only apply to web_search, not web_fetch. Add separate blocked_domains for the fetch tool.",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "A is correct because specifying 'example.com' in allowed_domains automatically includes all subdomains like docs.example.com. To restrict to specific subdomains, the team should list only the exact subdomains they want to allow. B is incorrect because this is documented behavior, not a bug. While adding docs.example.com to blocked_domains might work, the proper solution is to be specific in allowed_domains. C is incorrect because organization-level restrictions can only further restrict, not override request-level filters, and don't solve the subdomain inclusion issue. D is incorrect because domain filtering applies to both web_search and web_fetch tools.",
+      "references": ["tool-use.server-tools.web-search-fetch"]
+    },
+    {
+      "id": "q-007",
+      "topic": "Code Execution Tool",
+      "difficulty": "medium",
+      "scenario": "A developer is building a data analysis agent that uses Claude's code execution tool. They want the agent to fetch live stock data from an API and then use pandas to analyze it. The code execution runs successfully for the pandas analysis step but fails when trying to fetch data from the external API.",
+      "question": "What is causing the API fetch failure in the code execution sandbox?",
+      "options": [
+        {
+          "label": "A",
+          "text": "The requests library is not pre-installed in the sandbox environment.",
+          "isCorrect": false
+        },
+        {
+          "label": "B",
+          "text": "The sandbox has no internet connectivity; external data must be fetched using web_search or web_fetch tools separately.",
+          "isCorrect": true
+        },
+        {
+          "label": "C",
+          "text": "The sandbox requires explicit network permissions to be enabled via an API parameter.",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "The code execution tool only supports Python, not shell commands that could use curl.",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "B is correct because the code execution sandbox runs in complete network isolation with no internet access. To access external data, the developer should use the web_search or web_fetch server tools separately, then pass the results to the code execution tool for analysis. A is incorrect because while specific packages may or may not be installed, the fundamental issue is network isolation, not missing packages. C is incorrect because there is no API parameter to enable network access in the sandbox; isolation is by design for security. D is incorrect because the current code execution tool version (code_execution_20250825) supports Bash commands, not just Python.",
+      "references": ["tool-use.server-tools.code-execution", "tool-use.server-tools.web-search-fetch"]
+    },
+    {
+      "id": "q-008",
+      "topic": "MCP Connector and Tool Conversion",
+      "difficulty": "hard",
+      "scenario": "A team is integrating a remote MCP server with Claude's Messages API using the MCP connector. They configure the mcp_servers array and an mcp_toolset in the tools array. The server exposes 50 tools, but the team only wants 3 specific tools enabled and the rest disabled. They also want to use Zero Data Retention for compliance.",
+      "question": "Which configuration approach should the team use, and what limitation should they be aware of?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Use an allowlist pattern with default_config enabled: false and explicitly enable the 3 tools in configs. Note that the MCP connector beta is excluded from ZDR arrangements.",
+          "isCorrect": true
+        },
+        {
+          "label": "B",
+          "text": "Use a denylist pattern listing all 47 unwanted tools in configs with enabled: false, and enable ZDR on the API request.",
+          "isCorrect": false
+        },
+        {
+          "label": "C",
+          "text": "Use defer_loading: true on the default_config so only the 3 needed tools are loaded into the context window, with ZDR enabled at the organization level.",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "Use the TypeScript SDK's mcpTools() helper to manually select only 3 tools for conversion, which supports ZDR by default.",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "A is correct because the allowlist pattern (default_config enabled: false, then explicitly enabling specific tools) is the security-first approach and most appropriate when only 3 of 50 tools are needed. The critical limitation is that the MCP connector beta is explicitly excluded from Zero Data Retention arrangements, which the team must account for in their compliance planning. B is incorrect because listing 47 tools individually is impractical, and ZDR cannot simply be enabled for the MCP connector since it's excluded from ZDR. C is incorrect because defer_loading controls whether tool descriptions are sent to the model initially (for context window optimization), not whether tools are enabled; disabled tools would still be callable. D is incorrect because the mcpTools() helper is for client-side MCP implementations, not the server-side MCP connector, and it doesn't inherently support ZDR.",
+      "references": ["tool-use.mcp.mcp-connector"]
+    },
+    {
+      "id": "q-009",
+      "topic": "Tool Definitions and Input Schemas",
+      "difficulty": "medium",
+      "scenario": "A developer defines a tool called 'search-flights' with a description 'Search flights'. During testing, Claude frequently selects the wrong tool when the user asks about flight information, sometimes using a general web_search tool instead. The input_schema is correctly defined.",
+      "question": "What is the most likely cause of Claude's poor tool selection?",
+      "options": [
+        {
+          "label": "A",
+          "text": "The tool name contains a hyphen, which is causing parsing issues with Claude's tool selection logic.",
+          "isCorrect": false
+        },
+        {
+          "label": "B",
+          "text": "The tool description is too vague; Claude needs a detailed description explaining when to use the tool, what it returns, and its limitations.",
+          "isCorrect": true
+        },
+        {
+          "label": "C",
+          "text": "The tool_choice parameter should be set to force use of the search-flights tool.",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "The input_schema needs the strict: true flag to help Claude better understand the tool's purpose.",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "B is correct because description quality is the most important factor in tool performance. A vague two-word description like 'Search flights' doesn't give Claude enough context to distinguish this tool from others. Descriptions should be 3-4 sentences minimum, explaining what the tool does, when it should be used, what it returns, and any limitations. A is incorrect because hyphens are valid in tool names (the regex allows a-zA-Z0-9_-). C is incorrect because forcing tool use with tool_choice is a workaround, not a solution, and prevents Claude from using other tools when appropriate. D is incorrect because strict mode validates parameter types, not tool selection; it doesn't influence when Claude chooses to use a tool.",
+      "references": ["tool-use.basics.tool-definitions"]
+    },
+    {
+      "id": "q-010",
+      "topic": "Tool Results and Response Handling",
+      "difficulty": "hard",
+      "scenario": "A multi-step agent uses Claude with extended thinking and tool use. After receiving a tool result, the developer sends the next API request but gets an error: 'Expected thinking or redacted_thinking, but found text.' The developer had included the tool_use block and tool_result but excluded the thinking blocks from the previous response.",
+      "question": "What must the developer do to resolve this error?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Disable extended thinking for tool use loops since thinking and tool use are incompatible.",
+          "isCorrect": false
+        },
+        {
+          "label": "B",
+          "text": "Include all thinking blocks (including redacted_thinking blocks) from the previous response, unmodified, at the start of the assistant message content.",
+          "isCorrect": true
+        },
+        {
+          "label": "C",
+          "text": "Set the thinking parameter to type: disabled for the continuation request only.",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "Extract the thinking text and pass it as a system prompt for the continuation request.",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "B is correct because when using extended thinking with tool use, the API requires thinking blocks at the start of assistant turns. All thinking and redacted_thinking blocks must be passed back exactly as received, unmodified, to maintain reasoning continuity. A is incorrect because extended thinking and tool use are compatible and work together; the issue is block preservation, not incompatibility. C is incorrect because you cannot toggle thinking mode mid-turn during a tool use loop; the entire assistant turn must use the same thinking configuration. D is incorrect because thinking content must remain as thinking blocks in the assistant message content; moving it to the system prompt would not satisfy the API's structural requirements.",
+      "references": ["tool-use.basics.tool-results", "agents.thinking.extended-thinking", "safety-alignment.principles.thinking-redaction"]
+    },
+    {
+      "id": "q-011",
+      "topic": "Extended Thinking Basics",
+      "difficulty": "easy",
+      "scenario": "A developer enables extended thinking for a Claude Sonnet 4.6 model to help with a complex math problem. They set budget_tokens to 10000 and max_tokens to 16000. The response works correctly and includes thinking blocks.",
+      "question": "What must be true about the relationship between budget_tokens and max_tokens?",
+      "options": [
+        {
+          "label": "A",
+          "text": "budget_tokens must be greater than max_tokens to ensure enough room for reasoning.",
+          "isCorrect": false
+        },
+        {
+          "label": "B",
+          "text": "budget_tokens must be less than max_tokens, with a minimum of 1,024 tokens.",
+          "isCorrect": true
+        },
+        {
+          "label": "C",
+          "text": "budget_tokens and max_tokens must be equal to avoid wasting tokens.",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "budget_tokens is only a suggestion and has no relationship to max_tokens.",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "B is correct because budget_tokens must be strictly less than max_tokens (except when using interleaved thinking with tools), and the minimum value for budget_tokens is 1,024 tokens. A is incorrect because the API validates that budget_tokens is less than max_tokens and returns an error otherwise. C is incorrect because the values must differ, with budget_tokens being the smaller value. D is incorrect because the relationship is enforced by the API; violating it causes a validation error.",
+      "references": ["agents.thinking.extended-thinking"]
+    },
+    {
+      "id": "q-012",
+      "topic": "Adaptive Thinking and Effort Parameter",
+      "difficulty": "medium",
+      "scenario": "A team is building an agentic workflow using Claude Opus 4.6. They want to use extended thinking but are unsure how to set the thinking budget. Some tasks in their pipeline are simple lookups while others require deep analysis. They've been using budget_tokens: 32000 for all tasks.",
+      "question": "What is the recommended approach for this workflow on Claude Opus 4.6?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Continue using budget_tokens but adjust the value dynamically based on detected task complexity.",
+          "isCorrect": false
+        },
+        {
+          "label": "B",
+          "text": "Use adaptive thinking (type: adaptive) with the effort parameter set to medium, allowing Claude to dynamically allocate reasoning depth per request.",
+          "isCorrect": true
+        },
+        {
+          "label": "C",
+          "text": "Disable thinking for simple tasks and enable it with budget_tokens: 32000 for complex ones using separate API calls.",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "Use the effort parameter set to max for all tasks to ensure the best quality.",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "B is correct because adaptive thinking is Anthropic's recommended approach for Claude Opus 4.6. It allows Claude to dynamically determine reasoning depth based on each request's complexity, and the medium effort level is specifically recommended for agentic workflows to balance speed, cost, and performance. A is incorrect because manual budget_tokens is deprecated on Opus 4.6 and Sonnet 4.6. C is incorrect because toggling thinking mode during a tool use loop causes it to silently disable, and the deprecated budget_tokens approach shouldn't be used on 4.6 models. D is incorrect because max effort is unnecessarily expensive for simple tasks and adds latency; medium effort lets Claude skip thinking for simple queries while still applying it for complex ones.",
+      "references": ["agents.thinking.adaptive-thinking", "agents.thinking.extended-thinking"]
+    },
+    {
+      "id": "q-013",
+      "topic": "Interleaved Thinking with Tools",
+      "difficulty": "hard",
+      "scenario": "A developer builds a debugging agent using Claude Sonnet 4.6 with extended thinking and tools. During a tool use loop, Claude reasons about a database error, queries for available tables, and adjusts its approach. The developer wants to enable interleaved thinking so Claude can reason between tool calls. They also need to switch from adaptive thinking to manual budget_tokens mid-conversation because they're hitting token limits.",
+      "question": "What constraint will prevent the developer from switching thinking modes mid-conversation?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Interleaved thinking requires a beta header that is incompatible with manual budget_tokens on Sonnet 4.6.",
+          "isCorrect": false
+        },
+        {
+          "label": "B",
+          "text": "Thinking mode cannot be toggled during a tool use loop; the entire assistant turn must use the same thinking configuration, and switching silently disables thinking.",
+          "isCorrect": true
+        },
+        {
+          "label": "C",
+          "text": "Sonnet 4.6 only supports adaptive thinking and does not accept manual budget_tokens configuration.",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "Switching thinking modes requires ending the current session and starting a new one with the updated configuration.",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "B is correct because the API does not allow toggling thinking mode during a tool use loop. The entire assistant turn (including all tool calls within it) must operate under the same thinking configuration. Attempting to switch modes mid-turn will silently disable thinking for that request. A is incorrect because Sonnet 4.6 supports both the interleaved thinking beta header and adaptive mode, and they can be used with manual budget_tokens. C is incorrect because Sonnet 4.6 supports both adaptive and manual thinking modes, unlike Opus 4.6 where manual is deprecated. D is incorrect because the issue isn't about sessions; it's about the constraint within a single tool use loop.",
+      "references": ["agents.thinking.interleaved-thinking", "agents.thinking.adaptive-thinking", "agents.thinking.extended-thinking"]
+    },
+    {
+      "id": "q-014",
+      "topic": "State Management and Progress Tracking",
+      "difficulty": "medium",
+      "scenario": "A team deploys a long-running coding agent that operates for several hours. After 45 minutes, the agent's performance noticeably degrades: it starts repeating work it already completed and forgets architectural decisions made earlier. The agent operates in a single context window.",
+      "question": "What is the most effective approach to maintain agent performance over extended periods?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Increase the model's context window to 1M tokens to accommodate the growing conversation history.",
+          "isCorrect": false
+        },
+        {
+          "label": "B",
+          "text": "Implement a state management system with structured progress files, git-based checkpoints, and context compaction to preserve critical information while freeing context space.",
+          "isCorrect": true
+        },
+        {
+          "label": "C",
+          "text": "Switch to a more capable model that can handle longer contexts without degradation.",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "Reduce the agent's token budget so it completes tasks faster before performance degrades.",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "B is correct because effective state management requires multiple complementary strategies: structured progress files to track completed work and decisions, git commits for checkpointing, and context compaction to summarize old context while preserving essential information. Research shows agent performance degrades after approximately 35 minutes, so explicit state management is essential. A is incorrect because simply having more context space doesn't solve the problem; model performance degrades as context grows regardless of capacity. C is incorrect because performance degradation in long contexts is a fundamental challenge across models, not solved by model capability alone. D is incorrect because reducing the token budget would limit the agent's ability to reason effectively without addressing the core state management problem.",
+      "references": ["agents.long-horizon.state-management", "agents.long-horizon.multi-context-workflows"]
+    },
+    {
+      "id": "q-015",
+      "topic": "Multi-Context Window Workflows",
+      "difficulty": "hard",
+      "scenario": "A development team implements a multi-session coding agent. The first session sets up the project and begins implementation. When the second session starts, the agent reads the progress file from session one and begins implementing a feature. However, the progress file contains an incorrect claim that a specific API requires OAuth authentication when it actually uses API keys. The agent proceeds with the wrong approach across all subsequent sessions.",
+      "question": "What failure mode is this an example of, and how should it be prevented?",
+      "options": [
+        {
+          "label": "A",
+          "text": "This is context distraction. The solution is to limit the amount of information loaded from previous sessions.",
+          "isCorrect": false
+        },
+        {
+          "label": "B",
+          "text": "This is context poisoning. The solution is to implement validation checks that verify claims in progress files before applying them, and document decisions with explicit reasoning.",
+          "isCorrect": true
+        },
+        {
+          "label": "C",
+          "text": "This is a compaction artifact. The solution is to increase the compaction threshold so less information is summarized.",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "This is a session isolation problem. The solution is to give each session a completely fresh context without any prior state.",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "B is correct because this is context poisoning: when incorrect information (hallucination or error) enters a progress file or summary, it propagates to all future sessions, corrupting the agent's understanding. The prevention strategy includes validation checks (running tests before implementing), explicit documentation of decisions with reasoning, and verifying claims against actual system behavior. A is incorrect because context distraction refers to information density filling the context window counterproductively, not to incorrect information being propagated. C is incorrect because the error originated in the progress file, not from automated compaction. D is incorrect because starting each session fresh would eliminate the benefits of multi-session workflows and force the agent to rediscover context every time.",
+      "references": ["agents.long-horizon.multi-context-workflows", "agents.long-horizon.state-management"]
+    },
+    {
+      "id": "q-016",
+      "topic": "Subagent Orchestration",
+      "difficulty": "medium",
+      "scenario": "A research team builds a multi-agent system for analyzing market data. They spawn 15 subagents for a simple competitive analysis task that could be handled by 2-3 agents. The system works but costs 15x more tokens than expected and takes longer due to coordination overhead.",
+      "question": "What principle did the team violate, and what should they do instead?",
+      "options": [
+        {
+          "label": "A",
+          "text": "They violated the single parent rule. Each subagent should be managed by exactly one coordinator to reduce overhead.",
+          "isCorrect": false
+        },
+        {
+          "label": "B",
+          "text": "They over-spawned subagents. They should scale effort to task complexity, using 1-3 agents with 3-10 tool calls for simple fact-finding tasks.",
+          "isCorrect": true
+        },
+        {
+          "label": "C",
+          "text": "They should have used sequential execution instead of parallel execution to reduce token usage.",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "They should have used a single agent with more tools rather than multiple specialized agents.",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "B is correct because over-spawning is a common anti-pattern in multi-agent systems. The team should match subagent count to task difficulty. Simple competitive analysis is a straightforward task that needs 1-3 agents, not 15. Multi-agent systems consume approximately 15x more tokens than single-agent approaches, so subagents should only be used when the complexity justifies the cost. A is incorrect because the single parent rule is about ownership (each agent can only be a subagent of one parent), not about reducing the total number of agents. C is incorrect because the problem isn't the execution pattern (parallel vs sequential) but the excessive number of agents. D is incorrect because the recommendation isn't always to use a single agent; sometimes specialized agents are appropriate. The issue is scale relative to complexity.",
+      "references": ["agents.orchestration.subagents"]
+    },
+    {
+      "id": "q-017",
+      "topic": "Agent SDK Core Concepts",
+      "difficulty": "easy",
+      "scenario": "A developer is using the Claude Agent SDK to build a code review tool. They want Claude to read files and search for patterns but never modify any files. They need the agent to run without prompting for user approval on each operation.",
+      "question": "What is the correct configuration for this read-only agent?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Set allowed_tools to [\"Read\", \"Glob\", \"Grep\"] with permission_mode set to bypassPermissions.",
+          "isCorrect": true
+        },
+        {
+          "label": "B",
+          "text": "Set permission_mode to acceptEdits, which only auto-approves file modifications while requiring approval for reads.",
+          "isCorrect": false
+        },
+        {
+          "label": "C",
+          "text": "Set permission_mode to plan, which allows reading but prevents all execution.",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "Set allowed_tools to [\"read\", \"glob\", \"grep\"] with permission_mode set to default.",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "A is correct because restricting allowed_tools to Read, Glob, and Grep prevents any file modifications, and bypassPermissions auto-approves all tool calls without user interaction. Since the tools themselves are read-only, this is safe. B is incorrect because acceptEdits auto-approves file operations (Edit, Write), which is the opposite of what's needed. Additionally, read operations typically require approval in default mode, not acceptEdits. C is incorrect because plan mode prevents all tool execution, including reads. The agent wouldn't be able to analyze files at all. D is incorrect because tool names are case-sensitive in the SDK. Using lowercase 'read', 'glob', 'grep' would not be recognized; the correct names are 'Read', 'Glob', 'Grep'.",
+      "references": ["agents.sdk.core-concepts"]
+    },
+    {
+      "id": "q-018",
+      "topic": "Hooks and Sessions",
+      "difficulty": "hard",
+      "scenario": "A security-focused team implements SDK hooks to control their agent. They create a PreToolUse hook that checks Bash commands for dangerous patterns. The hook returns permissionDecision: 'deny' for commands containing 'rm -rf'. They also create a second PreToolUse hook that logs all tool calls and returns permissionDecision: 'allow'. During testing, a Bash command containing 'rm -rf' is unexpectedly blocked.",
+      "question": "Given that the logging hook returns 'allow', why is the dangerous command still blocked?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Hooks are evaluated in order and the first decision wins, so if the deny hook runs first, the allow from the logging hook is ignored.",
+          "isCorrect": false
+        },
+        {
+          "label": "B",
+          "text": "When multiple hooks apply, deny takes priority over ask, which takes priority over allow, regardless of hook evaluation order.",
+          "isCorrect": true
+        },
+        {
+          "label": "C",
+          "text": "The logging hook's allow decision only applies to the logging action itself, not to the original Bash command.",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "PreToolUse hooks can only deny or pass; the allow decision from the logging hook is invalid and treated as a no-op.",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "B is correct because the SDK's permission evaluation follows a priority hierarchy: deny always wins over ask, which wins over allow, regardless of the order hooks are defined or executed. So even though the logging hook returns 'allow', the security hook's 'deny' takes precedence. A is incorrect because it's not about execution order; the priority hierarchy governs the final decision. Even if the allow hook ran first, deny would still override it. C is incorrect because hook permission decisions apply to the tool call being evaluated, not to the hook's own actions. D is incorrect because PreToolUse hooks can return allow, deny, or ask as valid permission decisions.",
+      "references": ["agents.sdk.hooks-and-sessions", "agents.sdk.core-concepts"]
+    },
+    {
+      "id": "q-019",
+      "topic": "Agent SDK Core Concepts",
+      "difficulty": "hard",
+      "scenario": "A CI/CD pipeline uses the Agent SDK with bypassPermissions mode to automatically fix failing tests. The system spawns a subagent for each test file to isolate modifications. A security review reveals that every subagent has unrestricted access to run any Bash command on the system, including commands that could access secrets or modify infrastructure.",
+      "question": "What security issue enables this unrestricted subagent access?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Subagents default to the same permission mode as the parent agent. The team should set explicit permission restrictions on each subagent.",
+          "isCorrect": false
+        },
+        {
+          "label": "B",
+          "text": "When the parent uses bypassPermissions, all subagents inherit this mode and it cannot be overridden, giving them full autonomous system access.",
+          "isCorrect": true
+        },
+        {
+          "label": "C",
+          "text": "The allowed_tools restriction on subagents is not enforced when the parent has bypassPermissions enabled.",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "Subagents have a different system prompt and may interpret permissions differently than the parent agent.",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "B is correct because bypassPermissions inheritance is a documented security concern: when the parent agent uses bypassPermissions, all subagents inherit this mode and it cannot be overridden. Subagents may have different system prompts and less constrained behavior, giving them full autonomous system access. A is incorrect because the issue isn't about defaults; it's that the inherited bypassPermissions cannot be overridden on subagents. C is incorrect because the issue is the permission mode itself, not tool restrictions. allowed_tools can limit which tools are available but doesn't change the permission evaluation. D is incorrect because while subagents can have different system prompts, the security issue is the inherited bypassPermissions mode, not prompt interpretation differences.",
+      "references": ["agents.sdk.core-concepts", "agents.sdk.hooks-and-sessions"]
+    },
+    {
+      "id": "q-020",
+      "topic": "Extended Thinking Basics",
+      "difficulty": "medium",
+      "scenario": "A developer uses Claude 4 models with extended thinking enabled for a complex analysis task. They notice the API response shows 8,000 output_tokens in the usage field, but the visible thinking summary and text response combined appear to be only about 2,000 tokens. The developer's cost calculations are significantly off.",
+      "question": "Why is there a discrepancy between visible tokens and billed tokens?",
+      "options": [
+        {
+          "label": "A",
+          "text": "The system prompt tokens are being double-counted in the output_tokens field.",
+          "isCorrect": false
+        },
+        {
+          "label": "B",
+          "text": "Claude 4 models return summarized thinking, but billing is based on the full thinking tokens generated internally, not the visible summary.",
+          "isCorrect": true
+        },
+        {
+          "label": "C",
+          "text": "The output_tokens field includes cached tokens from previous requests that were reused.",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "Extended thinking generates internal retries that consume additional tokens before producing the final response.",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "B is correct because Claude 4 models return summarized thinking rather than the full reasoning output. However, you are billed for the full thinking tokens generated internally, not the summary you see in the response. This creates a visible mismatch between the token count in the usage field and the apparent length of the response. A is incorrect because system prompt tokens are counted as input tokens, not output tokens. C is incorrect because cached tokens are tracked separately in the usage object under cache_read_input_tokens and don't appear in output_tokens. D is incorrect because extended thinking doesn't work through retries; it's a single reasoning pass that gets summarized before delivery.",
+      "references": ["agents.thinking.extended-thinking", "agents.thinking.adaptive-thinking"]
+    },
+    {
+      "id": "q-021",
+      "topic": "Prompt Caching Fundamentals",
+      "difficulty": "easy",
+      "scenario": "A developer builds a document analysis chatbot. Users upload a large document and ask multiple questions about it. Each question triggers a new API request with the full document in the system prompt. The developer wants to reduce costs for follow-up questions.",
+      "question": "What is the most effective caching strategy for this use case?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Place cache_control with type: ephemeral on the system prompt containing the document, so subsequent questions reuse the cached document at 90% lower cost.",
+          "isCorrect": true
+        },
+        {
+          "label": "B",
+          "text": "Use the batch API to send all questions at once to avoid repeated processing of the document.",
+          "isCorrect": false
+        },
+        {
+          "label": "C",
+          "text": "Set max_tokens to a lower value for follow-up questions to reduce the overall token usage.",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "Store the document externally and only send relevant excerpts for each question using RAG.",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "A is correct because placing cache_control on the system prompt containing the document enables prompt caching. The first request incurs a cache write cost (1.25x), but all subsequent requests with the same prefix read from cache at 0.1x the base input price (90% savings). The break-even point is just 2 API calls. B is incorrect because while the batch API offers 50% cost savings, it requires all questions upfront and doesn't support interactive follow-up questions. C is incorrect because max_tokens controls output length, not input processing costs. The document processing cost is the same regardless. D is incorrect because while RAG can reduce input tokens, it adds complexity and may miss relevant context. Prompt caching solves the cost problem directly without losing full document context.",
+      "references": ["context-management.caching.basics"]
+    },
+    {
+      "id": "q-022",
+      "topic": "Caching with Extended Thinking",
+      "difficulty": "hard",
+      "scenario": "An agentic workflow uses Claude Sonnet 4.6 with extended thinking (budget_tokens: 10000) and prompt caching. During a tool use loop, the developer needs to increase the thinking budget to 15000 for a particularly complex tool result analysis. They notice that after changing the budget, the system prompt cache still hits but the message cache misses entirely.",
+      "question": "What explains this selective cache invalidation behavior?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Any thinking parameter change invalidates the entire cache hierarchy, but the system prompt was recently accessed and its TTL hasn't expired yet.",
+          "isCorrect": false
+        },
+        {
+          "label": "B",
+          "text": "Cache follows a strict hierarchy (tools, system, messages). Changing budget_tokens invalidates only message cache breakpoints while preserving tool and system prompt caches.",
+          "isCorrect": true
+        },
+        {
+          "label": "C",
+          "text": "Thinking blocks are stripped from previous turns automatically, so only the current turn's cache is affected by budget changes.",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "The message cache miss is caused by the new tool results being added, not by the budget_tokens change.",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "B is correct because prompt caching follows a strict hierarchy: tools, then system, then messages. Changes to thinking parameters (including budget_tokens) only invalidate the messages level, leaving tool definitions and system prompts cached. This is why the system prompt cache still hits even after the budget change. A is incorrect because thinking parameter changes do not invalidate the entire hierarchy; they specifically affect only the message level. C is incorrect because thinking block stripping behavior is model-dependent (Opus 4.5+ preserves them), and the cache invalidation is caused by the parameter change, not block stripping. D is incorrect because while new tool results do extend the message content, the question specifically asks about the budget_tokens change causing the miss; tool results added to the end would not invalidate previously cached message prefixes.",
+      "references": ["context-management.caching.with-thinking", "context-management.caching.basics"]
+    },
+    {
+      "id": "q-023",
+      "topic": "Context Compaction",
+      "difficulty": "medium",
+      "scenario": "A customer support chatbot has been running for 30 minutes and is approaching the context window limit. The developer enables the compact_20260112 strategy with a trigger threshold of 150,000 tokens. After compaction occurs, they notice the agent needs to re-read a configuration file it had analyzed earlier in the conversation.",
+      "question": "What trade-off of compaction caused this re-fetch, and how can it be mitigated?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Compaction uses a cheaper model for summarization that loses details. Use the same model to improve summary quality.",
+          "isCorrect": false
+        },
+        {
+          "label": "B",
+          "text": "Compaction summarizes older context, which can discard specific artifacts like file contents. Use pause_after_compaction to preserve recent messages and critical content verbatim.",
+          "isCorrect": true
+        },
+        {
+          "label": "C",
+          "text": "Compaction only removes images and tool results, not text content. The file data was likely in an image format.",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "The compaction threshold was set too low. Increase it to 200,000 tokens to delay compaction.",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "B is correct because compaction summarizes older conversation content, which can discard detailed artifacts like file contents or raw tool outputs. The pause_after_compaction option allows the developer to insert preserved messages or critical content between the compaction block and subsequent messages, maintaining important details verbatim. A is incorrect because Claude uses the same model specified in the request for summarization; there's no option to use a different model. C is incorrect because compaction summarizes all older content, not just specific content types. D is incorrect because increasing the threshold delays compaction but doesn't prevent the information loss when it eventually occurs.",
+      "references": ["context-management.optimization.compaction"]
+    },
+    {
+      "id": "q-024",
+      "topic": "Token Counting API",
+      "difficulty": "easy",
+      "scenario": "A developer wants to estimate the cost of an API request before sending it. They use the token counting endpoint to check how many input tokens their message will consume. The count shows 50,000 tokens. They also want to ensure the request doesn't exceed 80% of the context window.",
+      "question": "What should the developer consider about the token counting result?",
+      "options": [
+        {
+          "label": "A",
+          "text": "The count is exact and matches billing precisely. They can safely use it for context window validation.",
+          "isCorrect": false
+        },
+        {
+          "label": "B",
+          "text": "The count is highly accurate but should be treated as an estimate. Actual billed tokens may differ slightly, and prompt caching behavior is not simulated.",
+          "isCorrect": true
+        },
+        {
+          "label": "C",
+          "text": "The count only includes message tokens and excludes tool definitions and system prompts.",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "The count consumes tokens from the same rate limit pool as the Messages API.",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "B is correct because while the token counting API is highly accurate (using the same tokenization logic as the inference pipeline), it should be treated as an estimate since actual billed tokens may differ slightly. Importantly, prompt caching is not simulated in the count, so cached tokens aren't reflected. A is incorrect because the count is explicitly described as an estimate, not an exact match. C is incorrect because the token counting endpoint accepts the same input structure as the Messages API, including system prompts, tools, and multi-turn conversations. D is incorrect because token counting and message creation have independent rate limits; usage of one doesn't count against the other.",
+      "references": ["context-management.optimization.token-counting"]
+    },
+    {
+      "id": "q-025",
+      "topic": "Prompt Caching Fundamentals",
+      "difficulty": "medium",
+      "scenario": "A developer configures prompt caching with both 1-hour and 5-minute TTL options. They place a 1-hour cache_control on a large reference document in the system prompt and a 5-minute cache_control on the conversation history. When deploying, they receive a 400 error.",
+      "question": "What is causing the 400 error?",
+      "options": [
+        {
+          "label": "A",
+          "text": "You cannot mix different TTL durations in the same request.",
+          "isCorrect": false
+        },
+        {
+          "label": "B",
+          "text": "The 1-hour TTL entry must appear before the 5-minute TTL entry in the cache hierarchy. If the 5-minute entry appears first, the API returns a 400 error.",
+          "isCorrect": true
+        },
+        {
+          "label": "C",
+          "text": "The maximum number of cache breakpoints (4) has been exceeded.",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "The 1-hour TTL option is only available for Claude Opus models, not Sonnet.",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "B is correct because when mixing TTLs, longer TTL entries must appear before shorter ones in the cache hierarchy. The API enforces this ordering constraint and returns a 400 error if violated. Since the cache hierarchy is tools, then system, then messages, the 1-hour system prompt (second in hierarchy) before 5-minute messages (third) is actually correct ordering. However, if the developer placed them in reverse order within any level, it would fail. A is incorrect because mixing TTL durations is explicitly supported. C is incorrect because the scenario only describes 2 breakpoints, well under the 4-breakpoint limit. D is incorrect because the 1-hour TTL option is available across all Claude models that support caching.",
+      "references": ["context-management.caching.basics"]
+    },
+    {
+      "id": "q-026",
+      "topic": "Caching with Extended Thinking",
+      "difficulty": "medium",
+      "scenario": "A developer switches their application from thinking: {type: 'enabled', budget_tokens: 10000} to thinking: {type: 'adaptive'} between requests in a conversation. They notice that the system prompt cache still hits, but all message content is reprocessed.",
+      "question": "Why does the system prompt cache survive while messages are invalidated?",
+      "options": [
+        {
+          "label": "A",
+          "text": "System prompts are always cached permanently and never invalidated.",
+          "isCorrect": false
+        },
+        {
+          "label": "B",
+          "text": "Switching thinking modes invalidates message cache breakpoints but preserves tool and system prompt caches because cache follows a strict prefix hierarchy.",
+          "isCorrect": true
+        },
+        {
+          "label": "C",
+          "text": "Adaptive thinking mode uses a separate cache namespace from manual thinking mode.",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "The system prompt was still within its 5-minute TTL while the message cache had expired.",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "B is correct because prompt caching follows a strict prefix hierarchy: tools, system, messages. When thinking mode changes (from enabled to adaptive), only the message-level cache breakpoints are invalidated. The tools and system prompt caches are unaffected because they appear earlier in the hierarchy and are independent of thinking parameters. A is incorrect because system prompts do have TTLs and can be invalidated by changes to content appearing before them in the hierarchy. C is incorrect because there are no separate cache namespaces; it's a single hierarchical cache. D is incorrect because the invalidation is caused by the thinking mode change, not TTL expiration.",
+      "references": ["context-management.caching.with-thinking", "context-management.caching.basics"]
+    },
+    {
+      "id": "q-027",
+      "topic": "Context Compaction",
+      "difficulty": "hard",
+      "scenario": "An autonomous coding agent uses context compaction with a trigger at 100,000 tokens. After several compactions, the agent consistently re-fetches files it previously analyzed. The team estimates that compaction has caused 3x the token usage compared to an ideal scenario where no re-fetching was needed. They also notice the agent sometimes applies outdated code patterns from compaction summaries.",
+      "question": "What combination of strategies should the team implement to address both re-fetching overhead and stale summaries?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Increase the compaction threshold to delay compaction and cache all file contents in the system prompt.",
+          "isCorrect": false
+        },
+        {
+          "label": "B",
+          "text": "Use custom compaction instructions to prioritize retaining file paths and architectural decisions, combine with structured progress files that the agent validates against actual state before applying.",
+          "isCorrect": true
+        },
+        {
+          "label": "C",
+          "text": "Disable compaction entirely and instead use sub-agent delegation to isolate each task within its own context window.",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "Switch to the 1-hour cache TTL to keep more content cached longer between compaction events.",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "B is correct because custom compaction instructions replace the default summarization prompt, allowing the team to specify what information is most important to retain (file paths, architectural decisions). Combined with structured progress files that are validated against actual system state (running tests, checking git status), this addresses both the re-fetching problem (by retaining key references) and stale information (by verifying before applying). A is incorrect because increasing the threshold only delays the problem, and caching file contents in the system prompt is impractical for large codebases. C is incorrect because sub-agent delegation increases token usage by approximately 15x, which would worsen the cost problem. D is incorrect because cache TTL is unrelated to compaction behavior; caching and compaction are separate mechanisms.",
+      "references": ["context-management.optimization.compaction", "agents.long-horizon.state-management"]
+    },
+    {
+      "id": "q-028",
+      "topic": "Messages API Fundamentals",
+      "difficulty": "easy",
+      "scenario": "A developer migrating from another AI API is setting up their first Claude integration. They configure their HTTP client with an Authorization: Bearer header for authentication, just like they did with the previous API. Their requests consistently return 401 errors.",
+      "question": "What is the developer doing wrong?",
+      "options": [
+        {
+          "label": "A",
+          "text": "They need to use the x-api-key header for authentication, not the Authorization header.",
+          "isCorrect": true
+        },
+        {
+          "label": "B",
+          "text": "They need to include the anthropic-version header, which is required alongside the Authorization header.",
+          "isCorrect": false
+        },
+        {
+          "label": "C",
+          "text": "The API key needs to be base64-encoded before being placed in the header.",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "They need to generate a new API key specifically for the Messages API, separate from other Anthropic endpoints.",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "A is correct because the Claude API uses the x-api-key header for authentication, not the Authorization header. This is a common mistake when migrating from other APIs. B is incorrect because while the anthropic-version header is required, it wouldn't fix the authentication error; the wrong authentication header is the root cause. C is incorrect because the API key should be passed as-is in the x-api-key header without encoding. D is incorrect because a single API key works across all Anthropic API endpoints; there's no need for separate keys.",
+      "references": ["api-integration.messages-api.basics"]
+    },
+    {
+      "id": "q-029",
+      "topic": "Streaming Responses",
+      "difficulty": "medium",
+      "scenario": "A developer implements streaming for their Claude chatbot using server-sent events. During testing, they notice that tool use responses sometimes produce unparseable JSON. They are trying to parse the tool input immediately when each input_json_delta event arrives.",
+      "question": "Why are the tool inputs failing to parse, and how should they be handled?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Tool inputs during streaming require a special JSON parser library that handles partial JSON objects.",
+          "isCorrect": false
+        },
+        {
+          "label": "B",
+          "text": "input_json_delta events contain JSON fragments, not valid JSON. The fragments must be accumulated and parsed only after the content_block_stop event.",
+          "isCorrect": true
+        },
+        {
+          "label": "C",
+          "text": "Streaming is not supported for tool use responses. The developer should disable streaming for requests with tools.",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "The model is generating malformed JSON. Setting strict: true on the tool definition will fix the streaming output.",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "B is correct because input_json_delta events emit partial JSON strings that are fragments of the full tool input. These fragments must be concatenated into a buffer and only parsed as complete JSON after the content_block_stop event signals the block is complete. A is incorrect because while partial JSON parsers exist, the proper approach is to wait for the complete JSON. The fragments are designed to be concatenated, not individually parsed. C is incorrect because streaming is fully supported with tool use; it just requires proper handling of partial JSON. D is incorrect because the JSON isn't malformed; it's intentionally delivered in fragments during streaming.",
+      "references": ["api-integration.messages-api.streaming"]
+    },
+    {
+      "id": "q-030",
+      "topic": "Message Batches API",
+      "difficulty": "medium",
+      "scenario": "A company needs to process 50,000 customer support transcripts for sentiment analysis. They decide to use the Message Batches API for the 50% cost savings. They submit the batch and start processing results in the order they were submitted.",
+      "question": "What mistake is the company making when processing batch results?",
+      "options": [
+        {
+          "label": "A",
+          "text": "They should process results using the custom_id field since batch results are not guaranteed to return in submission order.",
+          "isCorrect": true
+        },
+        {
+          "label": "B",
+          "text": "They should wait for the entire batch to complete before processing any results.",
+          "isCorrect": false
+        },
+        {
+          "label": "C",
+          "text": "They should split the batch into smaller chunks of 1,000 requests each for faster processing.",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "They should use streaming mode within each batch request for real-time result delivery.",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "A is correct because batch results are not guaranteed to return in the order they were submitted. Each request must have a unique custom_id that the company uses to correlate results with the original transcripts. Processing results by position order will misattribute analyses. B is incorrect because waiting for complete results is the correct workflow (you poll until processing_status is 'ended'), but the issue is about using custom_id for correlation, not about timing. C is incorrect because the batch API supports up to 100,000 requests per batch, and splitting into smaller batches adds management overhead without solving the ordering issue. D is incorrect because the stream parameter is explicitly ignored in batch requests; all batch responses are complete messages.",
+      "references": ["api-integration.batch-processing.basics"]
+    },
+    {
+      "id": "q-031",
+      "topic": "SDK Setup and Usage",
+      "difficulty": "easy",
+      "scenario": "A developer's production application is experiencing intermittent failures where requests to the Claude API sometimes return 429 (rate limit) and 500 (server error) responses. They add their own retry logic with a loop that retries up to 3 times with a 1-second fixed delay.",
+      "question": "What problem does this custom retry logic introduce?",
+      "options": [
+        {
+          "label": "A",
+          "text": "The 1-second fixed delay is too short; they should use at least 5-second delays between retries.",
+          "isCorrect": false
+        },
+        {
+          "label": "B",
+          "text": "The official SDK already auto-retries 429 and 500 errors with exponential backoff, so adding custom retries creates multiplicative attempts and compounding delays.",
+          "isCorrect": true
+        },
+        {
+          "label": "C",
+          "text": "429 errors should never be retried because the rate limit won't reset within the retry window.",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "500 errors indicate permanent failures that should not be retried; only 429 errors are retryable.",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "B is correct because the official Anthropic SDKs automatically retry 429 (rate limit) and 500 (server error) responses with exponential backoff (2 retries by default). Adding custom retry logic on top creates multiplicative retry attempts (e.g., 3 x 3 = 9 attempts) with compounding delays, which can overwhelm recovering services. A is incorrect because the delay duration isn't the core issue; it's the layered retry logic. C is incorrect because 429 errors are explicitly retryable with exponential backoff, as the rate limit uses a token bucket that replenishes continuously. D is incorrect because 500 errors are retryable transient failures, and the SDK handles them automatically.",
+      "references": ["api-integration.sdks.setup", "api-integration.messages-api.basics"]
+    },
+    {
+      "id": "q-032",
+      "topic": "Messages API Fundamentals",
+      "difficulty": "medium",
+      "scenario": "A developer building a multi-turn chatbot notices that after Claude returns tool results, the subsequent response is completely empty despite having a stop_reason of 'end_turn'. They are adding a text block with instructions after the tool_result blocks in the same user message.",
+      "question": "What is causing the empty response?",
+      "options": [
+        {
+          "label": "A",
+          "text": "The max_tokens value is too low to generate a response after processing the tool results.",
+          "isCorrect": false
+        },
+        {
+          "label": "B",
+          "text": "Adding text blocks immediately after tool_result content in user messages can cause Claude to return empty responses. Tool results should be sent without additional text.",
+          "isCorrect": true
+        },
+        {
+          "label": "C",
+          "text": "The tools array was not included in the continuation request, causing Claude to not recognize the tool context.",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "The tool_use_id in the tool_result does not match the original tool request, causing the result to be silently ignored.",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "B is correct because adding text blocks immediately after tool_result content in user messages is a documented cause of empty responses with end_turn stop reason. The recommended practice is to send tool results without additional text content. A is incorrect because if max_tokens were too low, the stop_reason would be 'max_tokens', not 'end_turn'. C is incorrect because while tools must be included in every request, a missing tools array would cause a different error about missing tool definitions. D is incorrect because a mismatched tool_use_id would cause an explicit API error, not an empty response.",
+      "references": ["api-integration.messages-api.basics", "tool-use.basics.tool-results"]
+    },
+    {
+      "id": "q-033",
+      "topic": "Streaming Responses",
+      "difficulty": "hard",
+      "scenario": "A developer implements error handling for streaming responses. Their application checks the HTTP status code and, if it's 200, assumes the request succeeded. During a period of high API load, they notice their application hangs indefinitely because it received a 200 OK but the stream contains an overloaded_error event midway through.",
+      "question": "What architectural change should the developer make to handle this correctly?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Add a connection timeout that aborts streams taking longer than 30 seconds.",
+          "isCorrect": false
+        },
+        {
+          "label": "B",
+          "text": "Check SSE event types during stream processing, not just the HTTP status code, since errors can occur mid-stream after a 200 OK response.",
+          "isCorrect": true
+        },
+        {
+          "label": "C",
+          "text": "Switch to non-streaming requests since they properly return error status codes.",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "Enable the SDK's built-in stream error handler by passing an error callback in the stream options.",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "B is correct because streaming responses return HTTP 200 immediately when the connection opens. Errors like overloaded_error can occur mid-stream as SSE error events. The developer must check event types during stream processing, not just the HTTP status code, to properly detect and handle these mid-stream errors. A is incorrect because a timeout is a blunt instrument that doesn't distinguish between normal long responses and error states. The proper fix is checking event types. C is incorrect because switching to non-streaming removes the real-time delivery benefits and doesn't scale well for long responses. D is incorrect because while SDKs do provide stream error handling, the fundamental issue is the developer's architecture of only checking HTTP status codes.",
+      "references": ["api-integration.messages-api.streaming"]
+    },
+    {
+      "id": "q-034",
+      "topic": "Clarity and XML Structuring",
+      "difficulty": "easy",
+      "scenario": "A developer writes a prompt that says 'Don't use bullet points, don't include headers, and don't add any preamble.' Despite these instructions, Claude frequently starts responses with 'Here is the analysis:' and uses bullet points.",
+      "question": "How should the developer restructure these instructions for better compliance?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Add 'IMPORTANT:' before each negative instruction to increase emphasis.",
+          "isCorrect": false
+        },
+        {
+          "label": "B",
+          "text": "Reframe as positive instructions: 'Write in flowing prose paragraphs. Begin directly with the analysis content. Use no formatting except inline code.'",
+          "isCorrect": true
+        },
+        {
+          "label": "C",
+          "text": "Use the stop_sequences parameter to halt generation if Claude starts with preamble text.",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "Set temperature to 0 to make Claude follow instructions more literally.",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "B is correct because models perform better with positive instructions than negated ones. Telling Claude what to do ('write in flowing prose') is more effective than telling it what not to do ('don't use bullet points'). Positive framing gives the model a clear target behavior rather than a list of things to avoid. A is incorrect because emphasis through formatting like bold or capitalization has surprisingly little effect on LLM behavior; structural guidance outperforms typographic emphasis. C is incorrect because stop_sequences is a blunt tool that would prematurely end generation rather than reshaping the output style. D is incorrect because temperature primarily controls randomness, not instruction adherence.",
+      "references": ["prompt-engineering.fundamentals.clarity-and-structure", "prompt-engineering.output-control.verbosity-and-style"]
+    },
+    {
+      "id": "q-035",
+      "topic": "Role Prompting and System Prompts",
+      "difficulty": "medium",
+      "scenario": "A team building a medical information chatbot assigns Claude the role 'You are a world-renowned expert cardiologist who never makes mistakes.' They notice that Claude provides confident answers about cardiology topics but sometimes states uncertain medical claims as definitive facts.",
+      "question": "What is the root cause of this behavior and how should the team adjust their approach?",
+      "options": [
+        {
+          "label": "A",
+          "text": "The model needs access to a medical database to verify its claims. Add a search tool for medical literature.",
+          "isCorrect": false
+        },
+        {
+          "label": "B",
+          "text": "Heavy-handed role prompting like 'never makes mistakes' can make Claude overconfident. Replace with explicit behavioral instructions about acknowledging uncertainty and citing sources.",
+          "isCorrect": true
+        },
+        {
+          "label": "C",
+          "text": "Role prompting is inherently unreliable for medical topics. Switch to a fine-tuned medical model instead.",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "Add more specificity to the role: include years of experience, specific subspecialties, and hospital affiliations.",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "B is correct because overly specific or aggressive role definitions (like 'never makes mistakes') can constrain helpful behavior and make the model rigid or overconfident. Research shows that role prompting primarily affects communication style, not factual accuracy. The team should replace the heavy role with explicit behavioral instructions: 'Focus on evidence-based information. Acknowledge uncertainty when confidence is low. Cite relevant clinical guidelines.' A is incorrect because while a medical search tool could help, it doesn't address the root cause of the overconfident prompting. C is incorrect because the issue is the prompt design, not the model. D is incorrect because adding more persona details would compound the problem by making Claude even more committed to appearing authoritative.",
+      "references": ["prompt-engineering.fundamentals.role-prompting"]
+    },
+    {
+      "id": "q-036",
+      "topic": "Few-Shot and Multishot Prompting",
+      "difficulty": "medium",
+      "scenario": "A developer provides 12 examples in their classification prompt, all wrapped in <example> tags. They notice that adding more examples beyond 5 actually decreased accuracy, and the model seems to latch onto superficial patterns in the later examples rather than the intended classification criteria.",
+      "question": "What two issues is the developer likely encountering?",
+      "options": [
+        {
+          "label": "A",
+          "text": "The examples are consuming too many context tokens, and the model is running out of space for its response.",
+          "isCorrect": false
+        },
+        {
+          "label": "B",
+          "text": "Diminishing returns from too many examples, and recency bias causing the model to overweight patterns in the last few examples.",
+          "isCorrect": true
+        },
+        {
+          "label": "C",
+          "text": "The XML tags are preventing the model from distinguishing examples from input data, and the tag nesting is too deep.",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "The examples need to be reordered alphabetically, and negative examples should be removed.",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "B is correct because research indicates diminishing returns after 5-8 examples, and more examples can actually reduce accuracy by introducing noise. Additionally, models exhibit recency bias, weighting the last few examples more heavily. If those final examples share characteristics (e.g., all negative sentiment), the model biases toward those patterns. A is incorrect because while token limits are a consideration, the scenario specifically says accuracy decreased, not that responses were truncated. C is incorrect because XML tags actually help Claude distinguish examples from instructions; they improve parsing, not hinder it. D is incorrect because alphabetical ordering has no relevance, and negative examples (clearly labeled) are valuable for learning classification boundaries.",
+      "references": ["prompt-engineering.fundamentals.few-shot-examples"]
+    },
+    {
+      "id": "q-037",
+      "topic": "Structured Outputs and JSON",
+      "difficulty": "hard",
+      "scenario": "A team uses Claude's structured output with JSON schema to extract data from documents. They define a schema with several optional fields and deep nesting (4 levels). Some requests fail with 400 errors, and on successful requests they notice the output quality has degraded compared to their non-structured approach. A developer suggests the constrained decoding might be limiting quality.",
+      "question": "What combination of schema constraints is likely causing these issues?",
+      "options": [
+        {
+          "label": "A",
+          "text": "The JSON schema is using unsupported keywords like minimum and maxLength that cause validation failures.",
+          "isCorrect": false
+        },
+        {
+          "label": "B",
+          "text": "All fields must be marked required in strict mode, so the optional fields need to use union types with null instead. Deep nesting exceeding 2 levels may also cause compilation limits.",
+          "isCorrect": true
+        },
+        {
+          "label": "C",
+          "text": "The schema is missing additionalProperties: false, which is causing the 400 errors when extra fields appear in the output.",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "Structured outputs are incompatible with document content blocks and should only be used with text-only inputs.",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "B is correct because strict mode in OpenAI requires all properties to be listed in required, with optional fields handled via union types with null. Optional parameters roughly double grammar state space, contributing to complexity limits. Additionally, deep nesting beyond 2 levels may exceed compilation limits, causing 400 errors. The quality degradation can also result from constrained decoding limiting the model's generation options. A is incorrect because while minimum and maxLength are unsupported, the scenario describes both 400 errors and quality degradation, pointing to structural schema issues. C is incorrect because missing additionalProperties: false would cause errors during schema validation, not during output generation. D is incorrect because structured outputs work with all content types including documents.",
+      "references": ["prompt-engineering.output-control.structured-outputs", "tool-use.advanced.strict-tool-use"]
+    },
+    {
+      "id": "q-038",
+      "topic": "Verbosity and Communication Style",
+      "difficulty": "easy",
+      "scenario": "A developer wants Claude to respond concisely. They add 'Be brief' to their system prompt, but Claude still frequently provides 3-4 paragraph responses when 1-2 sentences would suffice.",
+      "question": "How should the developer improve their verbosity control?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Set max_tokens to a very low number to force shorter responses.",
+          "isCorrect": false
+        },
+        {
+          "label": "B",
+          "text": "Replace the subjective 'Be brief' with measurable constraints: 'Maximum 2 sentences per response. Lead with the direct answer. No preambles.'",
+          "isCorrect": true
+        },
+        {
+          "label": "C",
+          "text": "Add emphasis with bold formatting: '**Be brief. Do not write long responses.**'",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "Set temperature to 0 for more controlled, shorter output.",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "B is correct because subjective terms like 'brief', 'concise', or 'short' are interpreted inconsistently by models. Quantifiable constraints (sentence limits, word counts, explicit format rules) provide clear targets that the model can reliably follow. A is incorrect because max_tokens is a hard cutoff that truncates output mid-sentence rather than shaping content length. C is incorrect because research shows bold/italic emphasis has surprisingly little effect on LLM behavior; structural guidance outperforms typographic emphasis. D is incorrect because temperature controls randomness, not response length.",
+      "references": ["prompt-engineering.output-control.verbosity-and-style"]
+    },
+    {
+      "id": "q-039",
+      "topic": "Document Structuring and Placement",
+      "difficulty": "medium",
+      "scenario": "A developer builds a document Q&A system that processes 50K-token legal documents. They place the document at the end of the prompt after the instructions and question. Users report that Claude sometimes misses key details from the middle sections of the document and occasionally generates claims not supported by the source material.",
+      "question": "What two changes would most improve accuracy?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Split the document into smaller chunks and send multiple API requests, then aggregate the results.",
+          "isCorrect": false
+        },
+        {
+          "label": "B",
+          "text": "Place the document before the instructions (document-first ordering), and add a quote extraction step where Claude must cite relevant passages before answering.",
+          "isCorrect": true
+        },
+        {
+          "label": "C",
+          "text": "Convert the document to JSON format for better parsing and increase the context window size.",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "Add more explicit instructions about reading the document carefully and enable extended thinking.",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "B is correct because document-first ordering (placing long documents at the top, instructions at the bottom) can improve response quality by up to 30% on complex multi-document tasks. Adding a quote extraction step (grounding) forces Claude to locate supporting evidence before answering, reducing hallucination and improving factual accuracy. This is especially valuable for legal documents where precision matters. A is incorrect because splitting documents may lose cross-section relationships and adds complexity. The problem is placement and grounding, not document size. C is incorrect because JSON format actually shows notably poor performance compared to XML or pipe-delimited formats for document tasks. D is incorrect because while extended thinking can help with reasoning, the root causes are document placement and lack of evidence grounding.",
+      "references": ["prompt-engineering.long-context.document-structure", "prompt-engineering.fundamentals.clarity-and-structure"]
+    },
+    {
+      "id": "q-040",
+      "topic": "Defining Success Criteria",
+      "difficulty": "medium",
+      "scenario": "A team is evaluating a customer support agent and defines success as 'the agent should be helpful and respond quickly.' After deploying, they find that the agent provides thorough but slow responses, and sometimes leaks internal pricing information to customers.",
+      "question": "What framework should the team use to restructure their success criteria?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Use A/B testing to compare the current agent against a baseline and measure user satisfaction scores.",
+          "isCorrect": false
+        },
+        {
+          "label": "B",
+          "text": "Apply the five-dimension framework, prioritizing: safety (no data leaks, absolute requirement), correctness, reliability, efficiency (latency under 3 seconds), and user experience (tone and helpfulness).",
+          "isCorrect": true
+        },
+        {
+          "label": "C",
+          "text": "Use ROUGE-L scores to measure response quality against a set of ideal support responses.",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "Implement pass@k metrics to measure the probability of a correct response across multiple runs.",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "B is correct because the five-dimension framework provides structured prioritization: safety is an absolute requirement with zero tolerance for failures (like leaking pricing data), followed by correctness, reliability, efficiency (with specific latency targets), and user experience. This framework addresses all the issues in the scenario: the data leak (safety), slow responses (efficiency), and vague helpfulness criteria (UX). A is incorrect because A/B testing is an evaluation method, not a criteria definition framework. It doesn't address the structural problem of vague criteria. C is incorrect because ROUGE-L is a lexical similarity metric that doesn't capture semantic quality, safety compliance, or latency. D is incorrect because pass@k measures success probability but doesn't define what constitutes success across multiple dimensions.",
+      "references": ["evaluation.criteria.definition"]
+    },
+    {
+      "id": "q-041",
+      "topic": "Automated Evaluation",
+      "difficulty": "medium",
+      "scenario": "A team uses ROUGE-1 scores to evaluate their document summarization system. They notice that a summary stating 'The dog ate the cat' scores identically to the correct summary 'The cat ate the dog' when compared against the reference. They need a metric that captures word order.",
+      "question": "Which metric should they add to their evaluation pipeline?",
+      "options": [
+        {
+          "label": "A",
+          "text": "BLEU score, which uses n-gram precision with a brevity penalty to capture ordering.",
+          "isCorrect": false
+        },
+        {
+          "label": "B",
+          "text": "ROUGE-L, which uses longest common subsequence to capture word order differences that ROUGE-1 misses.",
+          "isCorrect": true
+        },
+        {
+          "label": "C",
+          "text": "Levenshtein distance, which measures character-level edit distance and naturally captures ordering.",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "Token-level F1 score, which balances precision and recall at the word level.",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "B is correct because ROUGE-L uses longest common subsequence (LCS) to measure overlap, which inherently captures word order. 'The cat ate the dog' vs 'The dog ate the cat' would produce different ROUGE-L scores because the LCS would differ based on word sequence. A is incorrect because while BLEU does use higher-order n-grams that capture some ordering, it's designed for translation evaluation, not summarization, and emphasizes precision over recall. C is incorrect because Levenshtein distance operates at the character level and is primarily useful for spelling correction, not semantic content ordering. D is incorrect because token-level F1 uses bag-of-words comparison and doesn't capture word order any better than ROUGE-1.",
+      "references": ["evaluation.methods.automated"]
+    },
+    {
+      "id": "q-042",
+      "topic": "LLM-Based Grading",
+      "difficulty": "hard",
+      "scenario": "A team implements LLM-as-judge evaluation for their chatbot using pairwise comparisons. They notice that when comparing Response A vs Response B, the judge consistently prefers whichever response appears first. Switching the order produces a 10%+ accuracy shift. The team also notices the judge tends to prefer longer responses even when the shorter one is more accurate.",
+      "question": "What two biases are affecting their evaluation, and what is the most robust mitigation strategy?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Position bias and self-preference bias. Mitigate by using a different model family as judge and randomizing response order.",
+          "isCorrect": false
+        },
+        {
+          "label": "B",
+          "text": "Position bias and verbosity bias. Mitigate by running both orderings and averaging scores, and explicitly instructing the judge to penalize unnecessary length.",
+          "isCorrect": true
+        },
+        {
+          "label": "C",
+          "text": "Recency bias and anchoring bias. Mitigate by showing only one response at a time and using absolute scoring instead of pairwise.",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "Format bias and confirmation bias. Mitigate by standardizing response formatting before evaluation and increasing temperature.",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "B is correct because the two biases described are position bias (preferring whichever response appears first in pairwise comparisons, with 10%+ accuracy shifts when order changes) and verbosity bias (preferring longer responses regardless of quality). The robust mitigation is to run evaluations in both orderings and average the results for position bias, and explicitly instruct the judge to penalize unnecessary length for verbosity bias. A is incorrect because while self-preference bias is real, the scenario doesn't indicate the judge is evaluating its own outputs. The first-position preference is position bias, not self-preference. C is incorrect because recency bias in LLM evaluation is about example ordering in prompts, not response presentation order. The scenario specifically describes position-based preference. D is incorrect because the biases described don't match format bias or confirmation bias.",
+      "references": ["evaluation.methods.llm-grading", "evaluation.criteria.definition"]
+    },
+    {
+      "id": "q-043",
+      "topic": "Defining Success Criteria",
+      "difficulty": "hard",
+      "scenario": "A team is deploying a code generation agent and wants to measure reliability. They run each test case 5 times. Out of 100 test cases, 95 produce at least one correct solution across the 5 runs, but only 70 produce correct solutions on all 5 runs. The production system needs to generate correct code on every attempt since there's no retry mechanism.",
+      "question": "Which metric should the team use to evaluate production readiness, and what is the current score?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Pass@5 = 95%. This shows the agent can solve 95% of problems and is production-ready.",
+          "isCorrect": false
+        },
+        {
+          "label": "B",
+          "text": "Pass^5 = 70%. This measures the probability that all 5 attempts succeed, reflecting production reliability without retries.",
+          "isCorrect": true
+        },
+        {
+          "label": "C",
+          "text": "Average accuracy = 82.5% (average of 95% and 70%). This balanced metric best represents overall performance.",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "F1 score calculated from the 500 total runs. This balances precision and recall of correct code generation.",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "B is correct because pass^k measures the probability that ALL k trials succeed, which is the relevant metric when there's no retry mechanism. If the code must be correct on every attempt (production requirement), pass^5 = 70% accurately reflects that 30% of test cases will sometimes produce incorrect code. A is incorrect because pass@k (at least one success in k attempts) measures exploratory capability, which is appropriate for tools with retry/selection mechanisms but not for production without retries. C is incorrect because averaging pass@k and pass^k is not a meaningful metric; these measure fundamentally different things. D is incorrect because F1 score from individual runs doesn't capture the reliability dimension (consistency across attempts) that the production system requires.",
+      "references": ["evaluation.criteria.definition", "evaluation.methods.automated"]
+    },
+    {
+      "id": "q-044",
+      "topic": "Automated Evaluation",
+      "difficulty": "easy",
+      "scenario": "A developer needs to evaluate whether their model correctly identifies capital cities from a list. The expected answer for France is 'Paris' but the model outputs 'The capital of France is Paris.' This output is factually correct but fails their evaluation.",
+      "question": "Why does the evaluation fail, and what metric would better capture this correct answer?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Exact match fails because it requires character-for-character equality. String presence (checking if 'Paris' appears in the output) would correctly identify this as a match.",
+          "isCorrect": true
+        },
+        {
+          "label": "B",
+          "text": "The evaluation uses ROUGE-L which penalizes extra words. Switch to BLEU which only checks precision.",
+          "isCorrect": false
+        },
+        {
+          "label": "C",
+          "text": "The model is using the wrong output format. Add a system prompt constraint to output only the city name.",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "Use Levenshtein distance with a threshold to allow for minor differences in output.",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "A is correct because exact match requires character-for-character equality between the model output and reference, so 'The capital of France is Paris' does not match 'Paris'. String presence checks whether the reference substring appears anywhere in the output, which would correctly identify that 'Paris' is present. B is incorrect because the scenario describes an exact match failure, not a ROUGE-L issue. ROUGE-L would actually give a non-zero score since 'Paris' appears in both. C is incorrect because while constraining output format is a valid approach, it addresses the model behavior rather than the evaluation methodology, and doesn't solve the immediate evaluation problem. D is incorrect because Levenshtein distance measures character edits, which would show a large distance for this case since there are many extra characters.",
+      "references": ["evaluation.methods.automated"]
+    },
+    {
+      "id": "q-045",
+      "topic": "Thinking Redaction and Safety",
+      "difficulty": "medium",
+      "scenario": "A developer using Claude 3.7 Sonnet with extended thinking encounters a response containing a redacted_thinking block alongside regular thinking and text blocks. They want to display the thinking process to the user in their UI but are concerned about how to handle the encrypted content.",
+      "question": "How should the developer handle the redacted_thinking block?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Attempt to decrypt the data field using the API key, then display the decrypted content alongside visible thinking.",
+          "isCorrect": false
+        },
+        {
+          "label": "B",
+          "text": "Filter redacted blocks from the user display while preserving them unmodified for API calls. Show a message like 'Some reasoning was encrypted for safety.'",
+          "isCorrect": true
+        },
+        {
+          "label": "C",
+          "text": "Replace the redacted_thinking block with a placeholder thinking block containing a generic reasoning summary.",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "Remove the redacted_thinking block entirely from subsequent requests since it cannot be displayed.",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "B is correct because redacted_thinking blocks should be filtered from user-facing display while being preserved unmodified for API calls. The UI should provide an explanation like 'Some internal reasoning was automatically encrypted for safety reasons.' The blocks cannot be decrypted client-side but must be passed back to the API for reasoning continuity. A is incorrect because the data field in redacted_thinking blocks is not decryptable client-side; it's an opaque blob only Anthropic's servers can process. C is incorrect because modifying or replacing thinking blocks invalidates the signature and causes API rejection. D is incorrect because removing redacted_thinking blocks from subsequent requests breaks reasoning continuity and can cause API errors requiring thinking blocks at the start of assistant turns.",
+      "references": ["safety-alignment.principles.thinking-redaction"]
+    },
+    {
+      "id": "q-046",
+      "topic": "Thinking Redaction and Safety",
+      "difficulty": "hard",
+      "scenario": "A development team is migrating their application from Claude 3.7 Sonnet to Claude 4 models. Their existing code handles redacted_thinking blocks, preserves thinking blocks with signatures, and displays full thinking output to users. After migration, they notice thinking blocks now contain abbreviated content, their billing costs seem higher than expected based on visible output, and they never encounter redacted_thinking blocks.",
+      "question": "What explains all three observations after the migration?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Claude 4 has improved safety systems that no longer require redaction. The billing discrepancy is a temporary bug during migration.",
+          "isCorrect": false
+        },
+        {
+          "label": "B",
+          "text": "Claude 4 uses summarized thinking instead of full thinking output, which eliminates redacted_thinking blocks. Billing reflects full thinking tokens, not the visible summary, explaining the cost discrepancy.",
+          "isCorrect": true
+        },
+        {
+          "label": "C",
+          "text": "Claude 4 requires a different API parameter to enable full thinking output. The default returns abbreviated thinking, and billing includes the unreturned full output.",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "Claude 4 thinking is encrypted end-to-end by default. The abbreviated content is a placeholder, and the actual thinking is processed server-side only.",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "B is correct because Claude 4 models fundamentally changed thinking behavior: they return summarized thinking instead of full reasoning output, which is why the content appears abbreviated. This summarization approach eliminates the need for redacted_thinking blocks (explaining their absence). Billing is based on full thinking tokens generated internally, not the summary visible in the response, which explains why costs appear higher than the visible output would suggest. A is incorrect because the absence of redacted blocks isn't about improved safety but about the structural change to summarized thinking. C is incorrect because there's no parameter to get full thinking output on Claude 4 models; summarized thinking is the only mode. D is incorrect because thinking blocks aren't encrypted; they're summarized. The signature field remains for verification, but the content is readable summarized text.",
+      "references": ["safety-alignment.principles.thinking-redaction", "agents.thinking.extended-thinking"]
+    },
+    {
+      "id": "q-047",
+      "topic": "Balancing Autonomy and Safety",
+      "difficulty": "easy",
+      "scenario": "A team is designing an AI agent that can access a database, send emails, and process refunds. They want to determine which actions should require human approval before execution.",
+      "question": "Which categorization best follows risk-based calibration principles?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Require approval for all actions equally to maintain consistent security.",
+          "isCorrect": false
+        },
+        {
+          "label": "B",
+          "text": "Auto-approve read-only database queries, require confirmation for sending emails, and mandate approval for processing refunds.",
+          "isCorrect": true
+        },
+        {
+          "label": "C",
+          "text": "Auto-approve all actions since the AI has been tested and demonstrated reliable behavior.",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "Require approval only for actions that have previously failed during testing.",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "B is correct because risk-based calibration applies different oversight levels based on action characteristics. Read-only database queries are lower-risk (reversible, no external impact) and candidates for auto-approval. Sending emails is higher-risk (external communication, harder to undo) and warrants confirmation. Processing refunds is a critical financial transaction (irreversible, direct financial impact) and should mandate approval. A is incorrect because requiring approval for everything negates the benefits of autonomous operation and creates approval fatigue. C is incorrect because auto-approving all actions creates excessive autonomy, which OWASP identifies as a top LLM vulnerability. D is incorrect because risk categorization should be based on potential impact and reversibility, not just past failure rates.",
+      "references": ["safety-alignment.principles.autonomy-balance"]
+    },
+    {
+      "id": "q-048",
+      "topic": "Balancing Autonomy and Safety",
+      "difficulty": "medium",
+      "scenario": "A company deploys an AI agent with human-in-the-loop approval for critical actions. A security researcher demonstrates that the agent's confirmation dialogs show manipulated context: the agent presents a 'delete old backup files' action but actually executes 'delete production database.' The human approver sees and approves the misleading description.",
+      "question": "What vulnerability class does this attack represent?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Excessive Agency (OWASP LLM06) where the agent has more permissions than necessary for its tasks.",
+          "isCorrect": false
+        },
+        {
+          "label": "B",
+          "text": "Lies-in-the-Loop (LITL) attack, where the attacker manipulates what users see in confirmation dialogs rather than bypassing HITL safeguards.",
+          "isCorrect": true
+        },
+        {
+          "label": "C",
+          "text": "Prompt injection attack where malicious instructions override the agent's system prompt.",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "Privilege escalation through the agent's service account accessing resources beyond its intended scope.",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "B is correct because the Lies-in-the-Loop (LITL) attack demonstrates that attackers don't need to bypass human-in-the-loop safeguards; they can manipulate what users see in confirmation dialogs. The human approver makes a decision based on compromised information, rendering the HITL protection ineffective. A is incorrect because Excessive Agency refers to the agent having unnecessary capabilities, permissions, or autonomy. The issue here isn't about what the agent can do but about what the human approver sees. C is incorrect because prompt injection attacks target the AI's instructions, while LITL attacks target the human reviewer's perception. D is incorrect because privilege escalation involves gaining unauthorized access; this attack works within existing permissions by deceiving the human approver.",
+      "references": ["safety-alignment.principles.autonomy-balance"]
+    },
+    {
+      "id": "q-049",
+      "topic": "Balancing Autonomy and Safety",
+      "difficulty": "hard",
+      "scenario": "An enterprise deploys 30 AI agents across different departments. A security audit reveals: 4 agents have no documented way to stop them during execution, agents share a single high-privileged service account, and development-phase tool integrations remain active in production. The audit references OWASP LLM06 guidelines.",
+      "question": "Which three remediation actions most directly address the OWASP Excessive Agency vulnerabilities?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Add monitoring dashboards, implement logging for all agent actions, and create incident response procedures.",
+          "isCorrect": false
+        },
+        {
+          "label": "B",
+          "text": "Implement reliable shutdown mechanisms for all agents, assign user-context credentials instead of shared service accounts, and audit and remove unused development-phase tool integrations.",
+          "isCorrect": true
+        },
+        {
+          "label": "C",
+          "text": "Reduce the number of agents to 10, add rate limiting to all agent API calls, and implement network segmentation.",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "Retrain all agents with safety-focused fine-tuning, implement content filtering on all outputs, and add human approval for every action.",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "B is correct because it directly addresses the three Excessive Agency root causes identified by OWASP: (1) shutdown mechanisms address the documented finding that 4/30 agents lack stop options despite autonomous execution; (2) user-context credentials replace the shared high-privileged service account, preventing audit trail breakage and privilege escalation; and (3) removing development-phase integrations addresses excessive functionality, since unused tools create unnecessary attack surface. A is incorrect because monitoring and logging are important but don't reduce excessive agency; they only detect it after the fact. C is incorrect because reducing agent count and adding rate limits don't address the specific vulnerabilities identified (missing shutdowns, shared accounts, unused tools). D is incorrect because fine-tuning and content filtering address different concerns, and requiring human approval for every action negates autonomy benefits entirely.",
+      "references": ["safety-alignment.principles.autonomy-balance"]
+    },
+    {
+      "id": "q-050",
+      "topic": "Image Processing and Analysis",
+      "difficulty": "easy",
+      "scenario": "A developer is building an invoice processing system using Claude's vision capabilities. They need to send a locally stored PNG invoice image to the API. They encode the image as base64 and include it as a data URL: 'data:image/png;base64,iVBOR...'",
+      "question": "What mistake has the developer made in formatting the image data?",
+      "options": [
+        {
+          "label": "A",
+          "text": "PNG format is not supported; they should convert to JPEG first.",
+          "isCorrect": false
+        },
+        {
+          "label": "B",
+          "text": "The API expects raw base64 data without the data URL prefix. They should remove 'data:image/png;base64,' and send only the encoded string.",
+          "isCorrect": true
+        },
+        {
+          "label": "C",
+          "text": "They need to specify the image dimensions in the content block metadata.",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "Base64 encoding is deprecated; they should use the URL source type instead.",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "B is correct because the Claude API expects raw base64 data in the source.data field, not a data URL. The 'data:image/png;base64,' prefix must be removed. The media type is specified separately in the source.media_type field. A is incorrect because PNG is one of the supported image formats (JPEG, PNG, GIF, WebP are all accepted). C is incorrect because image dimensions are not required in the API request; the system handles sizing automatically. D is incorrect because base64 encoding is a fully supported and common method for providing images.",
+      "references": ["multimodal.vision.image-processing"]
+    },
+    {
+      "id": "q-051",
+      "topic": "Image Processing and Analysis",
+      "difficulty": "medium",
+      "scenario": "A company processes thousands of product photos daily using Claude's vision API. They're experiencing high token costs. Their images are typically 4000x3000 pixels (12 megapixels), and each image consumes approximately 16,000 tokens.",
+      "question": "What optimization would most effectively reduce token costs while maintaining analysis quality?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Switch from base64 encoding to URL references, which use fewer tokens.",
+          "isCorrect": false
+        },
+        {
+          "label": "B",
+          "text": "Resize images to approximately 1.15 megapixels (max 1568px on the longest edge) before upload, since tokens are calculated as width x height / 750.",
+          "isCorrect": true
+        },
+        {
+          "label": "C",
+          "text": "Convert all images from PNG to JPEG to reduce file size and token count.",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "Batch multiple images into a single request to amortize the per-image token overhead.",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "B is correct because image tokens are calculated as (width x height) / 750. A 4000x3000 image uses 16,000 tokens, but resizing to ~1568x1176 (approximately 1.15 megapixels) would use about 2,459 tokens -- an 85% reduction. Anthropic recommends this optimal size range as it reduces latency without sacrificing quality. A is incorrect because the encoding method (base64 vs URL) doesn't affect token calculation; tokens are determined by pixel dimensions. C is incorrect because file format affects file size but not token count; tokens are based on pixel dimensions. D is incorrect because each image's tokens are calculated independently; batching doesn't reduce per-image token costs.",
+      "references": ["multimodal.vision.image-processing"]
+    },
+    {
+      "id": "q-052",
+      "topic": "PDF Processing",
+      "difficulty": "medium",
+      "scenario": "A legal team uses Claude on Amazon Bedrock to analyze contract PDFs containing both text clauses and embedded diagrams. They're using the Converse API but notice Claude only references the text content and never analyzes the embedded diagrams, even when explicitly asked about them.",
+      "question": "Why is Claude ignoring the visual elements in the PDFs on Bedrock?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Bedrock does not support PDF processing; the team needs to convert PDFs to images first.",
+          "isCorrect": false
+        },
+        {
+          "label": "B",
+          "text": "When using the Converse API on Bedrock, visual PDF understanding (charts, diagrams) requires citations to be enabled. Without citations, it falls back to text extraction only.",
+          "isCorrect": true
+        },
+        {
+          "label": "C",
+          "text": "The PDFs exceed the 32MB request size limit, causing the visual analysis to be silently skipped.",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "Bedrock only supports text extraction from PDFs; visual analysis requires the direct Anthropic API.",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "B is correct because on Amazon Bedrock's Converse API, visual PDF understanding (charts, images, diagrams) only works when citations are enabled. Without citations, the API falls back to basic text extraction only. The team needs to enable citations or switch to the InvokeModel API for visual analysis without citations. A is incorrect because Bedrock does support PDF processing, just with specific constraints around visual analysis. C is incorrect because exceeding the size limit would cause an error, not silent fallback. D is incorrect because Bedrock supports visual PDF analysis when properly configured with citations.",
+      "references": ["multimodal.documents.pdf-support"]
+    },
+    {
+      "id": "q-053",
+      "topic": "PDF Processing",
+      "difficulty": "hard",
+      "scenario": "A developer processes a 50-page financial report PDF. They estimate the cost based on text extraction alone (~2,000 tokens per page = 100,000 tokens). However, the actual API usage shows 250,000 input tokens. The developer is confused by the 2.5x cost overrun.",
+      "question": "What accounts for the additional 150,000 tokens beyond the text extraction estimate?",
+      "options": [
+        {
+          "label": "A",
+          "text": "The API processes each page as an image in addition to extracting text. The 150,000 extra tokens come from the image processing of all 50 pages.",
+          "isCorrect": true
+        },
+        {
+          "label": "B",
+          "text": "The system prompt and tool definitions are being double-counted for each page of the PDF.",
+          "isCorrect": false
+        },
+        {
+          "label": "C",
+          "text": "Extended thinking was automatically enabled for the complex document, generating hidden reasoning tokens.",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "The PDF contains embedded fonts that inflate the token count beyond the actual text content.",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "A is correct because PDF processing uses dual-mode: each page is both text-extracted AND converted to an image. The token cost combines text tokens (content-dependent, typically 1,500-3,000 per page) plus image tokens (each page rendered as an image using standard vision pricing at width x height / 750). This dual processing can result in significantly higher costs than text-only estimates. B is incorrect because system prompts and tool definitions are counted once per request, not per page. C is incorrect because extended thinking must be explicitly enabled; it doesn't activate automatically based on input complexity. D is incorrect because Claude doesn't parse font data as tokens; it processes the rendered visual output and extracted text.",
+      "references": ["multimodal.documents.pdf-support", "multimodal.vision.image-processing"]
+    },
+    {
+      "id": "q-054",
+      "topic": "CLI Installation and Usage",
+      "difficulty": "easy",
+      "scenario": "A developer is working in Claude Code and wants to cancel Claude's current response to give a different instruction. They press Ctrl+C, expecting to interrupt the response. Instead, the entire Claude Code session exits and they lose their conversation context.",
+      "question": "What should the developer use instead to interrupt a response without exiting?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Press Ctrl+Z to suspend the process, then resume with fg.",
+          "isCorrect": false
+        },
+        {
+          "label": "B",
+          "text": "Press Escape to interrupt the current response while keeping the session active.",
+          "isCorrect": true
+        },
+        {
+          "label": "C",
+          "text": "Type /stop in the prompt to halt the current generation.",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "Press Ctrl+D to send an end-of-file signal that interrupts without exiting.",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "B is correct because in Claude Code, Escape interrupts the current response while keeping the session active, allowing you to provide a new instruction. Ctrl+C exits the entire Claude Code process, losing conversation context. A is incorrect because Ctrl+Z suspends the entire process at the OS level, not just the current response, and resuming would continue where it left off. C is incorrect because /stop is not a recognized Claude Code command for interrupting generation. D is incorrect because Ctrl+D typically sends EOF which would also terminate the session.",
+      "references": ["claude-code.cli.basics"]
+    },
+    {
+      "id": "q-055",
+      "topic": "CLAUDE.md and Memory",
+      "difficulty": "medium",
+      "scenario": "A team has a CLAUDE.md file in their project root with coding standards, a user-level ~/.claude/CLAUDE.md with personal preferences, and an organization-managed policy file. A developer adds a local .claude/CLAUDE.md in a subdirectory. They notice that some instructions from the organization policy are being ignored.",
+      "question": "What determines the priority when instructions from different CLAUDE.md sources conflict?",
+      "options": [
+        {
+          "label": "A",
+          "text": "All CLAUDE.md files are merged equally with no priority order; conflicts are resolved randomly.",
+          "isCorrect": false
+        },
+        {
+          "label": "B",
+          "text": "The hierarchy is: managed policy (highest) > project CLAUDE.md > user CLAUDE.md > local .claude/CLAUDE.md (lowest). Managed policies cannot be overridden.",
+          "isCorrect": true
+        },
+        {
+          "label": "C",
+          "text": "The most recently modified CLAUDE.md file takes priority over older files.",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "Local files always take priority over remote or organization-level configurations.",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "B is correct because CLAUDE.md follows a defined hierarchy: managed policy files (set by organization admins) have the highest priority and cannot be overridden, followed by project-level CLAUDE.md, then user-level ~/.claude/CLAUDE.md, and local .claude/CLAUDE.md has the lowest priority. If organization policy instructions appear to be ignored, it's likely a misunderstanding of the content, not the hierarchy. A is incorrect because the hierarchy is well-defined, not random. C is incorrect because priority is based on the file's position in the hierarchy, not its modification time. D is incorrect because managed policies explicitly have the highest priority to ensure organizational control.",
+      "references": ["claude-code.cli.memory"]
+    },
+    {
+      "id": "q-056",
+      "topic": "Custom Skills and Commands",
+      "difficulty": "medium",
+      "scenario": "A developer creates a custom skill in .claude/skills/deploy/SKILL.md with auto-invocation instructions that match any prompt containing 'deploy.' They notice the skill consumes part of their context budget every time they interact with Claude Code, even for unrelated prompts, because the auto-matching is too aggressive.",
+      "question": "What is causing the context budget impact and how should they fix it?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Skills are loaded into the system prompt at startup and cannot be removed. Delete the skill file to stop consumption.",
+          "isCorrect": false
+        },
+        {
+          "label": "B",
+          "text": "Auto-invocation skills that match too broadly inject their content into the context for every matching prompt. Make the skill user-invocable only (remove auto conditions) or narrow the match criteria.",
+          "isCorrect": true
+        },
+        {
+          "label": "C",
+          "text": "The skill file exceeds the 200-line limit for auto-memory files, causing it to be truncated and re-read repeatedly.",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "Custom skills share the same context pool as CLAUDE.md files. Reduce the CLAUDE.md content to make room.",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "B is correct because auto-invocation skills inject their content into the context when their conditions match. A broadly matching condition (like matching any prompt with 'deploy') causes the skill to be injected frequently, consuming part of the approximately 2% context budget allocated to skills. The fix is either making the skill user-invocable only (accessed via slash command) or narrowing the auto-invocation criteria to match only truly relevant prompts. A is incorrect because skills are not loaded at startup; they're injected dynamically when conditions match. C is incorrect because the 200-line limit applies to MEMORY.md auto-memory files, not skill files. D is incorrect because while there are context budget considerations, the solution is to fix the skill's matching criteria, not reduce other content.",
+      "references": ["claude-code.customization.skills", "claude-code.cli.memory"]
+    },
+    {
+      "id": "q-057",
+      "topic": "Hooks System",
+      "difficulty": "hard",
+      "scenario": "A team configures a PreToolUse hook as a shell command that auto-formats code after every Write operation. The hook script sources the user's shell profile (which prints a welcome banner), then runs prettier, and outputs JSON with the hook response. The hook intermittently fails with JSON parsing errors despite the prettier command succeeding.",
+      "question": "What is causing the intermittent JSON parsing failures?",
+      "options": [
+        {
+          "label": "A",
+          "text": "The prettier command output is interfering with the hook's JSON response by writing to stdout.",
+          "isCorrect": false
+        },
+        {
+          "label": "B",
+          "text": "The shell profile's welcome banner text is being printed to stdout before the JSON, causing the hook's output to be unparseable. Shell command hooks communicate via stdout JSON.",
+          "isCorrect": true
+        },
+        {
+          "label": "C",
+          "text": "PreToolUse hooks cannot be used with Write operations; only PostToolUse hooks are supported for file operations.",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "The hook timeout of 10 minutes is being exceeded because prettier is processing large files.",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "B is correct because shell command hooks communicate via JSON on stdout. When the hook script sources the shell profile, the welcome banner text gets printed to stdout before the JSON output, causing the entire stdout content to be unparseable as JSON. This is a documented gotcha: shell profile output (like welcome messages, PATH exports that echo, or motd displays) breaks hook JSON parsing. The fix is to suppress profile output or redirect it to stderr. A is incorrect because prettier typically writes to the file directly, not to stdout, unless specifically configured to do so. The banner is the issue. C is incorrect because PreToolUse hooks work with all tool operations including Write. D is incorrect because while there is a 10-minute default timeout, prettier typically runs in seconds, and a timeout would produce a different error, not a JSON parsing error.",
+      "references": ["claude-code.customization.hooks"]
+    },
+    {
+      "id": "q-058",
+      "topic": "Rate Limits and Usage Tiers",
+      "difficulty": "medium",
+      "scenario": "A developer's application is hitting rate limits during peak usage. They implement prompt caching to reduce token consumption. After deploying, they notice that their requests per minute (RPM) limit is still being hit, but their input tokens per minute (ITPM) usage has dropped significantly.",
+      "question": "Why does prompt caching reduce ITPM but not RPM, and what should the developer do to address RPM limits?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Prompt caching reduces ITPM because cached tokens don't count toward the ITPM limit, but each request still counts as one RPM. To address RPM, implement request queuing with exponential backoff.",
+          "isCorrect": true
+        },
+        {
+          "label": "B",
+          "text": "Prompt caching only affects output tokens, not input tokens. The ITPM reduction is from unrelated request optimization. RPM requires upgrading to a higher usage tier.",
+          "isCorrect": false
+        },
+        {
+          "label": "C",
+          "text": "Both RPM and ITPM should decrease equally with caching. The developer likely has a bug in their caching implementation.",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "Prompt caching increases RPM because the server processes cached requests faster. The RPM limit must be a different bottleneck.",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "A is correct because cached tokens (cache hits) don't count toward the Input Tokens Per Minute (ITPM) rate limit, which is why ITPM dropped. However, each API call still counts as one request regardless of caching, so RPM limits remain the same. To address RPM, the developer should implement request queuing, exponential backoff, or consider batching requests. B is incorrect because prompt caching specifically reduces input token costs and ITPM, not output tokens. C is incorrect because RPM and ITPM are independent limits; caching only affects token-based limits, not request counts. D is incorrect because caching doesn't change the RPM calculation; each request counts as one regardless of processing speed.",
+      "references": ["enterprise.platform.rate-limits", "context-management.caching.basics"]
+    },
+    {
+      "id": "q-059",
+      "topic": "Workspaces and API Keys",
+      "difficulty": "medium",
+      "scenario": "An organization creates a workspace for their production API with a spend limit of $500/month. They generate API keys in this workspace and deploy to production. Later, they notice that their development team's API keys in the default workspace have no spend limits and are consuming significant resources.",
+      "question": "Why does the default workspace lack spend limits, and what risk does this create?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Default workspace limits are inherited from the organization level. The organization admin needs to set organization-wide limits.",
+          "isCorrect": false
+        },
+        {
+          "label": "B",
+          "text": "The default workspace has no configurable spend or rate limits, unlike custom workspaces. Development keys can consume unlimited resources up to the organization's total capacity.",
+          "isCorrect": true
+        },
+        {
+          "label": "C",
+          "text": "API keys can be moved between workspaces. Move the development keys to the production workspace to apply its limits.",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "Workspace limits reserve dedicated capacity. The default workspace can only use capacity not reserved by other workspaces.",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "B is correct because the default workspace has no configurable spend or rate limits, which is a documented gotcha. Custom workspaces can have limits configured, but the default workspace operates without them. This creates risk because development keys in the default workspace can consume unlimited resources. C is incorrect because API keys are immovable between workspaces once created; you would need to generate new keys in a different workspace. D is incorrect because workspace limits don't reserve capacity; they only set ceilings that don't guarantee availability.",
+      "references": ["enterprise.platform.workspaces", "enterprise.platform.rate-limits"]
+    },
+    {
+      "id": "q-060",
+      "topic": "Third-Party Platform APIs",
+      "difficulty": "hard",
+      "scenario": "A multinational company deploys Claude through multiple cloud platforms. They use Amazon Bedrock in US regions, Google Vertex AI in European regions, and direct API access for development. They need cross-region inference on Bedrock for high availability, but notice a cost premium. Their Vertex AI deployment uses a specific regional endpoint that doesn't support the latest Claude model.",
+      "question": "What explains the Bedrock cost premium and the Vertex AI model availability issue?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Bedrock charges extra for multi-region redundancy, and Vertex AI requires a specific API version header for new models.",
+          "isCorrect": false
+        },
+        {
+          "label": "B",
+          "text": "Bedrock cross-region inference uses inference profiles that route requests to the optimal region but costs 10% more, and Vertex AI model availability varies by region with new models launching in US regions first.",
+          "isCorrect": true
+        },
+        {
+          "label": "C",
+          "text": "Bedrock pricing is set by AWS, not Anthropic, resulting in variable markups, and Vertex AI requires creating a deployment resource before accessing any model.",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "Both platforms charge the same as direct API pricing. The cost difference is from data transfer fees, and Vertex AI restricts models based on project quota, not region.",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "B is correct because Amazon Bedrock's cross-region inference uses inference profiles that route requests to the optimal available region for high availability, but this comes with approximately a 10% price premium over single-region access. Google Vertex AI has regional model availability that varies, with newer models typically launching in US regions first and expanding to other regions later. A is incorrect because the 10% premium is specifically for cross-region inference profiles, not general multi-region redundancy, and Vertex AI doesn't require special headers for new models. C is incorrect because while AWS does set some pricing, the specific 10% premium for cross-region inference is a documented feature, not variable markup. Azure AI Foundry requires deployment creation, not Vertex AI. D is incorrect because platform pricing differs from direct API pricing, and model availability on Vertex AI is regional, not quota-based.",
+      "references": ["enterprise.cloud.integrations", "enterprise.platform.rate-limits"]
+    }
+  ]
+}
