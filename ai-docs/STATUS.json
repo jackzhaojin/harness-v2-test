@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "pipeline": "TTS",
+  "pipeline": "COMPLETE",
   "phases": {
     "DECOMPOSE": {
       "status": "complete",
@@ -33,19 +33,19 @@
       "completedAt": "2026-03-01T21:47:00.000Z"
     },
     "DEPOSIT": {
-      "status": "pending",
-      "attempts": 0,
+      "status": "complete",
+      "attempts": 1,
       "error": null,
-      "completedAt": null
+      "completedAt": "2026-03-01T22:30:00.000Z"
     },
     "VALIDATE": {
-      "status": "pending",
-      "attempts": 0,
+      "status": "complete",
+      "attempts": 1,
       "error": null,
-      "completedAt": null
+      "completedAt": "2026-03-01T23:06:00.000Z"
     }
   },
   "topicCount": 44,
   "startedAt": "2026-03-01T04:35:31.273Z",
-  "updatedAt": "2026-03-01T21:47:00.000Z"
+  "updatedAt": "2026-03-01T23:06:00.000Z"
 }
