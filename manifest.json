@@ -1,18 +1,9 @@
 {
   "version": "1.0",
-  "generatedAt": "2026-03-01T17:17:12.556Z",
+  "title": "Claude Developer Certification",
+  "generatedAt": "2026-03-01T20:48:31.923Z",
   "generatedBy": "study-agent-harness",
   "topics": [
-    "_combined_agents",
-    "_combined_api-integration",
-    "_combined_claude-code",
-    "_combined_context-management",
-    "_combined_enterprise",
-    "_combined_evaluation",
-    "_combined_multimodal",
-    "_combined_prompt-engineering",
-    "_combined_safety-alignment",
-    "_combined_tool-use",
     "agents_long-horizon_multi-context-workflows",
     "agents_long-horizon_state-management",
     "agents_orchestration_subagents",
@@ -58,72 +49,743 @@
     "tool-use_server-tools_code-execution",
     "tool-use_server-tools_web-search-fetch"
   ],
-  "podcasts": [
-    "agents",
-    "api-integration",
-    "claude-code",
-    "context-management",
-    "enterprise",
-    "evaluation",
-    "multimodal",
-    "prompt-engineering",
-    "safety-alignment",
-    "tool-use"
-  ],
-  "quizzes": "quizzes.json",
-  "audioFiles": [
-    "agents_part1",
-    "agents_part2",
-    "agents_part3",
-    "agents_part4",
-    "agents_part5",
-    "api-integration_part1",
-    "api-integration_part2",
-    "api-integration_part3",
-    "api-integration_part4",
-    "claude-code_part1",
-    "claude-code_part2",
-    "claude-code_part3",
-    "claude-code_part4",
-    "claude-code_part5",
-    "claude-code_part6",
-    "context-management_part1",
-    "context-management_part2",
-    "context-management_part3",
-    "context-management_part4",
-    "context-management_part5",
-    "enterprise_part1",
-    "enterprise_part2",
-    "enterprise_part3",
-    "enterprise_part4",
-    "enterprise_part5",
-    "enterprise_part6",
-    "evaluation_part1",
-    "evaluation_part2",
-    "evaluation_part3",
-    "evaluation_part4",
-    "evaluation_part5",
-    "evaluation_part6",
-    "multimodal_part1",
-    "multimodal_part2",
-    "multimodal_part3",
-    "multimodal_part4",
-    "multimodal_part5",
-    "prompt-engineering_part1",
-    "prompt-engineering_part2",
-    "prompt-engineering_part3",
-    "prompt-engineering_part4",
-    "prompt-engineering_part5",
-    "prompt-engineering_part6",
-    "safety-alignment_part1",
-    "safety-alignment_part2",
-    "safety-alignment_part3",
-    "safety-alignment_part4",
-    "safety-alignment_part5",
-    "tool-use_part1",
-    "tool-use_part2",
-    "tool-use_part3",
-    "tool-use_part4",
-    "tool-use_part5"
+  "topicTree": {
+    "examTitle": "Claude Developer Certification",
+    "sourceDocument": "/Users/jackjin/dev/jack-dev-server-configs/local/study-harness-v2026-03-v1/input/claude-certification/manifest.yaml",
+    "generatedAt": "2026-02-28T00:00:00Z",
+    "totalLeafTopics": 38,
+    "topics": [
+      {
+        "id": "prompt-engineering",
+        "title": "Prompt Engineering",
+        "description": "Core techniques for crafting effective prompts to steer Claude's behavior, including structuring, examples, and output control.",
+        "depth": 0,
+        "estimatedComplexity": "high",
+        "subtopics": [
+          {
+            "id": "prompt-engineering.fundamentals",
+            "title": "Prompt Fundamentals",
+            "description": "Basic principles of prompt design including clarity, context, and specificity.",
+            "depth": 1,
+            "estimatedComplexity": "medium",
+            "subtopics": [
+              {
+                "id": "prompt-engineering.fundamentals.clarity-and-structure",
+                "title": "Clarity and XML Structuring",
+                "description": "Writing clear, direct prompts and using XML tags to organize instructions, context, and examples unambiguously.",
+                "depth": 2,
+                "estimatedComplexity": "medium",
+                "subtopics": []
+              },
+              {
+                "id": "prompt-engineering.fundamentals.role-prompting",
+                "title": "Role Prompting and System Prompts",
+                "description": "Setting roles in system prompts to focus Claude's behavior and tone for specific use cases.",
+                "depth": 2,
+                "estimatedComplexity": "low",
+                "subtopics": []
+              },
+              {
+                "id": "prompt-engineering.fundamentals.few-shot-examples",
+                "title": "Few-Shot and Multishot Prompting",
+                "description": "Using relevant, diverse examples wrapped in proper tags to steer output format, tone, and structure.",
+                "depth": 2,
+                "estimatedComplexity": "medium",
+                "subtopics": []
+              }
+            ]
+          },
+          {
+            "id": "prompt-engineering.output-control",
+            "title": "Output Control and Formatting",
+            "description": "Techniques for controlling response format, verbosity, and style.",
+            "depth": 1,
+            "estimatedComplexity": "medium",
+            "subtopics": [
+              {
+                "id": "prompt-engineering.output-control.structured-outputs",
+                "title": "Structured Outputs and JSON",
+                "description": "Guaranteeing schema conformance with JSON outputs and strict tool use for validated responses.",
+                "depth": 2,
+                "estimatedComplexity": "medium",
+                "subtopics": []
+              },
+              {
+                "id": "prompt-engineering.output-control.verbosity-and-style",
+                "title": "Verbosity and Communication Style",
+                "description": "Controlling response length, markdown usage, and communication tone through explicit instructions.",
+                "depth": 2,
+                "estimatedComplexity": "low",
+                "subtopics": []
+              }
+            ]
+          },
+          {
+            "id": "prompt-engineering.long-context",
+            "title": "Long Context Prompting",
+            "description": "Best practices for working with large documents and data-rich inputs over 20K tokens.",
+            "depth": 1,
+            "estimatedComplexity": "high",
+            "subtopics": [
+              {
+                "id": "prompt-engineering.long-context.document-structure",
+                "title": "Document Structuring and Placement",
+                "description": "Placing long documents at the top, structuring with XML tags, and grounding responses in quotes.",
+                "depth": 2,
+                "estimatedComplexity": "medium",
+                "subtopics": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "tool-use",
+        "title": "Tool Use and Function Calling",
+        "description": "Enabling Claude to interact with external tools and functions through the Messages API.",
+        "depth": 0,
+        "estimatedComplexity": "high",
+        "subtopics": [
+          {
+            "id": "tool-use.basics",
+            "title": "Tool Use Fundamentals",
+            "description": "Core concepts of defining tools, handling tool requests, and processing results.",
+            "depth": 1,
+            "estimatedComplexity": "medium",
+            "subtopics": [
+              {
+                "id": "tool-use.basics.tool-definitions",
+                "title": "Tool Definitions and Input Schemas",
+                "description": "Defining tools with names, descriptions, and JSON Schema input schemas for the Messages API.",
+                "depth": 2,
+                "estimatedComplexity": "medium",
+                "subtopics": []
+              },
+              {
+                "id": "tool-use.basics.tool-results",
+                "title": "Tool Results and Response Handling",
+                "description": "Executing tools, returning tool_result blocks, and processing Claude's final responses.",
+                "depth": 2,
+                "estimatedComplexity": "medium",
+                "subtopics": []
+              }
+            ]
+          },
+          {
+            "id": "tool-use.advanced",
+            "title": "Advanced Tool Patterns",
+            "description": "Parallel tool calls, sequential chaining, and tool_choice configuration.",
+            "depth": 1,
+            "estimatedComplexity": "high",
+            "subtopics": [
+              {
+                "id": "tool-use.advanced.parallel-and-sequential",
+                "title": "Parallel and Sequential Tool Calls",
+                "description": "Handling multiple independent tool calls in parallel vs. sequential chaining for dependent operations.",
+                "depth": 2,
+                "estimatedComplexity": "high",
+                "subtopics": []
+              },
+              {
+                "id": "tool-use.advanced.tool-choice",
+                "title": "Tool Choice Configuration",
+                "description": "Using tool_choice parameter (auto, any, tool, none) to control when Claude uses specific tools.",
+                "depth": 2,
+                "estimatedComplexity": "medium",
+                "subtopics": []
+              },
+              {
+                "id": "tool-use.advanced.strict-tool-use",
+                "title": "Strict Tool Use",
+                "description": "Guaranteeing schema conformance with strict: true for production agents where invalid parameters cause failures.",
+                "depth": 2,
+                "estimatedComplexity": "medium",
+                "subtopics": []
+              }
+            ]
+          },
+          {
+            "id": "tool-use.server-tools",
+            "title": "Server-Side Tools",
+            "description": "Built-in tools that execute on Anthropic's servers including web search, code execution, and memory.",
+            "depth": 1,
+            "estimatedComplexity": "medium",
+            "subtopics": [
+              {
+                "id": "tool-use.server-tools.web-search-fetch",
+                "title": "Web Search and Web Fetch Tools",
+                "description": "Using server-side web search and web fetch tools for real-time information retrieval.",
+                "depth": 2,
+                "estimatedComplexity": "medium",
+                "subtopics": []
+              },
+              {
+                "id": "tool-use.server-tools.code-execution",
+                "title": "Code Execution Tool",
+                "description": "Running code in sandboxed environments for data analysis, calculations, and file processing.",
+                "depth": 2,
+                "estimatedComplexity": "medium",
+                "subtopics": []
+              }
+            ]
+          },
+          {
+            "id": "tool-use.mcp",
+            "title": "Model Context Protocol (MCP)",
+            "description": "Connecting Claude to external systems via the MCP standard for tools and data sources.",
+            "depth": 1,
+            "estimatedComplexity": "high",
+            "subtopics": [
+              {
+                "id": "tool-use.mcp.mcp-connector",
+                "title": "MCP Connector and Tool Conversion",
+                "description": "Converting MCP tools to Claude format and connecting to MCP servers via the Messages API.",
+                "depth": 2,
+                "estimatedComplexity": "high",
+                "subtopics": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "agents",
+        "title": "Agentic Patterns",
+        "description": "Building autonomous AI agents with multi-step reasoning, tool orchestration, and state management.",
+        "depth": 0,
+        "estimatedComplexity": "high",
+        "subtopics": [
+          {
+            "id": "agents.thinking",
+            "title": "Extended and Adaptive Thinking",
+            "description": "Enhanced reasoning capabilities for complex tasks with step-by-step thought processes.",
+            "depth": 1,
+            "estimatedComplexity": "high",
+            "subtopics": [
+              {
+                "id": "agents.thinking.extended-thinking",
+                "title": "Extended Thinking Basics",
+                "description": "Enabling thinking blocks with budget_tokens, streaming thinking, and processing thinking outputs.",
+                "depth": 2,
+                "estimatedComplexity": "high",
+                "subtopics": []
+              },
+              {
+                "id": "agents.thinking.adaptive-thinking",
+                "title": "Adaptive Thinking and Effort Parameter",
+                "description": "Using adaptive thinking mode with effort parameter (low, medium, high, max) for dynamic reasoning depth.",
+                "depth": 2,
+                "estimatedComplexity": "high",
+                "subtopics": []
+              },
+              {
+                "id": "agents.thinking.interleaved-thinking",
+                "title": "Interleaved Thinking with Tools",
+                "description": "Reasoning between tool calls to make sophisticated decisions based on intermediate results.",
+                "depth": 2,
+                "estimatedComplexity": "high",
+                "subtopics": []
+              }
+            ]
+          },
+          {
+            "id": "agents.long-horizon",
+            "title": "Long-Horizon Reasoning",
+            "description": "State tracking and context management across extended autonomous sessions.",
+            "depth": 1,
+            "estimatedComplexity": "high",
+            "subtopics": [
+              {
+                "id": "agents.long-horizon.state-management",
+                "title": "State Management and Progress Tracking",
+                "description": "Using structured formats for state data, git for checkpoints, and unstructured text for progress notes.",
+                "depth": 2,
+                "estimatedComplexity": "high",
+                "subtopics": []
+              },
+              {
+                "id": "agents.long-horizon.multi-context-workflows",
+                "title": "Multi-Context Window Workflows",
+                "description": "Managing tasks spanning multiple context windows with setup scripts, tests, and graceful continuation.",
+                "depth": 2,
+                "estimatedComplexity": "high",
+                "subtopics": []
+              }
+            ]
+          },
+          {
+            "id": "agents.orchestration",
+            "title": "Agent Orchestration",
+            "description": "Multi-agent coordination and subagent delegation patterns.",
+            "depth": 1,
+            "estimatedComplexity": "high",
+            "subtopics": [
+              {
+                "id": "agents.orchestration.subagents",
+                "title": "Subagent Orchestration",
+                "description": "Delegating specialized subtasks to subagents and managing when to use parallel vs. direct approaches.",
+                "depth": 2,
+                "estimatedComplexity": "high",
+                "subtopics": []
+              }
+            ]
+          },
+          {
+            "id": "agents.sdk",
+            "title": "Agent SDK",
+            "description": "Building production AI agents using Claude Code as a library with built-in tools.",
+            "depth": 1,
+            "estimatedComplexity": "high",
+            "subtopics": [
+              {
+                "id": "agents.sdk.core-concepts",
+                "title": "Agent SDK Core Concepts",
+                "description": "Using query function, built-in tools (Read, Write, Edit, Bash, Glob, Grep), and permission modes.",
+                "depth": 2,
+                "estimatedComplexity": "high",
+                "subtopics": []
+              },
+              {
+                "id": "agents.sdk.hooks-and-sessions",
+                "title": "Hooks and Sessions",
+                "description": "Running custom code at lifecycle points (PreToolUse, PostToolUse) and maintaining context with sessions.",
+                "depth": 2,
+                "estimatedComplexity": "high",
+                "subtopics": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "context-management",
+        "title": "Context Window Management",
+        "description": "Strategies for efficiently managing Claude's context window including caching, compaction, and token optimization.",
+        "depth": 0,
+        "estimatedComplexity": "high",
+        "subtopics": [
+          {
+            "id": "context-management.caching",
+            "title": "Prompt Caching",
+            "description": "Reducing costs and latency by caching frequently used prompt content.",
+            "depth": 1,
+            "estimatedComplexity": "medium",
+            "subtopics": [
+              {
+                "id": "context-management.caching.basics",
+                "title": "Prompt Caching Fundamentals",
+                "description": "Using cache_control with ephemeral type, automatic caching, and 5-minute vs 1-hour cache durations.",
+                "depth": 2,
+                "estimatedComplexity": "medium",
+                "subtopics": []
+              },
+              {
+                "id": "context-management.caching.with-thinking",
+                "title": "Caching with Extended Thinking",
+                "description": "Understanding thinking block caching behavior, cache invalidation, and preservation patterns.",
+                "depth": 2,
+                "estimatedComplexity": "high",
+                "subtopics": []
+              }
+            ]
+          },
+          {
+            "id": "context-management.optimization",
+            "title": "Context Optimization",
+            "description": "Techniques for managing and reducing context window usage.",
+            "depth": 1,
+            "estimatedComplexity": "medium",
+            "subtopics": [
+              {
+                "id": "context-management.optimization.compaction",
+                "title": "Context Compaction",
+                "description": "Server-side context summarization for long-running conversations approaching window limits.",
+                "depth": 2,
+                "estimatedComplexity": "medium",
+                "subtopics": []
+              },
+              {
+                "id": "context-management.optimization.token-counting",
+                "title": "Token Counting API",
+                "description": "Using the token counting endpoint to determine message size before sending and manage costs.",
+                "depth": 2,
+                "estimatedComplexity": "low",
+                "subtopics": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "api-integration",
+        "title": "API Integration",
+        "description": "Working with the Claude API including Messages API, streaming, batching, and error handling.",
+        "depth": 0,
+        "estimatedComplexity": "medium",
+        "subtopics": [
+          {
+            "id": "api-integration.messages-api",
+            "title": "Messages API",
+            "description": "Core API for conversational interactions with Claude.",
+            "depth": 1,
+            "estimatedComplexity": "medium",
+            "subtopics": [
+              {
+                "id": "api-integration.messages-api.basics",
+                "title": "Messages API Fundamentals",
+                "description": "Request structure, authentication headers, model selection, and response handling.",
+                "depth": 2,
+                "estimatedComplexity": "medium",
+                "subtopics": []
+              },
+              {
+                "id": "api-integration.messages-api.streaming",
+                "title": "Streaming Responses",
+                "description": "Using server-sent events (SSE) for real-time response streaming and handling stream events.",
+                "depth": 2,
+                "estimatedComplexity": "medium",
+                "subtopics": []
+              }
+            ]
+          },
+          {
+            "id": "api-integration.batch-processing",
+            "title": "Batch Processing",
+            "description": "Processing large volumes of requests asynchronously for cost savings.",
+            "depth": 1,
+            "estimatedComplexity": "medium",
+            "subtopics": [
+              {
+                "id": "api-integration.batch-processing.basics",
+                "title": "Message Batches API",
+                "description": "Creating batches, polling for results, and achieving 50% cost reduction on batch requests.",
+                "depth": 2,
+                "estimatedComplexity": "medium",
+                "subtopics": []
+              }
+            ]
+          },
+          {
+            "id": "api-integration.sdks",
+            "title": "Client SDKs",
+            "description": "Using official SDKs for Python, TypeScript, Java, and other languages.",
+            "depth": 1,
+            "estimatedComplexity": "low",
+            "subtopics": [
+              {
+                "id": "api-integration.sdks.setup",
+                "title": "SDK Setup and Usage",
+                "description": "Installing SDKs, configuring API keys, and using type-safe request/response handling.",
+                "depth": 2,
+                "estimatedComplexity": "low",
+                "subtopics": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "multimodal",
+        "title": "Multimodal Capabilities",
+        "description": "Processing images, PDFs, and other non-text content with Claude's vision capabilities.",
+        "depth": 0,
+        "estimatedComplexity": "medium",
+        "subtopics": [
+          {
+            "id": "multimodal.vision",
+            "title": "Vision Capabilities",
+            "description": "Image understanding and analysis features.",
+            "depth": 1,
+            "estimatedComplexity": "medium",
+            "subtopics": [
+              {
+                "id": "multimodal.vision.image-processing",
+                "title": "Image Processing and Analysis",
+                "description": "Passing images to Claude, multi-image contexts, and extracting structured data from visual content.",
+                "depth": 2,
+                "estimatedComplexity": "medium",
+                "subtopics": []
+              }
+            ]
+          },
+          {
+            "id": "multimodal.documents",
+            "title": "Document Processing",
+            "description": "Working with PDFs and other document formats.",
+            "depth": 1,
+            "estimatedComplexity": "medium",
+            "subtopics": [
+              {
+                "id": "multimodal.documents.pdf-support",
+                "title": "PDF Processing",
+                "description": "Processing text and visual content from PDF documents with the Messages API.",
+                "depth": 2,
+                "estimatedComplexity": "medium",
+                "subtopics": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "evaluation",
+        "title": "Evaluation and Testing",
+        "description": "Defining success criteria, building evaluations, and testing LLM applications systematically.",
+        "depth": 0,
+        "estimatedComplexity": "high",
+        "subtopics": [
+          {
+            "id": "evaluation.criteria",
+            "title": "Success Criteria",
+            "description": "Defining measurable, specific, and achievable success metrics for LLM applications.",
+            "depth": 1,
+            "estimatedComplexity": "medium",
+            "subtopics": [
+              {
+                "id": "evaluation.criteria.definition",
+                "title": "Defining Success Criteria",
+                "description": "Creating SMART criteria for task fidelity, consistency, relevance, tone, privacy, and latency.",
+                "depth": 2,
+                "estimatedComplexity": "medium",
+                "subtopics": []
+              }
+            ]
+          },
+          {
+            "id": "evaluation.methods",
+            "title": "Evaluation Methods",
+            "description": "Different approaches to measuring LLM performance.",
+            "depth": 1,
+            "estimatedComplexity": "high",
+            "subtopics": [
+              {
+                "id": "evaluation.methods.automated",
+                "title": "Automated Evaluation",
+                "description": "Code-based grading with exact match, string match, and automated metrics like ROUGE-L and F1.",
+                "depth": 2,
+                "estimatedComplexity": "medium",
+                "subtopics": []
+              },
+              {
+                "id": "evaluation.methods.llm-grading",
+                "title": "LLM-Based Grading",
+                "description": "Using Claude as an evaluator with detailed rubrics, Likert scales, and binary classification.",
+                "depth": 2,
+                "estimatedComplexity": "high",
+                "subtopics": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "claude-code",
+        "title": "Claude Code and Skills",
+        "description": "Using Claude Code CLI, skills system, MCP servers, hooks, and IDE integrations for development workflows.",
+        "depth": 0,
+        "estimatedComplexity": "medium",
+        "subtopics": [
+          {
+            "id": "claude-code.cli",
+            "title": "Claude Code CLI",
+            "description": "Terminal-based agentic coding tool for development tasks.",
+            "depth": 1,
+            "estimatedComplexity": "medium",
+            "subtopics": [
+              {
+                "id": "claude-code.cli.basics",
+                "title": "CLI Installation and Usage",
+                "description": "Installing Claude Code, starting sessions, and using common workflows for coding tasks.",
+                "depth": 2,
+                "estimatedComplexity": "low",
+                "subtopics": []
+              },
+              {
+                "id": "claude-code.cli.memory",
+                "title": "CLAUDE.md and Memory",
+                "description": "Using CLAUDE.md files for project context, coding standards, and auto-memory for persistent learnings.",
+                "depth": 2,
+                "estimatedComplexity": "medium",
+                "subtopics": []
+              }
+            ]
+          },
+          {
+            "id": "claude-code.customization",
+            "title": "Customization and Extensions",
+            "description": "Extending Claude Code with skills, hooks, and MCP servers.",
+            "depth": 1,
+            "estimatedComplexity": "high",
+            "subtopics": [
+              {
+                "id": "claude-code.customization.skills",
+                "title": "Custom Skills and Commands",
+                "description": "Creating custom skills in .claude/skills/ and slash commands for repeatable workflows.",
+                "depth": 2,
+                "estimatedComplexity": "medium",
+                "subtopics": []
+              },
+              {
+                "id": "claude-code.customization.hooks",
+                "title": "Hooks System",
+                "description": "Running shell commands before or after Claude Code actions like auto-formatting and linting.",
+                "depth": 2,
+                "estimatedComplexity": "medium",
+                "subtopics": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "enterprise",
+        "title": "Enterprise Patterns",
+        "description": "Production deployment patterns including workspaces, rate limiting, cost optimization, and platform integrations.",
+        "depth": 0,
+        "estimatedComplexity": "medium",
+        "subtopics": [
+          {
+            "id": "enterprise.platform",
+            "title": "Platform Management",
+            "description": "Managing API access, workspaces, and usage across an organization.",
+            "depth": 1,
+            "estimatedComplexity": "medium",
+            "subtopics": [
+              {
+                "id": "enterprise.platform.rate-limits",
+                "title": "Rate Limits and Usage Tiers",
+                "description": "Understanding RPM, TPM, spend limits, usage tiers, and the token bucket algorithm.",
+                "depth": 2,
+                "estimatedComplexity": "medium",
+                "subtopics": []
+              },
+              {
+                "id": "enterprise.platform.workspaces",
+                "title": "Workspaces and API Keys",
+                "description": "Segmenting API keys by use case, managing workspace limits, and controlling spend.",
+                "depth": 2,
+                "estimatedComplexity": "low",
+                "subtopics": []
+              }
+            ]
+          },
+          {
+            "id": "enterprise.cloud",
+            "title": "Cloud Platform Integrations",
+            "description": "Using Claude via AWS Bedrock, Google Vertex AI, and Microsoft Azure.",
+            "depth": 1,
+            "estimatedComplexity": "medium",
+            "subtopics": [
+              {
+                "id": "enterprise.cloud.integrations",
+                "title": "Third-Party Platform APIs",
+                "description": "Deploying Claude on AWS Bedrock, Google Vertex AI, and Azure AI with platform-specific configurations.",
+                "depth": 2,
+                "estimatedComplexity": "medium",
+                "subtopics": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "safety-alignment",
+        "title": "Safety and Alignment",
+        "description": "Understanding Claude's safety design, usage policies, and responsible AI practices.",
+        "depth": 0,
+        "estimatedComplexity": "medium",
+        "subtopics": [
+          {
+            "id": "safety-alignment.principles",
+            "title": "Safety Principles",
+            "description": "Core concepts of Claude's safety and alignment approach.",
+            "depth": 1,
+            "estimatedComplexity": "medium",
+            "subtopics": [
+              {
+                "id": "safety-alignment.principles.thinking-redaction",
+                "title": "Thinking Redaction and Safety",
+                "description": "Understanding redacted_thinking blocks, encrypted content handling, and safety-triggered redaction.",
+                "depth": 2,
+                "estimatedComplexity": "medium",
+                "subtopics": []
+              },
+              {
+                "id": "safety-alignment.principles.autonomy-balance",
+                "title": "Balancing Autonomy and Safety",
+                "description": "Configuring confirmation prompts for risky actions, reversibility considerations, and safe defaults.",
+                "depth": 2,
+                "estimatedComplexity": "medium",
+                "subtopics": []
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "quizPath": "quizzes.json",
+  "researchDir": "research/",
+  "podcastEpisodes": [
+    {
+      "id": "agents",
+      "title": "Agentic Patterns",
+      "audioPath": "podcasts/audio/agents.mp3",
+      "scriptPath": "podcasts/scripts/agents.md"
+    },
+    {
+      "id": "api-integration",
+      "title": "API Integration",
+      "audioPath": "podcasts/audio/api-integration.mp3",
+      "scriptPath": "podcasts/scripts/api-integration.md"
+    },
+    {
+      "id": "claude-code",
+      "title": "Claude Code and Skills",
+      "audioPath": "podcasts/audio/claude-code.mp3",
+      "scriptPath": "podcasts/scripts/claude-code.md"
+    },
+    {
+      "id": "context-management",
+      "title": "Context Window Management",
+      "audioPath": "podcasts/audio/context-management.mp3",
+      "scriptPath": "podcasts/scripts/context-management.md"
+    },
+    {
+      "id": "enterprise",
+      "title": "Enterprise Patterns",
+      "audioPath": "podcasts/audio/enterprise.mp3",
+      "scriptPath": "podcasts/scripts/enterprise.md"
+    },
+    {
+      "id": "evaluation",
+      "title": "Evaluation and Testing",
+      "audioPath": "podcasts/audio/evaluation.mp3",
+      "scriptPath": "podcasts/scripts/evaluation.md"
+    },
+    {
+      "id": "multimodal",
+      "title": "Multimodal Capabilities",
+      "audioPath": "podcasts/audio/multimodal.mp3",
+      "scriptPath": "podcasts/scripts/multimodal.md"
+    },
+    {
+      "id": "prompt-engineering",
+      "title": "Prompt Engineering",
+      "audioPath": "podcasts/audio/prompt-engineering.mp3",
+      "scriptPath": "podcasts/scripts/prompt-engineering.md"
+    },
+    {
+      "id": "safety-alignment",
+      "title": "Safety and Alignment",
+      "audioPath": "podcasts/audio/safety-alignment.mp3",
+      "scriptPath": "podcasts/scripts/safety-alignment.md"
+    },
+    {
+      "id": "tool-use",
+      "title": "Tool Use and Function Calling",
+      "audioPath": "podcasts/audio/tool-use.mp3",
+      "scriptPath": "podcasts/scripts/tool-use.md"
+    }
   ]
 }
