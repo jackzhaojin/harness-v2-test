@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "generatedAt": "2026-03-01T08:08:52.811Z",
+  "generatedAt": "2026-03-01T17:17:12.556Z",
   "generatedBy": "study-agent-harness",
   "topics": [
     "_combined_agents",
@@ -77,12 +77,10 @@
     "agents_part3",
     "agents_part4",
     "agents_part5",
-    "agents_part6",
     "api-integration_part1",
     "api-integration_part2",
     "api-integration_part3",
     "api-integration_part4",
-    "api-integration_part5",
     "claude-code_part1",
     "claude-code_part2",
     "claude-code_part3",
@@ -94,7 +92,6 @@
     "context-management_part3",
     "context-management_part4",
     "context-management_part5",
-    "context-management_part6",
     "enterprise_part1",
     "enterprise_part2",
     "enterprise_part3",
@@ -118,15 +115,15 @@
     "prompt-engineering_part4",
     "prompt-engineering_part5",
     "prompt-engineering_part6",
-    "prompt-engineering_part7",
     "safety-alignment_part1",
     "safety-alignment_part2",
     "safety-alignment_part3",
     "safety-alignment_part4",
     "safety-alignment_part5",
-    "safety-alignment_part6",
-    "safety-alignment_part7",
     "tool-use_part1",
-    "tool-use_part2"
+    "tool-use_part2",
+    "tool-use_part3",
+    "tool-use_part4",
+    "tool-use_part5"
   ]
 }

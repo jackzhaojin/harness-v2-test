@@ -1,101 +1,100 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { ChevronRight, ChevronDown } from 'lucide-react'
-import { useManifest } from '../hooks/useManifest'
-import { cn } from '../lib/utils'
-
-function TopicNode({ topic, level = 0, selectedTopic, onSelect }) {
-  const [isOpen, setIsOpen] = useState(level < 2)
-  const hasChildren = topic.children && topic.children.length > 0
-
-  const handleClick = () => {
-    if (hasChildren) {
-      setIsOpen(!isOpen)
-    }
-    onSelect(topic.id)
-  }
-
-  const isSelected = selectedTopic === topic.id
-
-  return (
-    <div>
-      <button
-        onClick={handleClick}
-        className={cn(
-          'flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors hover:bg-accent',
-          isSelected && 'bg-accent font-medium',
-          level > 0 && 'ml-4'
-        )}
-        style={{ paddingLeft: `${level * 0.75 + 0.75}rem` }}
-      >
-        {hasChildren && (
-          <span className="flex-shrink-0">
-            {isOpen ? (
-              <ChevronDown className="h-4 w-4" />
-            ) : (
-              <ChevronRight className="h-4 w-4" />
-            )}
-          </span>
-        )}
-        {!hasChildren && <span className="w-4" />}
-        <span className="flex-1 text-left truncate">{topic.name}</span>
-      </button>
-      {hasChildren && isOpen && (
-        <div className="mt-1">
-          {topic.children.map((child) => (
-            <TopicNode
-              key={child.id}
-              topic={child}
-              level={level + 1}
-              selectedTopic={selectedTopic}
-              onSelect={onSelect}
-            />
-          ))}
-        </div>
-      )}
-    </div>
-  )
-}
 
 export default function TopicSidebar({ onTopicSelect }) {
-  const { manifest, loading } = useManifest()
+  const [topics, setTopics] = useState([])
+  const [expanded, setExpanded] = useState({})
   const [selectedTopic, setSelectedTopic] = useState(null)
 
-  const handleTopicSelect = (topicId) => {
-    setSelectedTopic(topicId)
+  useEffect(() => {
+    // Load topic tree from manifest
+    fetch('/research/topic-tree.json')
+      .then(res => res.json())
+      .then(data => {
+        setTopics(data.topics || [])
+        // Expand first level by default
+        const initialExpanded = {}
+        data.topics?.forEach(topic => {
+          initialExpanded[topic.id] = true
+        })
+        setExpanded(initialExpanded)
+      })
+      .catch(err => console.error('Failed to load topics:', err))
+  }, [])
+
+  const toggleExpand = (topicId) => {
+    setExpanded(prev => ({
+      ...prev,
+      [topicId]: !prev[topicId]
+    }))
+  }
+
+  const handleTopicClick = (topic) => {
+    setSelectedTopic(topic.id)
     if (onTopicSelect) {
-      onTopicSelect(topicId)
+      onTopicSelect(topic)
     }
   }
 
-  if (loading) {
+  const renderTopic = (topic, depth = 0) => {
+    const hasSubtopics = topic.subtopics && topic.subtopics.length > 0
+    const isExpanded = expanded[topic.id]
+    const isSelected = selectedTopic === topic.id
+
     return (
-      <div className="p-4">
-        <div className="animate-pulse space-y-2">
-          <div className="h-4 bg-muted rounded"></div>
-          <div className="h-4 bg-muted rounded"></div>
-          <div className="h-4 bg-muted rounded"></div>
+      <div key={topic.id} className="select-none">
+        <div
+          className={`flex items-center gap-2 px-3 py-2 text-sm cursor-pointer rounded-md transition-colors ${
+            isSelected
+              ? 'bg-accent text-accent-foreground font-medium'
+              : 'hover:bg-accent/50'
+          }`}
+          style={{ paddingLeft: `${depth * 12 + 12}px` }}
+          onClick={() => {
+            if (hasSubtopics) {
+              toggleExpand(topic.id)
+            }
+            handleTopicClick(topic)
+          }}
+        >
+          {hasSubtopics && (
+            <button
+              className="p-0"
+              onClick={(e) => {
+                e.stopPropagation()
+                toggleExpand(topic.id)
+              }}
+            >
+              {isExpanded ? (
+                <ChevronDown className="h-4 w-4" />
+              ) : (
+                <ChevronRight className="h-4 w-4" />
+              )}
+            </button>
+          )}
+          {!hasSubtopics && <div className="w-4" />}
+          <span className="flex-1">{topic.title}</span>
         </div>
+        {hasSubtopics && isExpanded && (
+          <div>
+            {topic.subtopics.map(subtopic => renderTopic(subtopic, depth + 1))}
+          </div>
+        )}
       </div>
     )
   }
 
-  if (!manifest) {
-    return <div className="p-4 text-muted-foreground">No topics available</div>
-  }
-
   return (
-    <div className="h-full overflow-auto p-4">
-      <h2 className="mb-4 px-3 text-lg font-semibold">Topics</h2>
-      <nav className="space-y-1">
-        {manifest.topics.map((topic) => (
-          <TopicNode
-            key={topic.id}
-            topic={topic}
-            selectedTopic={selectedTopic}
-            onSelect={handleTopicSelect}
-          />
-        ))}
-      </nav>
+    <div className="h-full overflow-y-auto py-4">
+      <div className="px-3 pb-2">
+        <h2 className="text-lg font-semibold tracking-tight">Topics</h2>
+        <p className="text-xs text-muted-foreground mt-1">
+          Explore the certification topics
+        </p>
+      </div>
+      <div className="space-y-1 mt-4">
+        {topics.map(topic => renderTopic(topic))}
+      </div>
     </div>
   )
 }

@@ -1,154 +1,186 @@
-import { useState } from 'react'
-import { BookOpen, ChevronLeft, ChevronRight } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '../components/ui/card'
 import { Button } from '../components/ui/button'
 import { Badge } from '../components/ui/badge'
 import QuizCard from '../components/QuizCard'
-import { useQuizData } from '../hooks/useQuizData'
+import { ChevronLeft, ChevronRight, RotateCcw } from 'lucide-react'
 
 export default function Quiz() {
-  const { quizData, loading } = useQuizData()
-  const [currentIndex, setCurrentIndex] = useState(0)
-  const [filter, setFilter] = useState('all')
+  const [quizData, setQuizData] = useState(null)
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
+  const [answeredQuestions, setAnsweredQuestions] = useState({})
+  const [filterTopic, setFilterTopic] = useState('all')
+  const [filterDifficulty, setFilterDifficulty] = useState('all')
 
-  const questions = quizData?.questions || []
+  useEffect(() => {
+    // Load quiz data
+    fetch('/quizzes.json')
+      .then(res => res.json())
+      .then(data => {
+        setQuizData(data)
+      })
+      .catch(err => console.error('Failed to load quiz data:', err))
+  }, [])
 
-  const filteredQuestions = filter === 'all'
-    ? questions
-    : questions.filter(q => q.difficulty === filter)
+  const handleAnswerSubmit = (questionId, answer) => {
+    setAnsweredQuestions(prev => ({
+      ...prev,
+      [questionId]: answer
+    }))
+  }
 
-  const currentQuestion = filteredQuestions[currentIndex]
+  const resetQuiz = () => {
+    setAnsweredQuestions({})
+    setCurrentQuestionIndex(0)
+  }
 
-  const handleNext = () => {
-    if (currentIndex < filteredQuestions.length - 1) {
-      setCurrentIndex(currentIndex + 1)
-    } else {
-      setCurrentIndex(0) // Loop back to start
+  const nextQuestion = () => {
+    if (filteredQuestions && currentQuestionIndex < filteredQuestions.length - 1) {
+      setCurrentQuestionIndex(prev => prev + 1)
     }
   }
 
-  const handlePrevious = () => {
-    if (currentIndex > 0) {
-      setCurrentIndex(currentIndex - 1)
+  const previousQuestion = () => {
+    if (currentQuestionIndex > 0) {
+      setCurrentQuestionIndex(prev => prev - 1)
     }
   }
 
-  if (loading) {
+  if (!quizData) {
     return (
-      <div className="space-y-6">
-        <div className="animate-pulse space-y-4">
-          <div className="h-8 bg-muted rounded w-1/3"></div>
-          <div className="h-96 bg-muted rounded"></div>
-        </div>
+      <div className="flex items-center justify-center min-h-[400px]">
+        <p className="text-muted-foreground">Loading quiz questions...</p>
       </div>
     )
   }
 
-  if (!quizData || questions.length === 0) {
-    return (
-      <div className="text-center py-12">
-        <BookOpen className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-        <h2 className="text-2xl font-bold mb-2">No Questions Available</h2>
-        <p className="text-muted-foreground">
-          Quiz questions will appear here once loaded.
-        </p>
-      </div>
-    )
+  // Get unique topics and difficulties
+  const topics = ['all', ...new Set(quizData.questions.map(q => q.topic))]
+  const difficulties = ['all', 'easy', 'medium', 'hard']
+
+  // Filter questions
+  const filteredQuestions = quizData.questions.filter(q => {
+    const topicMatch = filterTopic === 'all' || q.topic === filterTopic
+    const difficultyMatch = filterDifficulty === 'all' || q.difficulty === filterDifficulty
+    return topicMatch && difficultyMatch
+  })
+
+  const currentQuestion = filteredQuestions[currentQuestionIndex]
+  const progress = Object.keys(answeredQuestions).length
+  const totalQuestions = filteredQuestions.length
+
+  const difficultyColors = {
+    easy: 'bg-green-500/10 text-green-500 border-green-500/20',
+    medium: 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20',
+    hard: 'bg-red-500/10 text-red-500 border-red-500/20'
   }
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <BookOpen className="h-8 w-8 text-primary" />
-          <div>
-            <h1 className="text-3xl font-bold">Practice Quiz</h1>
-            <p className="text-muted-foreground">
-              Test your knowledge with scenario-based questions
-            </p>
+      <div className="space-y-2">
+        <h1 className="text-3xl font-bold tracking-tight">Quiz Practice</h1>
+        <p className="text-muted-foreground">
+          Test your knowledge with scenario-based certification questions
+        </p>
+      </div>
+
+      {/* Progress and Filters */}
+      <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle>Your Progress</CardTitle>
+              <CardDescription>
+                {progress} of {totalQuestions} questions attempted
+              </CardDescription>
+            </div>
+            <Button variant="outline" size="sm" onClick={resetQuiz}>
+              <RotateCcw className="h-4 w-4 mr-2" />
+              Reset
+            </Button>
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex gap-4 flex-wrap">
+            <div className="flex-1 min-w-[200px]">
+              <label className="text-sm font-medium mb-2 block">Filter by Topic</label>
+              <select
+                value={filterTopic}
+                onChange={(e) => {
+                  setFilterTopic(e.target.value)
+                  setCurrentQuestionIndex(0)
+                }}
+                className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
+              >
+                {topics.map(topic => (
+                  <option key={topic} value={topic}>
+                    {topic === 'all' ? 'All Topics' : topic}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="flex-1 min-w-[200px]">
+              <label className="text-sm font-medium mb-2 block">Filter by Difficulty</label>
+              <select
+                value={filterDifficulty}
+                onChange={(e) => {
+                  setFilterDifficulty(e.target.value)
+                  setCurrentQuestionIndex(0)
+                }}
+                className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
+              >
+                {difficulties.map(diff => (
+                  <option key={diff} value={diff}>
+                    {diff.charAt(0).toUpperCase() + diff.slice(1)}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Current Question */}
+      {currentQuestion && (
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Badge variant="outline">{currentQuestion.topic}</Badge>
+              <Badge className={difficultyColors[currentQuestion.difficulty]}>
+                {currentQuestion.difficulty}
+              </Badge>
+            </div>
+            <span className="text-sm text-muted-foreground">
+              Question {currentQuestionIndex + 1} of {totalQuestions}
+            </span>
+          </div>
+
+          <QuizCard
+            question={currentQuestion}
+            userAnswer={answeredQuestions[currentQuestion.id]}
+            onSubmit={handleAnswerSubmit}
+          />
+
+          {/* Navigation */}
+          <div className="flex justify-between">
+            <Button
+              variant="outline"
+              onClick={previousQuestion}
+              disabled={currentQuestionIndex === 0}
+            >
+              <ChevronLeft className="h-4 w-4 mr-2" />
+              Previous
+            </Button>
+            <Button
+              variant="outline"
+              onClick={nextQuestion}
+              disabled={currentQuestionIndex === totalQuestions - 1}
+            >
+              Next
+              <ChevronRight className="h-4 w-4 ml-2" />
+            </Button>
           </div>
         </div>
-      </div>
-
-      {/* Stats and Filters */}
-      <div className="flex flex-wrap items-center justify-between gap-4 p-4 rounded-lg bg-muted/50">
-        <div className="flex flex-wrap gap-2">
-          <Button
-            variant={filter === 'all' ? 'default' : 'outline'}
-            size="sm"
-            onClick={() => {
-              setFilter('all')
-              setCurrentIndex(0)
-            }}
-          >
-            All ({questions.length})
-          </Button>
-          <Button
-            variant={filter === 'easy' ? 'default' : 'outline'}
-            size="sm"
-            onClick={() => {
-              setFilter('easy')
-              setCurrentIndex(0)
-            }}
-          >
-            Easy ({quizData.difficultyDistribution.easy})
-          </Button>
-          <Button
-            variant={filter === 'medium' ? 'default' : 'outline'}
-            size="sm"
-            onClick={() => {
-              setFilter('medium')
-              setCurrentIndex(0)
-            }}
-          >
-            Medium ({quizData.difficultyDistribution.medium})
-          </Button>
-          <Button
-            variant={filter === 'hard' ? 'default' : 'outline'}
-            size="sm"
-            onClick={() => {
-              setFilter('hard')
-              setCurrentIndex(0)
-            }}
-          >
-            Hard ({quizData.difficultyDistribution.hard})
-          </Button>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <Badge variant="outline">
-            Question {currentIndex + 1} of {filteredQuestions.length}
-          </Badge>
-        </div>
-      </div>
-
-      {/* Navigation */}
-      <div className="flex items-center justify-between">
-        <Button
-          variant="outline"
-          onClick={handlePrevious}
-          disabled={currentIndex === 0}
-        >
-          <ChevronLeft className="h-4 w-4 mr-2" />
-          Previous
-        </Button>
-
-        <Button
-          variant="outline"
-          onClick={handleNext}
-        >
-          {currentIndex === filteredQuestions.length - 1 ? 'Start Over' : 'Skip'}
-          <ChevronRight className="h-4 w-4 ml-2" />
-        </Button>
-      </div>
-
-      {/* Quiz Card */}
-      {currentQuestion && (
-        <QuizCard
-          key={currentQuestion.id}
-          question={currentQuestion}
-          onNext={handleNext}
-        />
       )}
     </div>
   )

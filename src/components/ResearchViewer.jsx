@@ -1,125 +1,150 @@
 import { useState, useEffect } from 'react'
+import { Card, CardHeader, CardTitle, CardContent } from './ui/card'
 import ReactMarkdown from 'react-markdown'
-import { FileText } from 'lucide-react'
 
-export default function ResearchViewer({ filePath }) {
+export default function ResearchViewer({ topic }) {
   const [content, setContent] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
 
   useEffect(() => {
-    if (!filePath) {
-      setContent('')
-      return
-    }
+    if (!topic) return
 
     setLoading(true)
     setError(null)
 
-    fetch(`/${filePath}`)
-      .then((res) => {
+    fetch(`/research/${topic.file}`)
+      .then(res => {
         if (!res.ok) {
-          throw new Error('Failed to load research file')
+          throw new Error(`Failed to load: ${res.statusText}`)
         }
         return res.text()
       })
-      .then((text) => {
+      .then(text => {
         setContent(text)
         setLoading(false)
       })
-      .catch((err) => {
+      .catch(err => {
+        console.error('Failed to load research content:', err)
         setError(err.message)
         setLoading(false)
       })
-  }, [filePath])
+  }, [topic])
 
-  if (!filePath) {
+  if (!topic) {
     return (
-      <div className="flex flex-col items-center justify-center h-96 text-center">
-        <FileText className="h-16 w-16 text-muted-foreground mb-4" />
-        <h3 className="text-xl font-semibold mb-2">No Document Selected</h3>
-        <p className="text-muted-foreground">
-          Select a research document from the list to view its contents
-        </p>
-      </div>
-    )
-  }
-
-  if (loading) {
-    return (
-      <div className="animate-pulse space-y-4">
-        <div className="h-8 bg-muted rounded w-3/4"></div>
-        <div className="h-4 bg-muted rounded w-full"></div>
-        <div className="h-4 bg-muted rounded w-full"></div>
-        <div className="h-4 bg-muted rounded w-2/3"></div>
-      </div>
-    )
-  }
-
-  if (error) {
-    return (
-      <div className="rounded-lg border-2 border-destructive/50 bg-destructive/10 p-6 text-center">
-        <p className="text-destructive font-medium">Error loading document</p>
-        <p className="text-sm text-muted-foreground mt-2">{error}</p>
-      </div>
+      <Card>
+        <CardHeader>
+          <CardTitle>No Topic Selected</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-muted-foreground">Select a topic to view research materials</p>
+        </CardContent>
+      </Card>
     )
   }
 
   return (
-    <div className="prose prose-slate dark:prose-invert max-w-none">
-      <ReactMarkdown
-        components={{
-          h1: ({ node, ...props }) => (
-            <h1 className="text-3xl font-bold mt-8 mb-4 text-foreground" {...props} />
-          ),
-          h2: ({ node, ...props }) => (
-            <h2 className="text-2xl font-bold mt-6 mb-3 text-foreground" {...props} />
-          ),
-          h3: ({ node, ...props }) => (
-            <h3 className="text-xl font-semibold mt-4 mb-2 text-foreground" {...props} />
-          ),
-          p: ({ node, ...props }) => (
-            <p className="mb-4 leading-7 text-foreground" {...props} />
-          ),
-          ul: ({ node, ...props }) => (
-            <ul className="list-disc list-inside mb-4 space-y-2 text-foreground" {...props} />
-          ),
-          ol: ({ node, ...props }) => (
-            <ol className="list-decimal list-inside mb-4 space-y-2 text-foreground" {...props} />
-          ),
-          li: ({ node, ...props }) => (
-            <li className="ml-4 text-foreground" {...props} />
-          ),
-          code: ({ node, inline, ...props }) =>
-            inline ? (
-              <code className="px-1.5 py-0.5 rounded bg-muted text-foreground font-mono text-sm" {...props} />
-            ) : (
-              <code className="block p-4 rounded-lg bg-muted text-foreground font-mono text-sm overflow-x-auto" {...props} />
-            ),
-          pre: ({ node, ...props }) => (
-            <pre className="mb-4 p-4 rounded-lg bg-muted overflow-x-auto" {...props} />
-          ),
-          blockquote: ({ node, ...props }) => (
-            <blockquote className="border-l-4 border-primary pl-4 italic my-4 text-muted-foreground" {...props} />
-          ),
-          a: ({ node, ...props }) => (
-            <a className="text-primary hover:underline" {...props} />
-          ),
-          table: ({ node, ...props }) => (
-            <div className="overflow-x-auto mb-4">
-              <table className="min-w-full divide-y divide-border" {...props} />
-            </div>
-          ),
-          th: ({ node, ...props }) => (
-            <th className="px-4 py-2 bg-muted text-left font-semibold text-foreground" {...props} />
-          ),
-          td: ({ node, ...props }) => (
-            <td className="px-4 py-2 border-t border-border text-foreground" {...props} />
-          ),
-        }}
-      >
-        {content}
-      </ReactMarkdown>
-    </div>
+    <Card>
+      <CardHeader>
+        <CardTitle>{topic.title}</CardTitle>
+      </CardHeader>
+      <CardContent>
+        {loading && (
+          <div className="flex items-center justify-center py-12">
+            <div className="text-muted-foreground">Loading...</div>
+          </div>
+        )}
+
+        {error && (
+          <div className="bg-destructive/10 text-destructive p-4 rounded-lg">
+            <p className="font-semibold">Error loading content</p>
+            <p className="text-sm mt-1">{error}</p>
+          </div>
+        )}
+
+        {!loading && !error && content && (
+          <div className="prose prose-sm dark:prose-invert max-w-none">
+            <ReactMarkdown
+              components={{
+                h1: ({ node, ...props }) => (
+                  <h1 className="text-3xl font-bold mt-8 mb-4 border-b pb-2" {...props} />
+                ),
+                h2: ({ node, ...props }) => (
+                  <h2 className="text-2xl font-bold mt-6 mb-3" {...props} />
+                ),
+                h3: ({ node, ...props }) => (
+                  <h3 className="text-xl font-semibold mt-4 mb-2" {...props} />
+                ),
+                h4: ({ node, ...props }) => (
+                  <h4 className="text-lg font-semibold mt-3 mb-2" {...props} />
+                ),
+                p: ({ node, ...props }) => (
+                  <p className="my-3 leading-relaxed" {...props} />
+                ),
+                ul: ({ node, ...props }) => (
+                  <ul className="my-3 ml-6 list-disc space-y-1" {...props} />
+                ),
+                ol: ({ node, ...props }) => (
+                  <ol className="my-3 ml-6 list-decimal space-y-1" {...props} />
+                ),
+                li: ({ node, ...props }) => (
+                  <li className="my-1" {...props} />
+                ),
+                code: ({ node, inline, ...props }) =>
+                  inline ? (
+                    <code
+                      className="bg-muted px-1.5 py-0.5 rounded text-sm font-mono"
+                      {...props}
+                    />
+                  ) : (
+                    <code
+                      className="block bg-muted p-4 rounded-lg overflow-x-auto text-sm font-mono my-3"
+                      {...props}
+                    />
+                  ),
+                pre: ({ node, ...props }) => (
+                  <pre className="bg-muted p-4 rounded-lg overflow-x-auto my-3" {...props} />
+                ),
+                blockquote: ({ node, ...props }) => (
+                  <blockquote
+                    className="border-l-4 border-primary pl-4 italic my-3 text-muted-foreground"
+                    {...props}
+                  />
+                ),
+                a: ({ node, ...props }) => (
+                  <a
+                    className="text-primary hover:underline"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    {...props}
+                  />
+                ),
+                table: ({ node, ...props }) => (
+                  <div className="overflow-x-auto my-4">
+                    <table className="min-w-full border-collapse" {...props} />
+                  </div>
+                ),
+                th: ({ node, ...props }) => (
+                  <th className="border border-border bg-muted px-4 py-2 text-left font-semibold" {...props} />
+                ),
+                td: ({ node, ...props }) => (
+                  <td className="border border-border px-4 py-2" {...props} />
+                ),
+                hr: ({ node, ...props }) => (
+                  <hr className="my-6 border-border" {...props} />
+                ),
+              }}
+            >
+              {content}
+            </ReactMarkdown>
+          </div>
+        )}
+
+        {!loading && !error && !content && (
+          <p className="text-muted-foreground">No content available</p>
+        )}
+      </CardContent>
+    </Card>
   )
 }

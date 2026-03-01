@@ -1,1406 +1,1561 @@
 {
-  "generatedAt": "2026-03-01T14:30:00Z",
-  "totalQuestions": 45,
+  "generatedAt": "2026-03-01T16:00:00Z",
+  "totalQuestions": 50,
   "difficultyDistribution": {
-    "easy": 9,
-    "medium": 23,
-    "hard": 13
+    "easy": 10,
+    "medium": 25,
+    "hard": 15
   },
   "questions": [
     {
       "id": "q-001",
-      "topic": "Tool Definitions and Input Schemas",
-      "difficulty": "medium",
-      "scenario": "A team is building a flight booking agent that needs to search for flights. They've noticed Claude sometimes provides passenger counts as strings (\"2\") instead of integers, causing their booking API to fail. The team wants to eliminate these parsing errors entirely.",
-      "question": "Which approach will guarantee that passenger count is always returned as an integer?",
-      "options": [
-        {
-          "label": "A",
-          "text": "Add detailed description text explaining that passengers must be an integer type",
-          "isCorrect": false
-        },
-        {
-          "label": "B",
-          "text": "Set strict: true on the tool definition and define passengers with type: integer",
-          "isCorrect": true
-        },
-        {
-          "label": "C",
-          "text": "Use tool_choice: {type: \"tool\", name: \"search_flights\"} to force the tool",
-          "isCorrect": false
-        },
-        {
-          "label": "D",
-          "text": "Lower the temperature to 0.0 to make outputs more deterministic",
-          "isCorrect": false
-        }
-      ],
-      "rationale": "B is correct because strict mode uses constrained decoding to guarantee that tool inputs exactly match the schema, physically preventing the model from generating string values when integer is specified. A is incorrect because descriptions alone don't enforce types—Claude can still generate strings despite good descriptions. C is incorrect because tool_choice controls which tool is selected, not parameter validation. D is incorrect because temperature affects randomness but doesn't guarantee schema compliance.",
-      "references": ["tool-use.advanced.strict-tool-use", "tool-use.basics.tool-definitions"]
-    },
-    {
-      "id": "q-002",
       "topic": "Prompt Caching",
       "difficulty": "medium",
-      "scenario": "An application processes legal documents by including a 50,000-token system prompt with case law references. The team wants to optimize costs using prompt caching. After implementing caching, they notice cache misses whenever they switch between the default 5-minute TTL and the 1-hour TTL in different requests.",
-      "question": "What is causing the cache invalidation?",
+      "scenario": "A developer is building a coding assistant that analyzes large codebases. Each request includes a 50,000-token system prompt with coding guidelines and a 100,000-token context document containing the codebase. The assistant handles 200 requests per day, with users asking follow-up questions within 10 minutes of their initial query.",
+      "question": "Which caching strategy will minimize costs while maintaining performance?",
       "options": [
         {
           "label": "A",
-          "text": "Mixing different TTL durations in the same conversation invalidates the cache",
-          "isCorrect": true
-        },
-        {
-          "label": "B",
-          "text": "The system prompt exceeds the maximum cacheable token limit",
+          "text": "Use automatic caching at the top level with default 5-minute TTL",
           "isCorrect": false
         },
         {
+          "label": "B",
+          "text": "Use explicit cache breakpoints on both system prompt and context document with 1-hour TTL",
+          "isCorrect": true
+        },
+        {
           "label": "C",
-          "text": "Legal documents require special cache_control settings that weren't configured",
+          "text": "Use automatic caching with extended 1-hour TTL at the request level",
           "isCorrect": false
         },
         {
           "label": "D",
-          "text": "Cache TTL changes require waiting for the previous cache to expire first",
+          "text": "Cache only the system prompt with 5-minute TTL, send context document uncached",
           "isCorrect": false
         }
       ],
-      "rationale": "A is correct because changing cache_control parameters (including TTL duration) between requests invalidates the cache, as the cache matching is based on exact prefix matching including all cache_control settings. B is incorrect because 50,000 tokens is well within cacheable limits (models support caching content from 1024-4096 tokens minimum up to the full context window). C is incorrect because there are no special cache settings required for specific content types. D is incorrect because you don't need to wait for cache expiration—the API accepts different TTL values immediately, but doing so invalidates the previous cache entry.",
+      "rationale": "B is correct because explicit cache breakpoints allow caching both the system prompt and context document separately, and the 1-hour TTL ensures cache hits across the day (users may return after 5 minutes expires). A is incorrect because automatic caching only places one breakpoint at the last cacheable block, and 5-minute TTL is too short for daily usage patterns. C is incorrect because automatic caching at request level doesn't provide granular control over what gets cached. D is incorrect because not caching the 100K context document wastes the primary cost-saving opportunity.",
       "references": ["context-management.caching.basics"]
     },
     {
-      "id": "q-003",
+      "id": "q-002",
       "topic": "Extended Thinking",
       "difficulty": "hard",
-      "scenario": "A coding agent uses extended thinking with a 10,000 token budget to solve complex algorithmic problems. During a tool use loop, the agent calls a code execution tool to test a solution. The developer wants to continue the conversation after the tool result while maintaining reasoning continuity.",
-      "question": "What must be included when sending the tool result back to Claude?",
+      "scenario": "A team is building a mathematical proof validator using Claude Sonnet 4.6. They enable extended thinking with budget_tokens: 16000 and use tool calls to verify steps against a symbolic math engine. After the first tool call, Claude returns a thinking block followed by a tool_use block. The developer continues the conversation by sending back only the tool_result block.",
+      "question": "What will happen when the API processes the continuation request?",
       "options": [
         {
           "label": "A",
-          "text": "Only the tool_result block with the execution output",
+          "text": "The request will fail with an error about missing thinking blocks",
           "isCorrect": false
         },
         {
           "label": "B",
-          "text": "The tool_result block plus a summary of the thinking block content",
+          "text": "Claude will silently disable extended thinking for the rest of the conversation",
           "isCorrect": false
         },
         {
           "label": "C",
-          "text": "Both the original thinking block and tool_use block, unmodified, along with the tool_result",
+          "text": "Claude will lose reasoning continuity and may produce lower-quality responses",
           "isCorrect": true
         },
         {
           "label": "D",
-          "text": "The tool_result block and a new thinking block with updated reasoning",
+          "text": "Claude will automatically regenerate the missing thinking context from the tool result",
           "isCorrect": false
         }
       ],
-      "rationale": "C is correct because thinking blocks must be preserved and passed back unmodified during tool use loops to maintain reasoning continuity. The entire sequence including the signature field must match the original output exactly. A is incorrect because omitting thinking blocks breaks reasoning continuity. B is incorrect because summarizing or modifying thinking blocks invalidates their signature verification. D is incorrect because you cannot add new thinking blocks manually—only Claude generates thinking blocks, and existing ones must be passed back unchanged.",
+      "rationale": "C is correct because thinking blocks must be preserved during tool use loops to maintain reasoning continuity. Omitting them breaks the chain of reasoning but doesn't cause an API error or disable thinking—it just degrades quality. A is incorrect because the API doesn't validate thinking block presence with errors. B is incorrect because thinking remains enabled; it's the continuity that's broken. D is incorrect because Claude cannot regenerate thinking blocks—they must be passed back unmodified with their signature field.",
       "references": ["agents.thinking.extended-thinking", "agents.thinking.interleaved-thinking"]
     },
     {
-      "id": "q-004",
-      "topic": "Tool Results and Response Handling",
+      "id": "q-003",
+      "topic": "Tool Definitions",
       "difficulty": "easy",
-      "scenario": "An agent makes parallel tool calls to fetch weather data for three cities: Tokyo, Paris, and New York. Each tool call has a unique ID. The developer needs to return the results to Claude.",
-      "question": "How should the tool results be structured in the response?",
+      "scenario": "A developer defines a get_stock_price tool with a description that says 'Gets stock price.' The tool has a parameter called ticker with type string. When users ask 'What's Apple's stock price?', Claude frequently fails to call the tool or provides the wrong ticker symbol.",
+      "question": "What is the most likely cause of this issue?",
       "options": [
         {
           "label": "A",
-          "text": "Send three separate user messages, each containing one tool_result block",
+          "text": "The tool definition is missing the required field in the input_schema",
           "isCorrect": false
         },
         {
           "label": "B",
-          "text": "Send a single user message containing all three tool_result blocks",
+          "text": "The tool description is too vague and lacks guidance on when and how to use it",
           "isCorrect": true
         },
         {
           "label": "C",
-          "text": "Combine the three results into a single tool_result block with concatenated content",
+          "text": "The ticker parameter should use an enum instead of string type",
           "isCorrect": false
         },
         {
           "label": "D",
-          "text": "Send the results in three assistant messages to maintain conversational flow",
+          "text": "The tool needs strict mode enabled to guarantee correct parameter values",
           "isCorrect": false
         }
       ],
-      "rationale": "B is correct because all tool results from parallel tool calls must be returned in a single user message. This teaches Claude that parallel execution is possible and expected. A is incorrect because sending separate messages discourages parallel tool calling in future interactions. C is incorrect because each tool_use block requires its own corresponding tool_result block with matching tool_use_id. D is incorrect because tool results must come from user role messages, not assistant messages.",
-      "references": ["tool-use.basics.tool-results", "tool-use.advanced.parallel-and-sequential"]
+      "rationale": "B is correct because tool description quality is the most important factor in tool performance. A vague description like 'Gets stock price' doesn't tell Claude when to use it, what format ticker symbols take, or what the tool returns. A is incorrect because the issue is tool selection and parameter inference, not schema validation. C is incorrect because enums are impractical for thousands of possible ticker symbols. D is incorrect because strict mode ensures schema compliance but doesn't help with tool selection or understanding what parameters to provide.",
+      "references": ["tool-use.basics.tool-definitions"]
+    },
+    {
+      "id": "q-004",
+      "topic": "Strict Tool Use",
+      "difficulty": "medium",
+      "scenario": "A travel booking system requires users to select exactly 1-6 passengers when searching flights. The developer creates a strict tool with passengers parameter as type integer. After deployment, they notice Claude sometimes provides passengers: 0 or passengers: 10, which breaks the booking API.",
+      "question": "What is the issue and how should it be fixed?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Strict mode doesn't enforce numerical constraints like minimum and maximum values; add validation in application code",
+          "isCorrect": true
+        },
+        {
+          "label": "B",
+          "text": "Change the schema to use enum with values [1, 2, 3, 4, 5, 6] to enforce the constraint",
+          "isCorrect": false
+        },
+        {
+          "label": "C",
+          "text": "Set strict: false because strict mode has a bug with integer ranges",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "Add minimum: 1 and maximum: 6 to the schema to enforce the constraint",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "A is correct because strict mode enforces type compliance and schema structure but does not support numerical constraints like minimum and maximum. The developer must validate these constraints after receiving the tool call. B is incorrect while it would work, the question asks about the issue—the real issue is misunderstanding strict mode's capabilities, and using enum for a range is awkward. C is incorrect because there's no bug; this is expected behavior. D is incorrect because minimum and maximum are explicitly listed as unsupported features in strict mode.",
+      "references": ["tool-use.advanced.strict-tool-use", "prompt-engineering.output-control.structured-outputs"]
     },
     {
       "id": "q-005",
-      "topic": "Messages API Fundamentals",
-      "difficulty": "easy",
-      "scenario": "A developer is integrating Claude into their application and receives a 401 authentication error. They've confirmed their API key is valid and set in the ANTHROPIC_API_KEY environment variable.",
-      "question": "What is the most likely cause of the authentication error?",
+      "topic": "Prompt Caching with Extended Thinking",
+      "difficulty": "hard",
+      "scenario": "A developer has a working agent that uses extended thinking with budget_tokens: 10000 and prompt caching on the system prompt and tool definitions. After running successfully for several requests, they decide to increase the thinking budget to 16000 to improve reasoning quality on complex queries.",
+      "question": "What cache behavior will occur on the next request after changing the budget?",
       "options": [
         {
           "label": "A",
-          "text": "The API key is being sent in the Authorization header instead of x-api-key header",
-          "isCorrect": true
-        },
-        {
-          "label": "B",
-          "text": "The anthropic-version header is set to an outdated version",
+          "text": "All caches (tools, system, and messages) will be invalidated and must be regenerated",
           "isCorrect": false
         },
         {
+          "label": "B",
+          "text": "Message cache will be invalidated, but tool and system prompt caches will remain valid",
+          "isCorrect": true
+        },
+        {
           "label": "C",
-          "text": "The model parameter specifies a model version the key doesn't have access to",
+          "text": "Cache remains fully valid because budget changes don't affect caching",
           "isCorrect": false
         },
         {
           "label": "D",
-          "text": "The messages array doesn't properly alternate between user and assistant roles",
+          "text": "Only thinking blocks are invalidated; all other content remains cached",
           "isCorrect": false
         }
       ],
-      "rationale": "A is correct because Claude API requires authentication via the x-api-key header, not the standard Authorization header used by many other APIs. This is a common mistake when migrating from other API integrations. B is incorrect because version header issues would return different error codes, not 401 authentication errors. C is incorrect because insufficient permissions for a model would return a 403 permission error, not 401. D is incorrect because message format issues would return 400 validation errors, not authentication errors.",
-      "references": ["api-integration.messages-api.basics"]
+      "rationale": "B is correct because changing budget_tokens invalidates message-level cache breakpoints while preserving cache at the tools and system levels. This is explicitly documented behavior. A is incorrect because tool and system prompt caches are preserved across thinking parameter changes. C is incorrect because budget changes do invalidate message caches. D is incorrect because thinking blocks can't have explicit cache breakpoints, so this distinction doesn't apply.",
+      "references": ["context-management.caching.with-thinking", "context-management.caching.basics"]
     },
     {
       "id": "q-006",
-      "topic": "Tool Choice Configuration",
-      "difficulty": "hard",
-      "scenario": "A data extraction pipeline uses extended thinking with a 5,000 token budget to analyze complex documents. The team wants to force Claude to always use the extract_data tool to ensure structured output, but they're getting an error when they set tool_choice to {type: \"tool\", name: \"extract_data\"}.",
-      "question": "Why is this configuration failing?",
+      "topic": "Tool Choice",
+      "difficulty": "medium",
+      "scenario": "A customer service chatbot needs to ensure every response is sent through a send_message tool for logging and compliance. The system has three tools: send_message, lookup_order, and check_inventory. The developer wants Claude to choose the appropriate action tool when needed but always send responses via send_message.",
+      "question": "How should tool_choice be configured?",
       "options": [
         {
           "label": "A",
-          "text": "The extract_data tool needs strict: true enabled to work with forced tool choice",
+          "text": "Set tool_choice to {type: 'tool', name: 'send_message'} to force the message tool",
           "isCorrect": false
         },
         {
           "label": "B",
-          "text": "Extended thinking is incompatible with tool_choice modes \"any\" and \"tool\"",
+          "text": "Set tool_choice to {type: 'any'} to ensure at least one tool is used",
           "isCorrect": true
         },
         {
           "label": "C",
-          "text": "The thinking budget must be less than max_tokens when using specific tool choice",
+          "text": "Use tool_choice: {type: 'auto'} and rely on prompt instructions to call send_message",
           "isCorrect": false
         },
         {
           "label": "D",
-          "text": "Tool names cannot contain underscores when using forced tool choice",
+          "text": "Set disable_parallel_tool_use: true to ensure only send_message is called at a time",
           "isCorrect": false
         }
       ],
-      "rationale": "B is correct because extended thinking only supports tool_choice modes \"auto\" and \"none\". Using \"any\" or \"tool\" with extended thinking returns an API error. A is incorrect because strict mode is unrelated to tool_choice compatibility. C is incorrect because while budget_tokens must be less than max_tokens in general, this isn't related to the tool_choice error. D is incorrect because tool names can contain underscores—the naming issue is unrelated to the actual problem.",
-      "references": ["tool-use.advanced.tool-choice", "agents.thinking.extended-thinking"]
+      "rationale": "B is correct because tool_choice: any ensures Claude must use at least one tool every turn, and if send_message is the only tool that handles final responses, Claude will call it (possibly after other information-gathering tools). A is incorrect because forcing only send_message would prevent Claude from looking up orders or checking inventory. C is incorrect because auto mode allows Claude to respond with plain text, bypassing the logging requirement. D is incorrect because disable_parallel_tool_use controls parallel execution, not which tools are required.",
+      "references": ["tool-use.advanced.tool-choice"]
     },
     {
       "id": "q-007",
-      "topic": "Caching with Extended Thinking",
-      "difficulty": "hard",
-      "scenario": "A research assistant agent uses extended thinking in adaptive mode for complex analysis tasks. After several successful requests with good cache hits, the team decides to switch to manual mode with a 8,000 token budget to have more control. They notice all subsequent requests show cache_creation_input_tokens instead of cache_read_input_tokens.",
-      "question": "What caused the cache invalidation?",
+      "topic": "Tool Results",
+      "difficulty": "easy",
+      "scenario": "An agent calls three tools in parallel: get_weather (Tokyo), get_weather (Paris), and get_time (Tokyo). The developer writes a loop that sends each tool result back to Claude in three separate user messages as results become available.",
+      "question": "What problem will this cause?",
       "options": [
         {
           "label": "A",
-          "text": "Adaptive mode and manual mode use different caching mechanisms that aren't compatible",
+          "text": "The API will return an error because tool results must be sent in a single user message",
           "isCorrect": false
         },
         {
           "label": "B",
-          "text": "Switching thinking modes (adaptive to enabled) invalidates the message cache",
+          "text": "Claude will 'learn' to avoid parallel tool calls and start making sequential requests instead",
           "isCorrect": true
         },
         {
           "label": "C",
-          "text": "The 8,000 token budget is below the minimum threshold for cache compatibility",
+          "text": "Tool results will be processed correctly but with higher latency",
           "isCorrect": false
         },
         {
           "label": "D",
-          "text": "Extended thinking blocks cannot be cached, requiring fresh generation each time",
+          "text": "The cache will be invalidated because of the message structure change",
           "isCorrect": false
         }
       ],
-      "rationale": "B is correct because switching between thinking modes (adaptive → enabled, or vice versa) invalidates message-level cache breakpoints, though system prompts and tools remain cached. A is incorrect because both modes use the same underlying caching mechanism—the issue is the mode transition. C is incorrect because the minimum budget is 1,024 tokens, and 8,000 is well above that. D is incorrect because thinking blocks are automatically cached as part of message content when subsequent requests include tool results.",
-      "references": ["context-management.caching.with-thinking", "agents.thinking.extended-thinking"]
+      "rationale": "B is correct because sending tool results in separate messages teaches Claude that tools must be called sequentially, undermining parallel execution benefits. A is incorrect because the API will accept separate messages—it just creates bad training signal. C is incorrect because this changes Claude's future behavior, not just current processing. D is incorrect because cache invalidation depends on content changes, not message boundaries.",
+      "references": ["tool-use.basics.tool-results", "tool-use.advanced.parallel-and-sequential"]
     },
     {
       "id": "q-008",
-      "topic": "Parallel and Sequential Tool Calls",
-      "difficulty": "medium",
-      "scenario": "An e-commerce agent needs to process a customer's order. The workflow requires: (1) validating the customer's payment method, (2) checking inventory for each item, and (3) calculating shipping costs based on the customer's location. The team wants to minimize latency.",
-      "question": "Which execution strategy would be most appropriate?",
+      "topic": "Messages API Basics",
+      "difficulty": "easy",
+      "scenario": "A developer new to Claude API writes the following curl command to test authentication but receives a 401 error:\ncurl https://api.anthropic.com/v1/messages \\\n  -H 'Authorization: Bearer sk-ant-abc123' \\\n  -H 'anthropic-version: 2023-06-01'",
+      "question": "What is wrong with this request?",
       "options": [
         {
           "label": "A",
-          "text": "Execute all three operations in parallel since they're all needed for the order",
+          "text": "The anthropic-version should be set to the latest Claude model version",
           "isCorrect": false
         },
         {
           "label": "B",
-          "text": "Execute payment validation first, then parallelize inventory checks and shipping calculation",
+          "text": "The API key should be sent in the x-api-key header, not Authorization",
           "isCorrect": true
         },
         {
           "label": "C",
-          "text": "Execute all operations sequentially to ensure data consistency",
+          "text": "The endpoint URL should use /v2/messages instead of /v1/messages",
           "isCorrect": false
         },
         {
           "label": "D",
-          "text": "Use disable_parallel_tool_use to ensure exactly one operation at a time",
+          "text": "The request is missing the required content-type: application/json header",
           "isCorrect": false
         }
       ],
-      "rationale": "B is correct because payment validation should happen first (sequential) to avoid wasting resources if payment fails, but inventory checks and shipping calculation are independent and can run in parallel. This hybrid approach balances data dependencies with performance. A is incorrect because you shouldn't check inventory or calculate shipping if payment validation fails—there's a logical dependency. C is incorrect because it's unnecessarily slow when inventory and shipping could run concurrently. D is incorrect because the flag would force all operations sequential, missing the parallelization opportunity.",
-      "references": ["tool-use.advanced.parallel-and-sequential"]
+      "rationale": "B is correct because Claude API uses x-api-key header for authentication, not the standard Authorization header. This is a common mistake for developers coming from other APIs. A is incorrect because anthropic-version is the API version (2023-06-01), not the model version. C is incorrect because /v1/messages is the correct endpoint. D is incorrect while content-type is required for POST requests with JSON bodies, the 401 error indicates an authentication problem, not a content type issue.",
+      "references": ["api-integration.messages-api.basics"]
     },
     {
       "id": "q-009",
-      "topic": "State Management and Progress Tracking",
-      "difficulty": "medium",
-      "scenario": "A software development agent works on multi-hour refactoring tasks that may span multiple sessions. The team notices that when resuming work after interruptions, the agent sometimes repeats analysis it already completed or loses track of which files have been modified.",
-      "question": "What state management pattern would best address this issue?",
-      "options": [
-        {
-          "label": "A",
-          "text": "Increase the context window size to hold all previous conversation history",
-          "isCorrect": false
-        },
-        {
-          "label": "B",
-          "text": "Implement git-based checkpointing with COMMIT operations after completing each milestone",
-          "isCorrect": true
-        },
-        {
-          "label": "C",
-          "text": "Use extended thinking with a larger budget to improve the agent's memory",
-          "isCorrect": false
-        },
-        {
-          "label": "D",
-          "text": "Enable prompt caching with 1-hour TTL to preserve the entire conversation",
-          "isCorrect": false
-        }
-      ],
-      "rationale": "B is correct because git-based checkpointing provides structured, persistent state that survives session boundaries. Commits capture meaningful progress that can be retrieved when resuming work. A is incorrect because context windows have hard limits and can't hold unlimited history. C is incorrect because extended thinking improves reasoning within a single response but doesn't provide cross-session state persistence. D is incorrect because caching optimizes cost/latency but the cache still expires, and doesn't solve the fundamental problem of tracking completed work across sessions.",
-      "references": ["agents.long-horizon.state-management"]
-    },
-    {
-      "id": "q-010",
       "topic": "Streaming Responses",
       "difficulty": "medium",
-      "scenario": "A content generation application uses Claude to write long-form articles (100,000+ output tokens). The team has configured max_tokens: 150000 but occasionally sees incomplete responses with no error messages in their logs.",
-      "question": "What is the most likely cause and solution?",
+      "scenario": "A research application generates extremely long analysis reports, sometimes exceeding 100,000 output tokens. The developer sets max_tokens: 128000 and doesn't use streaming. Users report that requests sometimes fail with timeout errors after several minutes of waiting.",
+      "question": "What is the best solution to this problem?",
       "options": [
         {
           "label": "A",
-          "text": "The API is silently truncating responses; increase max_tokens to 200,000",
+          "text": "Reduce max_tokens to 64000 to ensure requests complete faster",
           "isCorrect": false
         },
         {
           "label": "B",
-          "text": "Non-streaming requests with high max_tokens are hitting network timeouts; enable streaming",
+          "text": "Enable streaming to prevent HTTP connection timeouts on long-running requests",
           "isCorrect": true
         },
         {
           "label": "C",
-          "text": "The model is running out of context window space; enable prompt caching",
+          "text": "Switch to the Batch API which has longer timeout limits",
           "isCorrect": false
         },
         {
           "label": "D",
-          "text": "Long responses require the Batch API instead of synchronous Messages API",
+          "text": "Set stream: true and immediately call get_final_message() to wait for completion",
           "isCorrect": false
         }
       ],
-      "rationale": "B is correct because non-streaming requests with large max_tokens can exceed 10 minutes, causing network idle timeouts. Streaming keeps the connection alive with incremental data delivery. A is incorrect because the API returns stop_reason indicators—it doesn't silently truncate. C is incorrect because context window exhaustion would return an error, not silent failures. D is incorrect because the Batch API is for processing multiple requests asynchronously at 50% cost, not for handling individual long responses.",
+      "rationale": "B is correct because streaming prevents network timeouts by maintaining an active connection with incremental data transfer. For requests exceeding 21,333 max_tokens, streaming is actually required. A is incorrect because this reduces functionality rather than fixing the timeout issue. C is incorrect because batch API is for asynchronous processing; the question implies users need real-time results. D is incorrect because get_final_message() still waits for full completion, which doesn't solve the network timeout problem—the benefit of streaming is the active connection, not the accumulation method.",
       "references": ["api-integration.messages-api.streaming"]
     },
     {
-      "id": "q-011",
-      "topic": "Strict Tool Use",
-      "difficulty": "medium",
-      "scenario": "A reservation system has 15 different booking tools, each with strict: true enabled. The team wants to add 10 more tools with strict validation. When they deploy the expanded tool set, they start receiving 400 errors.",
-      "question": "What constraint are they hitting?",
+      "id": "q-010",
+      "topic": "Context Compaction",
+      "difficulty": "hard",
+      "scenario": "A code review agent maintains long conversations analyzing pull requests. The developer enables compaction with a 150,000 token trigger threshold. After compaction occurs, they notice Claude sometimes re-requests file contents it analyzed earlier in the conversation, adding latency.",
+      "question": "What is causing this behavior and how should it be addressed?",
       "options": [
         {
           "label": "A",
-          "text": "The total number of tools (25) exceeds the maximum allowed per request",
-          "isCorrect": false
-        },
-        {
-          "label": "B",
-          "text": "The maximum of 20 strict tools per request has been exceeded",
+          "text": "Compaction summarized away specific file contents; use pause_after_compaction to preserve recent file context",
           "isCorrect": true
         },
         {
+          "label": "B",
+          "text": "The 150,000 threshold is too high; reduce it to 100,000 to compact before files are forgotten",
+          "isCorrect": false
+        },
+        {
           "label": "C",
-          "text": "Too many tools are causing the grammar compilation to timeout",
+          "text": "Compaction is incompatible with tool use; disable it for agents that call tools",
           "isCorrect": false
         },
         {
           "label": "D",
-          "text": "Strict mode requires all tools to have the same schema structure",
+          "text": "This is expected behavior; increase the compaction threshold to 200,000 to avoid summarizing",
           "isCorrect": false
         }
       ],
-      "rationale": "B is correct because there's a hard limit of 20 strict tools per request. With 25 tools all having strict: true, they exceed this limit. A is incorrect because you can have more than 25 total tools—the limit is specific to strict tools. C is incorrect because grammar compilation limits are measured in schema complexity (optional parameters, union types), not total tool count. D is incorrect because strict mode doesn't require uniform schemas across tools.",
-      "references": ["tool-use.advanced.strict-tool-use"]
+      "rationale": "A is correct because aggressive summarization can discard specific details (like file contents) that become relevant later, and pause_after_compaction allows preserving recent messages verbatim while compacting older context. B is incorrect because reducing the threshold would cause more frequent compaction with the same issue. C is incorrect because compaction works with tool use; this is about what gets summarized. D is incorrect because increasing the threshold delays but doesn't solve the problem of losing specific details.",
+      "references": ["context-management.optimization.compaction", "agents.long-horizon.state-management"]
+    },
+    {
+      "id": "q-011",
+      "topic": "State Management",
+      "difficulty": "medium",
+      "scenario": "A long-running agent performs a 2-hour code migration task across 500 files. The agent maintains a NOTES.md file tracking completed files and learned constraints. At the 90-minute mark, the system crashes due to a network error. The team wants to resume work without starting over.",
+      "question": "Which state management pattern best enables reliable resumption?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Store the full conversation history in a database and replay all messages on resume",
+          "isCorrect": false
+        },
+        {
+          "label": "B",
+          "text": "Use git commits as checkpoints after each file migration, with NOTES.md for cross-file context",
+          "isCorrect": true
+        },
+        {
+          "label": "C",
+          "text": "Keep all state in the LLM context window using extended thinking to remember progress",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "Use prompt caching with 1-hour TTL to preserve the conversation state",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "B is correct because git commits provide durable checkpoints of actual progress (migrated files), while NOTES.md captures learned context that wouldn't be in git (constraints, patterns). This enables resumption from the last commit. A is incorrect because replaying all messages is inefficient and context windows have limits. C is incorrect because context windows reset on crashes and extended thinking doesn't persist across sessions. D is incorrect because prompt caching is for cost optimization, not durability—cache expires and doesn't survive system crashes.",
+      "references": ["agents.long-horizon.state-management"]
     },
     {
       "id": "q-012",
-      "topic": "Clarity and Structure",
-      "difficulty": "easy",
-      "scenario": "A legal document analysis agent sometimes confuses the document content with the instructions for analysis. The prompt includes both a 20,000-token legal brief and instructions for extracting key dates and parties.",
-      "question": "What prompt engineering technique would best prevent this confusion?",
+      "topic": "Parallel and Sequential Tool Calls",
+      "difficulty": "medium",
+      "scenario": "An agent needs to answer: 'Compare the weather and local time in Tokyo, London, and New York.' The system has get_weather and get_time tools. The developer wants to minimize response latency.",
+      "question": "How should the agent execute these tool calls?",
       "options": [
         {
           "label": "A",
-          "text": "Place the instructions at the very beginning of the prompt before the document",
-          "isCorrect": false
-        },
-        {
-          "label": "B",
-          "text": "Use XML tags to separate <instructions> from <document> content",
+          "text": "Six parallel calls: get_weather and get_time for each city simultaneously",
           "isCorrect": true
         },
         {
+          "label": "B",
+          "text": "Three sequential calls: get weather and time for Tokyo, then London, then New York",
+          "isCorrect": false
+        },
+        {
           "label": "C",
-          "text": "Use a system prompt for the document and user message for instructions",
+          "text": "Two sequential phases: all weather calls, then all time calls",
           "isCorrect": false
         },
         {
           "label": "D",
-          "text": "Increase the temperature to help Claude distinguish context from instructions",
+          "text": "Three parallel calls fetching weather only, then infer time from timezone data",
           "isCorrect": false
         }
       ],
-      "rationale": "B is correct because XML tags create unambiguous boundaries between different prompt components, preventing Claude from treating document content as instructions. A is incorrect because position alone doesn't prevent confusion—long documents can still bleed into instruction interpretation. C is incorrect because system prompts are for general instructions/context, not for storing documents to be analyzed. D is incorrect because temperature affects randomness, not the model's ability to distinguish prompt components.",
-      "references": ["prompt-engineering.fundamentals.clarity-and-structure"]
+      "rationale": "A is correct because all six operations are independent—weather and time for each city can be fetched simultaneously, minimizing latency. B is incorrect because sequential execution takes 6x longer than necessary. C is incorrect because this still requires two round trips when one would suffice. D is incorrect because this makes assumptions about data availability and doesn't answer the question directly.",
+      "references": ["tool-use.advanced.parallel-and-sequential"]
     },
     {
       "id": "q-013",
-      "topic": "Agent SDK Core Concepts",
-      "difficulty": "medium",
-      "scenario": "A team is building an automated code review agent using the Claude Agent SDK. They want the agent to read and analyze code files but prevent it from making any modifications or running any commands. The agent should automatically approve file reads without asking permission.",
-      "question": "What configuration should they use?",
+      "topic": "Structured Outputs",
+      "difficulty": "easy",
+      "scenario": "A document extraction system needs to pull invoice data into a database with strict schema requirements. The developer tries using JSON mode but finds that Claude sometimes returns {\"total\": \"$1,234.56\"} as a string instead of a number, breaking database inserts.",
+      "question": "What should the developer use instead?",
       "options": [
         {
           "label": "A",
-          "text": "allowed_tools: [\"Read\", \"Glob\", \"Grep\"], permission_mode: \"bypassPermissions\"",
-          "isCorrect": true
-        },
-        {
-          "label": "B",
-          "text": "allowed_tools: [\"Read\", \"Edit\", \"Bash\"], permission_mode: \"acceptEdits\"",
+          "text": "Add more detailed prompts explaining that numbers should be numeric types",
           "isCorrect": false
         },
         {
+          "label": "B",
+          "text": "Switch to structured outputs with a JSON schema that specifies total as type number",
+          "isCorrect": true
+        },
+        {
           "label": "C",
-          "text": "allowed_tools: [\"Read\"], permission_mode: \"default\"",
+          "text": "Use strict tool mode with the extraction schema defined as a tool",
           "isCorrect": false
         },
         {
           "label": "D",
-          "text": "allowed_tools: [\"Read\", \"Glob\", \"Grep\"], permission_mode: \"plan\"",
+          "text": "Post-process the response with schema validation and retry on failures",
           "isCorrect": false
         }
       ],
-      "rationale": "A is correct because this configuration provides read-only tools (Read, Glob, Grep) and bypassPermissions automatically approves all tool use without prompts. B is incorrect because Edit and Bash allow modifications, and acceptEdits only applies to file operations. C is incorrect because permission_mode: \"default\" would require a callback to approve each read operation. D is incorrect because plan mode prevents actual tool execution—the agent would only propose actions, not analyze code.",
-      "references": ["agents.sdk.core-concepts"]
+      "rationale": "B is correct because structured outputs with JSON schema enforce type compliance through constrained decoding, guaranteeing that total will be a number type. A is incorrect because prompting alone cannot guarantee schema compliance—JSON mode only ensures valid JSON syntax. C is incorrect while this would work technically, it's using tool calling for a non-tool use case; structured outputs are the direct solution. D is incorrect because this adds complexity and retry costs when structured outputs solve it at the source.",
+      "references": ["prompt-engineering.output-control.structured-outputs"]
     },
     {
       "id": "q-014",
-      "topic": "Defining Success Criteria",
+      "topic": "Evaluation Criteria",
       "difficulty": "medium",
-      "scenario": "A customer support agent is being evaluated for deployment. The team has defined success as \"completes tickets accurately and maintains appropriate tone.\" After running tests, they find it difficult to determine if the agent is ready for production because results vary significantly across evaluators.",
-      "question": "What is the primary problem with their success criteria?",
+      "scenario": "A team builds a customer support agent and defines success as 'responds helpfully to user queries.' After deploying, they struggle to determine if model updates improve or degrade performance, resorting to manual review of random samples.",
+      "question": "What is the fundamental problem with their evaluation approach?",
       "options": [
         {
           "label": "A",
-          "text": "They need to add latency requirements to the criteria",
+          "text": "They should use BLEU or ROUGE scores to measure response quality objectively",
           "isCorrect": false
         },
         {
           "label": "B",
-          "text": "The criteria are too vague and not measurable using the SMART framework",
+          "text": "Their success criteria are too vague and not measurable; they need specific, quantifiable metrics",
           "isCorrect": true
         },
         {
           "label": "C",
-          "text": "They should use pass@k instead of pass^k metrics",
+          "text": "Manual review is sufficient but they need larger sample sizes for statistical significance",
           "isCorrect": false
         },
         {
           "label": "D",
-          "text": "Customer support agents require LLM-as-judge evaluation instead of human review",
+          "text": "They need to implement LLM-as-judge evaluation to automate quality assessment",
           "isCorrect": false
         }
       ],
-      "rationale": "B is correct because \"accurately\" and \"appropriate tone\" are subjective without specific definitions. SMART criteria require specific, measurable targets like \"resolves 95% of tier-1 tickets without escalation\" and \"maintains empathetic tone with 4+ score on defined rubric.\" A is incorrect because while latency is important, the core issue is vague criteria. C is incorrect because the metric choice doesn't solve the problem of undefined success. D is incorrect because evaluation method doesn't fix poorly defined criteria.",
+      "rationale": "B is correct because 'responds helpfully' is not a measurable criterion. They need SMART criteria: task completion rate, response time under 3 seconds, correct answer rate >95%, etc. A is incorrect because BLEU/ROUGE are inappropriate for conversational quality—they measure n-gram overlap, not helpfulness. C is incorrect because larger samples don't fix the fundamental lack of measurable criteria. D is incorrect because LLM-as-judge is a measurement technique, but you still need to define what 'helpful' means in concrete terms.",
       "references": ["evaluation.criteria.definition"]
     },
     {
       "id": "q-015",
-      "topic": "Interleaved Thinking",
-      "difficulty": "hard",
-      "scenario": "A debugging agent uses interleaved thinking to analyze code issues. It generates thinking, calls a tool to run tests, receives error output, and needs to reason about the errors before trying a fix. The team is using Claude Sonnet 4.6.",
-      "question": "Which configuration enables thinking between tool calls?",
+      "topic": "Batch Processing",
+      "difficulty": "medium",
+      "scenario": "A research team needs to classify 50,000 academic papers. Each classification request costs about 2,000 input tokens and generates 100 output tokens. They're debating between the synchronous Messages API and the Batch API.",
+      "question": "What is the primary trade-off they should consider?",
       "options": [
         {
           "label": "A",
-          "text": "thinking: {type: \"enabled\", budget_tokens: 10000} with no additional headers",
-          "isCorrect": false
-        },
-        {
-          "label": "B",
-          "text": "thinking: {type: \"enabled\", budget_tokens: 10000} with anthropic-beta: \"interleaved-thinking-2025-05-14\"",
+          "text": "Batch API provides 50% cost savings but results may take up to 24 hours instead of immediate responses",
           "isCorrect": true
         },
         {
+          "label": "B",
+          "text": "Batch API can process unlimited requests while Messages API is limited by rate limits",
+          "isCorrect": false
+        },
+        {
           "label": "C",
-          "text": "thinking: {type: \"adaptive\"} with no additional headers",
+          "text": "Batch API provides better accuracy for classification tasks due to batch optimization",
           "isCorrect": false
         },
         {
           "label": "D",
-          "text": "thinking: {type: \"interleaved\", budget_tokens: 10000} with no additional headers",
+          "text": "Messages API supports prompt caching for cost savings while Batch API does not",
           "isCorrect": false
         }
       ],
-      "rationale": "B is correct because Claude Sonnet 4.6 requires manual thinking mode with the interleaved-thinking beta header to enable thinking between tool calls. A is incorrect because without the beta header, thinking only occurs before the first tool call. C is incorrect because adaptive thinking on Sonnet 4.6 is supported but also requires the beta header for interleaved behavior. D is incorrect because there's no \"interleaved\" thinking type—it's enabled via the beta header.",
-      "references": ["agents.thinking.interleaved-thinking"]
+      "rationale": "A is correct because the core trade-off is cost (50% discount) vs. latency (up to 24 hours processing time). For offline research classification, this is likely acceptable. B is incorrect because batch API has its own separate rate limits, not unlimited processing. C is incorrect because there's no accuracy difference—it's the same models and processing. D is incorrect because batch API does support prompt caching (with best-effort cache hits due to concurrent processing).",
+      "references": ["api-integration.batch-processing.basics"]
     },
     {
       "id": "q-016",
-      "topic": "Tool Definitions",
-      "difficulty": "easy",
-      "scenario": "A weather tool is defined with a required \"location\" parameter. Claude frequently fails to provide this parameter, instead asking follow-up questions. The tool name is \"get_weather\" and the description is \"Gets weather.\"",
-      "question": "What change would most likely improve Claude's tool usage?",
+      "topic": "Rate Limits",
+      "difficulty": "hard",
+      "scenario": "A startup is on Claude's Tier 2 with 100 RPM and 300K ITPM limits. They implement aggressive prompt caching on a 50K-token context document and achieve 90% cache hit rate. Their application makes 80 requests per minute, each with the 50K context plus a 1K prompt.",
+      "question": "Will they hit rate limits, and why or why not?",
       "options": [
         {
           "label": "A",
-          "text": "Add input_examples showing sample location values",
-          "isCorrect": false
+          "text": "No, because cached tokens don't count toward ITPM limits, so only 80K tokens/min (80 requests × 1K uncached) are counted",
+          "isCorrect": true
         },
         {
           "label": "B",
-          "text": "Change the tool name to \"weather_api_current_conditions\"",
+          "text": "Yes, because they'll exceed 300K ITPM with 80 requests × 51K tokens = 4.08M tokens/min",
           "isCorrect": false
         },
         {
           "label": "C",
-          "text": "Expand the description to explain what the tool does, when to use it, and what it returns",
-          "isCorrect": true
+          "text": "No, because they're under the 100 RPM limit and RPM is the only enforced limit",
+          "isCorrect": false
         },
         {
           "label": "D",
-          "text": "Mark location as optional in the schema and provide a default value",
+          "text": "Yes, because prompt caching still counts 10% of cached tokens toward ITPM limits",
           "isCorrect": false
         }
       ],
-      "rationale": "C is correct because description quality is the most important factor in tool performance. The current description \"Gets weather\" is too vague. Detailed descriptions explaining use cases and behavior dramatically improve tool selection and parameter inference. A is incorrect because examples help with complex schemas, but the fundamental issue is the poor description. B is incorrect because while descriptive names help, the description field has more impact. D is incorrect because this would mask the problem rather than helping Claude understand when location is needed.",
-      "references": ["tool-use.basics.tool-definitions"]
+      "rationale": "A is correct because Claude's ITPM only counts uncached input tokens. With 90% cache hit rate, only the 1K prompt + 10% of context (5K) = 6K tokens per request are counted. 80 requests × 6K = 480K, but the effective rate is dominated by the uncached prompt (80K) plus cache writes. B is incorrect because it doesn't account for cache behavior. C is incorrect because both RPM and ITPM are enforced simultaneously. D is incorrect because cached tokens are billed at 10% cost but don't count toward ITPM rate limits.",
+      "references": ["enterprise.platform.rate-limits", "context-management.caching.basics"]
     },
     {
       "id": "q-017",
-      "topic": "Prompt Caching",
-      "difficulty": "hard",
-      "scenario": "A RAG application caches a large knowledge base in the system prompt with cache_control. The team notices they're being charged cache_creation_input_tokens on every request, even though the knowledge base never changes. They're using Claude Sonnet 4.5 which has a minimum cacheable size of 1,024 tokens, and their knowledge base is 15,000 tokens.",
-      "question": "What is most likely causing the cache misses?",
+      "topic": "Agent SDK Core Concepts",
+      "difficulty": "medium",
+      "scenario": "A developer builds a code analysis agent using the Claude Agent SDK with permission_mode set to 'acceptEdits'. During testing, they notice the agent can modify files but still asks for permission before running git commands or installing packages via npm.",
+      "question": "Why is the agent still requesting permission for some operations?",
       "options": [
         {
           "label": "A",
-          "text": "The knowledge base updates too frequently for the 5-minute TTL",
+          "text": "The acceptEdits mode is incorrectly configured; it should be bypassPermissions for full automation",
           "isCorrect": false
         },
         {
           "label": "B",
-          "text": "They're modifying other API parameters like tool_choice or adding/removing images",
+          "text": "The acceptEdits mode only auto-approves file operations (Edit, Write); Bash commands still require permission",
           "isCorrect": true
         },
         {
           "label": "C",
-          "text": "The knowledge base size exceeds the maximum cacheable content for Sonnet models",
+          "text": "Git and npm commands need to be added to the allowed_tools list explicitly",
           "isCorrect": false
         },
         {
           "label": "D",
-          "text": "Concurrent requests are racing, preventing cache establishment",
+          "text": "The agent SDK requires a canUseTool callback for runtime command approval",
           "isCorrect": false
         }
       ],
-      "rationale": "B is correct because changes to tool_choice, adding/removing images anywhere in the prompt, or modifying other parameters invalidate message-level caches even if the system prompt is unchanged. A is incorrect because the scenario states the knowledge base never changes. C is incorrect because 15,000 tokens is well within cacheable limits. D is incorrect because while concurrent requests can race for the first cache entry, subsequent requests would still hit the cache once established.",
-      "references": ["context-management.caching.basics"]
+      "rationale": "B is correct because acceptEdits specifically auto-approves file operations (Edit, Write, mkdir, rm, mv, cp) but other Bash commands still require permission. This is by design to prevent unintended dangerous operations. A is incorrect because bypassPermissions would auto-approve everything, which may not be desired. C is incorrect because git and npm run through the Bash tool, which is already available. D is incorrect because canUseTool is only invoked when permission modes don't resolve the decision.",
+      "references": ["agents.sdk.core-concepts"]
     },
     {
       "id": "q-018",
-      "topic": "Tool Results",
-      "difficulty": "medium",
-      "scenario": "An API integration tool occasionally fails due to rate limiting. The developer wants Claude to handle these failures gracefully by waiting and retrying instead of giving up immediately.",
-      "question": "How should the developer communicate the rate limit error to Claude?",
+      "topic": "Subagent Orchestration",
+      "difficulty": "hard",
+      "scenario": "A research system using subagents analyzes 10 competitor companies. An initial implementation spawns 50 subagents, with 5 per company. Token costs are 15× higher than expected, but latency reduction is only 30%. The team needs to improve efficiency.",
+      "question": "What is the most likely issue and solution?",
       "options": [
         {
           "label": "A",
-          "text": "Return a tool_result with content: \"Error: Rate limit exceeded\" and is_error: true",
-          "isCorrect": false
-        },
-        {
-          "label": "B",
-          "text": "Return a tool_result with content: \"Rate limit exceeded. Retry after 60 seconds.\" and is_error: true",
+          "text": "The coordination overhead exceeds parallelism benefits; reduce to 10 subagents (1 per company) with clear task boundaries",
           "isCorrect": true
         },
         {
+          "label": "B",
+          "text": "Subagents are processing sequentially; enable parallel execution to achieve 90% latency reduction",
+          "isCorrect": false
+        },
+        {
           "label": "C",
-          "text": "Throw an exception and let the API return a 500 error to Claude",
+          "text": "Token costs are expected for multi-agent systems; focus on latency optimization only",
           "isCorrect": false
         },
         {
           "label": "D",
-          "text": "Return an empty tool_result to signal the tool should be retried",
+          "text": "Switch to a single agent with extended thinking to reduce token costs while maintaining quality",
           "isCorrect": false
         }
       ],
-      "rationale": "B is correct because error messages should be instructive, including what went wrong AND recovery hints. Claude can then adapt its strategy (wait, retry with different parameters, etc.). A is incorrect because generic error messages don't give Claude enough information to make good decisions. C is incorrect because API errors may not reach Claude properly and lose context about which tool failed. D is incorrect because empty results signal successful operations that produced no data.",
-      "references": ["tool-use.basics.tool-results"]
+      "rationale": "A is correct because over-spawning (50 agents for 10 companies) creates massive overhead. With only 30% latency reduction, the coordination cost outweighs benefits. One specialized agent per company with clear boundaries is more efficient. B is incorrect because 30% reduction suggests they are already parallel—the issue is too many agents. C is incorrect because 15× cost with minimal latency benefit is a poor trade-off. D is incorrect because the task likely benefits from some parallelism (10 companies analyzed simultaneously), just not 50 agents.",
+      "references": ["agents.orchestration.subagents"]
     },
     {
       "id": "q-019",
-      "topic": "Extended Thinking",
-      "difficulty": "medium",
-      "scenario": "A math tutoring application uses extended thinking for complex problem solving. The team sets budget_tokens: 50000 and max_tokens: 4000, expecting detailed reasoning followed by a concise answer. They receive validation errors.",
-      "question": "What constraint are they violating?",
+      "topic": "Interleaved Thinking",
+      "difficulty": "hard",
+      "scenario": "A developer enables interleaved thinking for a debugging agent that uses tool calls to run tests, check logs, and modify code. After implementing tool use loops, they notice thinking_delta events appear between tool calls during streaming, but the agent sometimes repeats failed approaches without learning from errors.",
+      "question": "What is the most likely cause of this behavior?",
       "options": [
         {
           "label": "A",
-          "text": "budget_tokens must be less than max_tokens",
-          "isCorrect": true
-        },
-        {
-          "label": "B",
-          "text": "The budget_tokens value exceeds the maximum thinking budget of 32,000",
+          "text": "The developer is toggling thinking mode mid-turn, which breaks reasoning continuity",
           "isCorrect": false
         },
         {
+          "label": "B",
+          "text": "The developer is not passing thinking blocks back to the API with tool results, losing reasoning context",
+          "isCorrect": true
+        },
+        {
           "label": "C",
-          "text": "Extended thinking cannot be combined with max_tokens limits",
+          "text": "Interleaved thinking is incompatible with error recovery; the agent needs adaptive thinking instead",
           "isCorrect": false
         },
         {
           "label": "D",
-          "text": "The total of budget_tokens and max_tokens exceeds the context window",
+          "text": "The budget_tokens is too low, preventing the agent from reasoning about failures",
           "isCorrect": false
         }
       ],
-      "rationale": "A is correct because budget_tokens must be less than max_tokens (except when using interleaved thinking with tools, where budget can use the full context window). B is incorrect because there's no hard 32K limit—Claude may not use budgets above 32K efficiently, but it's not a validation error. C is incorrect because extended thinking and max_tokens work together. D is incorrect because the context window limit is checked separately and involves input_tokens + max_tokens.",
-      "references": ["agents.thinking.extended-thinking"]
+      "rationale": "B is correct because thinking blocks must be preserved and passed back with tool results to maintain the reasoning chain. Without them, the agent can't build on its previous analysis of errors. A is incorrect because toggling mid-turn would silently disable thinking entirely, not cause repetition. C is incorrect because interleaved thinking is specifically designed for multi-step tool workflows with error recovery. D is incorrect because insufficient budget would prevent reasoning, not cause repetition of the same approach.",
+      "references": ["agents.thinking.interleaved-thinking", "agents.thinking.extended-thinking"]
     },
     {
       "id": "q-020",
-      "topic": "Streaming",
+      "topic": "Tool Results and Error Handling",
       "difficulty": "medium",
-      "scenario": "A code generation tool streams Claude's output to show real-time progress. When Claude uses tools, the team wants to accumulate the tool input JSON but can't use JSON.parse() until the tool input is complete. They're processing content_block_delta events.",
-      "question": "How should they handle tool input streaming?",
+      "scenario": "An agent calls a database query tool that fails with 'Connection timeout: database unavailable.' The developer returns this error with is_error: true. Claude responds by immediately retrying the same query twice more, each time failing, before giving up.",
+      "question": "How should the error message be improved to help Claude respond more effectively?",
       "options": [
         {
           "label": "A",
-          "text": "Parse each input_json_delta event separately and merge the objects",
+          "text": "Remove is_error: true so Claude doesn't interpret it as a transient failure",
           "isCorrect": false
         },
         {
           "label": "B",
-          "text": "Concatenate all partial_json strings from input_json_delta events, then parse after content_block_stop",
+          "text": "Provide a more informative error: 'Database unavailable. Service is down for maintenance. Retry after 30 minutes or use cached data.'",
           "isCorrect": true
         },
         {
           "label": "C",
-          "text": "Use a streaming JSON parser library to handle partial JSON in real-time",
+          "text": "Return an empty tool result instead of an error to avoid retry loops",
           "isCorrect": false
         },
         {
           "label": "D",
-          "text": "Wait for the tool_use event in the stream which contains the complete JSON",
+          "text": "Set max_retries parameter in the API request to limit retry attempts",
           "isCorrect": false
         }
       ],
-      "rationale": "B is correct because input_json_delta events contain JSON fragments that are not individually valid JSON. You must accumulate all partial_json strings and only parse the complete string after receiving content_block_stop. A is incorrect because partial JSON strings can't be parsed individually. C is incorrect while potentially feasible, it's unnecessarily complex when you can simply accumulate strings. D is incorrect because streaming doesn't emit a single complete tool_use event—the input is delivered incrementally via deltas.",
-      "references": ["api-integration.messages-api.streaming"]
+      "rationale": "B is correct because instructive error messages help Claude understand the failure is not transient and suggest alternatives (cached data) or appropriate retry timing (30 minutes). A is incorrect because removing is_error would make Claude treat the error string as valid data. C is incorrect because empty results hide the problem and don't help Claude respond appropriately. D is incorrect because there's no max_retries parameter—Claude's retry behavior is based on the error context.",
+      "references": ["tool-use.basics.tool-results"]
     },
     {
       "id": "q-021",
-      "topic": "State Management",
+      "topic": "Extended Thinking with Tool Choice",
       "difficulty": "hard",
-      "scenario": "A documentation agent maintains a memory system to remember style guidelines and API patterns it has learned. After operating for several weeks, the team notices performance degradation. Analysis shows the agent's memory has grown to 50,000+ entries, many of which contain outdated information about deprecated APIs.",
-      "question": "What state management strategy would address this performance issue?",
+      "scenario": "A developer wants to use extended thinking for complex reasoning while ensuring that every agent response calls a specific structured_output tool for consistent formatting. They configure: thinking: {type: 'enabled', budget_tokens: 8000} and tool_choice: {type: 'tool', name: 'structured_output'}.",
+      "question": "What will happen when this request is sent to the API?",
       "options": [
         {
           "label": "A",
-          "text": "Implement citation-based verification to validate memories before use and discard stale entries",
-          "isCorrect": true
-        },
-        {
-          "label": "B",
-          "text": "Increase the context window to accommodate all memories",
+          "text": "The request will succeed, with Claude reasoning internally before calling the structured_output tool",
           "isCorrect": false
         },
         {
+          "label": "B",
+          "text": "The request will fail with an error because forced tool use is incompatible with extended thinking",
+          "isCorrect": true
+        },
+        {
           "label": "C",
-          "text": "Store all memories in a vector database for semantic retrieval",
+          "text": "Extended thinking will be silently disabled and the tool will be called without reasoning",
           "isCorrect": false
         },
         {
           "label": "D",
-          "text": "Enable aggressive prompt caching to reduce processing costs",
+          "text": "The request will succeed but thinking blocks will be summarized to fit the tool schema",
           "isCorrect": false
         }
       ],
-      "rationale": "A is correct because citation-based verification (checking that file paths, API endpoints, etc. still match current state) allows automatic pruning of outdated memories, preventing error propagation. GitHub found 7% performance improvements with this approach. B is incorrect because larger context windows don't solve the quality problem—more outdated information degrades performance. C is incorrect because semantic retrieval doesn't validate freshness. D is incorrect because caching reduces cost but doesn't address stale memory degradation.",
-      "references": ["agents.long-horizon.state-management"]
+      "rationale": "B is correct because extended thinking only works with tool_choice types 'auto' or 'none'. Using 'any' or 'tool' (forced tool use) returns an error because forcing a tool conflicts with the model's reasoning process. A is incorrect because this combination is explicitly prohibited. C is incorrect because the API returns an error rather than silently disabling features. D is incorrect because the request fails before any processing occurs.",
+      "references": ["agents.thinking.extended-thinking", "tool-use.advanced.tool-choice"]
     },
     {
       "id": "q-022",
-      "topic": "Tool Choice",
-      "difficulty": "easy",
-      "scenario": "A classification pipeline needs to categorize support tickets into predefined buckets. The team wants every input to produce a structured JSON output via a classify_ticket tool, with no natural language explanation preceding the classification.",
-      "question": "Which tool_choice configuration achieves this requirement?",
+      "topic": "Streaming with Tool Use",
+      "difficulty": "medium",
+      "scenario": "A developer enables streaming for an agent that uses tools. During streaming, they receive content_block_delta events with type: 'input_json_delta' containing partial JSON strings. They try to parse each delta immediately to display tool parameters to users in real-time but encounter JSON parsing errors.",
+      "question": "What is the correct approach to handle tool use deltas?",
       "options": [
         {
           "label": "A",
-          "text": "tool_choice: {type: \"auto\"}",
+          "text": "Use a streaming JSON parser library that can handle partial JSON fragments",
           "isCorrect": false
         },
         {
           "label": "B",
-          "text": "tool_choice: {type: \"any\"}",
-          "isCorrect": false
-        },
-        {
-          "label": "C",
-          "text": "tool_choice: {type: \"tool\", name: \"classify_ticket\"}",
+          "text": "Accumulate all input_json_delta.partial_json strings and parse only after content_block_stop",
           "isCorrect": true
         },
         {
+          "label": "C",
+          "text": "Switch to non-streaming mode when using tools to avoid partial JSON issues",
+          "isCorrect": false
+        },
+        {
           "label": "D",
-          "text": "tool_choice: {type: \"none\"}",
+          "text": "Set the stream_tool_results: false parameter to receive complete tool blocks",
           "isCorrect": false
         }
       ],
-      "rationale": "C is correct because specifying a specific tool with type: \"tool\" forces that exact tool to be used and prefills the response to skip natural language, ensuring structured output only. A is incorrect because auto mode allows Claude to decide whether to use tools and may include explanatory text. B is incorrect because any mode lets Claude choose which tool to use, and you want a specific tool. D is incorrect because none mode prevents all tool use.",
-      "references": ["tool-use.advanced.tool-choice"]
+      "rationale": "B is correct because input_json_delta events contain JSON fragments that are not individually parseable. You must concatenate all partial_json strings and parse the complete result after the content block ends. A is incorrect while partial JSON parsers exist, the deltas aren't designed to be incrementally parseable—they're arbitrary string chunks. C is incorrect because you can use streaming with tools if you handle deltas correctly. D is incorrect because no such parameter exists.",
+      "references": ["api-integration.messages-api.streaming", "tool-use.basics.tool-results"]
     },
     {
       "id": "q-023",
-      "topic": "Parallel Tool Calls",
+      "topic": "Context Management Token Economics",
       "difficulty": "medium",
-      "scenario": "A travel planning agent needs to search for flights, hotels, and rental cars. These operations are independent and can run simultaneously. However, the team notices Claude always makes these calls sequentially, increasing response time from 300ms to 900ms.",
-      "question": "What could be causing Claude to avoid parallel tool calls?",
+      "scenario": "A developer reviews their usage metrics and sees: input_tokens: 500, cache_creation_input_tokens: 100000, cache_read_input_tokens: 0, output_tokens: 2000. On the next request with identical cached content, they see: input_tokens: 500, cache_creation_input_tokens: 0, cache_read_input_tokens: 100000, output_tokens: 2000.",
+      "question": "What is the cost difference between these two requests (using Claude Sonnet 4.x pricing)?",
       "options": [
         {
           "label": "A",
-          "text": "The tool descriptions don't explicitly state that operations are independent",
-          "isCorrect": false
-        },
-        {
-          "label": "B",
-          "text": "Previous tool results were sent in separate user messages, teaching Claude to work sequentially",
+          "text": "First request: ~$0.31, Second request: ~$0.03 (90% savings from cache hit)",
           "isCorrect": true
         },
         {
+          "label": "B",
+          "text": "Both requests cost the same because total tokens are identical",
+          "isCorrect": false
+        },
+        {
           "label": "C",
-          "text": "The model being used doesn't support parallel tool calls",
+          "text": "First request: ~$0.30, Second request: ~$0.10 (67% savings)",
           "isCorrect": false
         },
         {
           "label": "D",
-          "text": "disable_parallel_tool_use is set to false instead of true",
+          "text": "First request: ~$0.38, Second request: ~$0.04 (roughly 90% savings)",
           "isCorrect": false
         }
       ],
-      "rationale": "B is correct because sending tool results in separate messages trains Claude to avoid parallelization. Always send all tool results in a single user message to encourage parallel behavior. A is incorrect because Claude can infer independence from context. C is incorrect because Claude 4 models reliably parallelize. D is incorrect because the flag name is backwards—false means parallel is enabled (the default).",
-      "references": ["tool-use.advanced.parallel-and-sequential"]
+      "rationale": "A is correct. First request: (500×$3 + 100000×$3.75)/1M input + (2000×$15)/1M output = $0.0015 + $0.375 + $0.03 = ~$0.31. Second request: (500×$3 + 100000×$0.30)/1M input + (2000×$15)/1M output = $0.0015 + $0.03 + $0.03 = ~$0.06 (actually better than 90% on the cached portion). B is incorrect because cached tokens cost 0.1× base price. C underestimates savings. D has wrong calculation for first request (should use 1.25× not 2× for 5-min cache).",
+      "references": ["context-management.caching.basics"]
     },
     {
       "id": "q-024",
-      "topic": "Strict Tool Use",
-      "difficulty": "hard",
-      "scenario": "A booking system uses strict mode for a reservation tool. The schema has 18 required parameters and 12 optional parameters. They want to add 3 more optional parameters but start getting schema complexity errors.",
-      "question": "What limit are they encountering?",
+      "topic": "Structured Outputs vs Strict Tool Use",
+      "difficulty": "medium",
+      "scenario": "A developer needs guaranteed JSON schema compliance for extracting structured data from invoices. They're unsure whether to use structured outputs (output_config.format) or strict tool use (strict: true on a tool definition).",
+      "question": "What is the key difference that should guide this decision?",
       "options": [
         {
           "label": "A",
-          "text": "Total parameters cannot exceed 30 in strict mode",
+          "text": "Structured outputs provide 100% schema compliance while strict tools only provide best-effort compliance",
           "isCorrect": false
         },
         {
           "label": "B",
-          "text": "Maximum of 24 total optional parameters across all strict schemas",
+          "text": "Structured outputs control the final response format; strict tools validate function call parameters",
           "isCorrect": true
         },
         {
           "label": "C",
-          "text": "The ratio of required to optional parameters must be at least 2:1",
+          "text": "Strict tools are faster because they don't require grammar compilation",
           "isCorrect": false
         },
         {
           "label": "D",
-          "text": "Each strict tool can have at most 10 optional parameters",
+          "text": "Structured outputs support more complex schemas with deeper nesting",
           "isCorrect": false
         }
       ],
-      "rationale": "B is correct because strict mode limits the total optional parameters across all strict schemas to 24. With 12 optional parameters already and trying to add 3 more (15 total), they would exceed this if they have other strict tools with optional parameters. A is incorrect because there's no 30-parameter total limit. C is incorrect because there's no ratio requirement. D is incorrect because the limit is aggregate across all strict tools, not per-tool.",
-      "references": ["tool-use.advanced.strict-tool-use"]
+      "rationale": "B is correct because these serve different purposes: output_config.format controls what Claude says (the response), while strict tools validate what Claude does (tool parameters). For data extraction where Claude's response is the extracted data, use structured outputs. A is incorrect because both provide 100% compliance via constrained decoding. C is incorrect because both require grammar compilation. D is incorrect because both have similar schema limitations.",
+      "references": ["prompt-engineering.output-control.structured-outputs", "tool-use.advanced.strict-tool-use"]
     },
     {
       "id": "q-025",
-      "topic": "Messages API",
-      "difficulty": "medium",
-      "scenario": "A chatbot maintains conversation history by appending each exchange to a messages array. After several turns, Claude stops responding and returns an error stating that messages must alternate between user and assistant roles.",
-      "question": "What is the most likely cause?",
+      "topic": "Messages API Stop Reasons",
+      "difficulty": "easy",
+      "scenario": "An application receives a response with stop_reason: 'max_tokens' and the last content block is a partial sentence. The developer wants to get the complete response.",
+      "question": "What is the correct way to continue generation?",
       "options": [
         {
           "label": "A",
-          "text": "The conversation started with an assistant message instead of a user message",
+          "text": "Increase max_tokens and resend the original request",
           "isCorrect": false
         },
         {
           "label": "B",
-          "text": "Tool results were added as user messages, creating consecutive user messages when combined with the next user query",
+          "text": "Add the partial response as an assistant message and send a user message saying 'Please continue.'",
           "isCorrect": true
         },
         {
           "label": "C",
-          "text": "The max_tokens limit was reached, causing partial assistant messages",
+          "text": "Set stream: true to avoid truncation on the retry",
           "isCorrect": false
         },
         {
           "label": "D",
-          "text": "The anthropic-version header doesn't match the message format being used",
+          "text": "Use the continuation_token from the response to resume generation",
           "isCorrect": false
         }
       ],
-      "rationale": "B is correct because tool results go in user messages, and if you then add another user message with the next query without an intervening assistant message, you violate the alternating role requirement. A is incorrect because conversations must start with user, so this would fail immediately. C is incorrect because truncation affects content, not role structure. D is incorrect because version mismatches cause different errors.",
+      "rationale": "B is correct because the standard pattern for continuing truncated responses is to append the partial assistant response to the conversation and prompt continuation. A is incorrect because resending the original request would regenerate from scratch, potentially getting truncated again at a different point. C is incorrect because streaming doesn't prevent truncation when max_tokens is too low. D is incorrect because there's no continuation_token feature in the API.",
       "references": ["api-integration.messages-api.basics"]
     },
     {
       "id": "q-026",
-      "topic": "Agent SDK",
+      "topic": "Multi-Tool Workflows",
       "difficulty": "hard",
-      "scenario": "A development team configures an agent with permission_mode: \"bypassPermissions\" to speed up automated testing. They create a subagent for a specific analysis task and want that subagent to require approval for file operations while the parent agent remains fully autonomous.",
-      "question": "What will happen with this configuration?",
+      "scenario": "An agent has three tools: search_database, analyze_data, and generate_report. A user asks 'Analyze sales trends and create a report.' The agent needs to: 1) search for sales data, 2) analyze it, then 3) generate a report. The developer wants optimal performance.",
+      "question": "How should the tool calls be structured?",
       "options": [
         {
           "label": "A",
-          "text": "The subagent will successfully require approval while the parent bypasses permissions",
+          "text": "All three tools called in parallel to minimize latency",
           "isCorrect": false
         },
         {
           "label": "B",
-          "text": "The subagent will inherit bypassPermissions and cannot be configured to require approval",
+          "text": "Sequential execution: search → analyze → report, because each depends on the previous",
           "isCorrect": true
         },
         {
           "label": "C",
-          "text": "Both agents will default to permission_mode: \"default\" to resolve the conflict",
+          "text": "Parallel search and analyze, then sequential report generation",
           "isCorrect": false
         },
         {
           "label": "D",
-          "text": "The agent will fail to spawn the subagent due to incompatible permission modes",
+          "text": "Use tool_choice to force search_database first, then use auto mode for remaining tools",
           "isCorrect": false
         }
       ],
-      "rationale": "B is correct because bypassPermissions is inherited by all subagents and cannot be overridden. This is a critical security consideration—subagents get full autonomous access if the parent does. A is incorrect because subagents can't override parent permissions. C is incorrect because there's no automatic conflict resolution. D is incorrect because subagent creation succeeds—it just inherits the permission mode.",
-      "references": ["agents.sdk.core-concepts"]
-    },
-    {
-      "id": "q-027",
-      "topic": "Prompt Engineering",
-      "difficulty": "easy",
-      "scenario": "A content moderation agent frequently makes mistakes when analyzing text that contains examples of violating content within instructional material (e.g., \"Don't post content like this: [example]\"). The agent incorrectly flags the instructional material as violations.",
-      "question": "What prompt structure would best prevent this confusion?",
-      "options": [
-        {
-          "label": "A",
-          "text": "Add a note saying \"Ignore examples in the text\"",
-          "isCorrect": false
-        },
-        {
-          "label": "B",
-          "text": "Use XML tags to separate <policy_text> from <content_to_analyze>",
-          "isCorrect": true
-        },
-        {
-          "label": "C",
-          "text": "Place all examples at the end of the prompt after the content to analyze",
-          "isCorrect": false
-        },
-        {
-          "label": "D",
-          "text": "Use extended thinking to improve the agent's reasoning about context",
-          "isCorrect": false
-        }
-      ],
-      "rationale": "B is correct because XML tags create clear boundaries preventing the model from confusing instructional examples with the actual content being moderated. A is incorrect because negative instructions often fail. C is incorrect because repositioning doesn't create the semantic separation needed. D is incorrect because extended thinking improves reasoning but doesn't solve the structural ambiguity problem.",
-      "references": ["prompt-engineering.fundamentals.clarity-and-structure"]
-    },
-    {
-      "id": "q-028",
-      "topic": "Evaluation Criteria",
-      "difficulty": "medium",
-      "scenario": "A code review agent is being tested. The team measures accuracy using exact string matching against expected outputs. They find the agent often produces correct reviews in different wording, which fail the exact match test despite being functionally accurate.",
-      "question": "What evaluation approach would better measure the agent's true performance?",
-      "options": [
-        {
-          "label": "A",
-          "text": "Use BLEU or ROUGE scores to measure n-gram overlap",
-          "isCorrect": false
-        },
-        {
-          "label": "B",
-          "text": "Implement LLM-as-judge evaluation with a rubric defining code review quality",
-          "isCorrect": true
-        },
-        {
-          "label": "C",
-          "text": "Lower the temperature to 0.0 to make outputs more deterministic",
-          "isCorrect": false
-        },
-        {
-          "label": "D",
-          "text": "Switch to pass^k metric to measure consistency across multiple runs",
-          "isCorrect": false
-        }
-      ],
-      "rationale": "B is correct because LLM-as-judge can evaluate semantic correctness, understanding that different phrasing can convey the same valid review points. This is superior to exact matching for free-form outputs. A is incorrect because BLEU/ROUGE measure surface-level similarity, not semantic correctness. C is incorrect because this constrains generation but doesn't fix the evaluation methodology. D is incorrect because pass^k measures reliability across runs, not semantic equivalence.",
-      "references": ["evaluation.criteria.definition"]
-    },
-    {
-      "id": "q-029",
-      "topic": "Caching with Thinking",
-      "difficulty": "medium",
-      "scenario": "An agent uses adaptive thinking for document analysis. The team switches to manual thinking mode with budget_tokens: 10000 for better cost control. They expect system prompts and tool definitions to remain cached but see cache_creation_input_tokens for those as well.",
-      "question": "Why were system prompts and tools invalidated?",
-      "options": [
-        {
-          "label": "A",
-          "text": "They weren't—this is expected behavior. Only messages are invalidated, not system/tools",
-          "isCorrect": true
-        },
-        {
-          "label": "B",
-          "text": "Switching thinking modes invalidates all cache levels including tools and system prompts",
-          "isCorrect": false
-        },
-        {
-          "label": "C",
-          "text": "Adaptive and manual modes use incompatible cache formats",
-          "isCorrect": false
-        },
-        {
-          "label": "D",
-          "text": "The budget_tokens value affects cache hierarchy placement",
-          "isCorrect": false
-        }
-      ],
-      "rationale": "A is correct—this is actually a trick question. Switching thinking modes only invalidates message-level cache breakpoints. System prompts and tool definitions should remain cached. If they're seeing cache creation for those, there's another change happening (tool modifications, system prompt changes, etc.). B is incorrect because tools and system remain cached during mode switches. C is incorrect because both modes use the same caching mechanism. D is incorrect because budget_tokens affects message cache, not the hierarchy.",
-      "references": ["context-management.caching.with-thinking"]
-    },
-    {
-      "id": "q-030",
-      "topic": "Interleaved Thinking",
-      "difficulty": "medium",
-      "scenario": "A debugging agent with interleaved thinking generates reasoning, calls a test execution tool, receives output showing 3 failing tests, and needs to analyze the failures. During the continuation, the agent appears to have forgotten details from its initial reasoning.",
-      "question": "What likely went wrong?",
-      "options": [
-        {
-          "label": "A",
-          "text": "The thinking budget was too small to maintain context across tool calls",
-          "isCorrect": false
-        },
-        {
-          "label": "B",
-          "text": "The original thinking block wasn't included when returning the tool_result",
-          "isCorrect": true
-        },
-        {
-          "label": "C",
-          "text": "Tool results must be summarized before being returned to avoid overwhelming the model",
-          "isCorrect": false
-        },
-        {
-          "label": "D",
-          "text": "Interleaved thinking requires streaming to maintain context",
-          "isCorrect": false
-        }
-      ],
-      "rationale": "B is correct because thinking blocks must be passed back unmodified to maintain reasoning continuity. Omitting them breaks the reasoning chain. A is incorrect because budget size doesn't affect whether existing thinking is preserved. C is incorrect because tool results should be passed as-is, not summarized. D is incorrect because streaming is orthogonal to thinking block preservation.",
-      "references": ["agents.thinking.interleaved-thinking"]
-    },
-    {
-      "id": "q-031",
-      "topic": "Tool Definitions",
-      "difficulty": "hard",
-      "scenario": "A financial analysis tool has a complex nested schema with multiple levels of objects. When using strict mode, the team gets 400 errors about schema complexity even though they're under the 20 strict tools limit and have only 15 optional parameters total.",
-      "question": "What schema limitation might they be hitting?",
-      "options": [
-        {
-          "label": "A",
-          "text": "Nested objects exceed the maximum recursion depth for strict mode",
-          "isCorrect": true
-        },
-        {
-          "label": "B",
-          "text": "Financial data types aren't supported in strict mode schemas",
-          "isCorrect": false
-        },
-        {
-          "label": "C",
-          "text": "The total JSON size exceeds the strict mode schema byte limit",
-          "isCorrect": false
-        },
-        {
-          "label": "D",
-          "text": "Each strict tool's schema must be under 1000 tokens",
-          "isCorrect": false
-        }
-      ],
-      "rationale": "A is correct because strict mode has recursion depth limits (sources vary between 2-5 levels, with 2 being the conservative safe limit). Deep nesting causes grammar compilation to fail. B is incorrect because all standard JSON types are supported. C is incorrect because there's no specific byte size limit mentioned. D is incorrect because complexity is measured in structural features (optional params, unions, nesting), not token count.",
-      "references": ["tool-use.advanced.strict-tool-use"]
-    },
-    {
-      "id": "q-032",
-      "topic": "Extended Thinking",
-      "difficulty": "easy",
-      "scenario": "A team wants to use extended thinking for creative writing tasks to improve output quality. They enable thinking with a 5,000 token budget for a short story generation prompt.",
-      "question": "What should they expect?",
-      "options": [
-        {
-          "label": "A",
-          "text": "Significantly improved creative writing quality",
-          "isCorrect": false
-        },
-        {
-          "label": "B",
-          "text": "Potentially worse performance, as extended thinking can degrade creative tasks",
-          "isCorrect": true
-        },
-        {
-          "label": "C",
-          "text": "Similar quality but with faster response times due to optimized generation",
-          "isCorrect": false
-        },
-        {
-          "label": "D",
-          "text": "The request will fail because creative tasks don't support extended thinking",
-          "isCorrect": false
-        }
-      ],
-      "rationale": "B is correct because extended thinking can actually hurt performance on intuitive, creative tasks by up to 36%. It's designed for analytical, multi-step reasoning, not creative generation. A is incorrect because the research shows degradation, not improvement, for creative tasks. C is incorrect because extended thinking increases latency (more tokens generated) and doesn't improve speed. D is incorrect because the API will accept the request—it just won't help quality.",
-      "references": ["agents.thinking.extended-thinking"]
-    },
-    {
-      "id": "q-033",
-      "topic": "Streaming",
-      "difficulty": "hard",
-      "scenario": "A streaming implementation processes events in real-time. The application suddenly starts crashing when processing certain responses. The logs show an unexpected event type that isn't in the documented event types.",
-      "question": "How should this be handled according to API best practices?",
-      "options": [
-        {
-          "label": "A",
-          "text": "Report it as a bug since undocumented events shouldn't appear",
-          "isCorrect": false
-        },
-        {
-          "label": "B",
-          "text": "Log the unknown event type and continue processing other events",
-          "isCorrect": true
-        },
-        {
-          "label": "C",
-          "text": "Reject the entire stream and retry the request",
-          "isCorrect": false
-        },
-        {
-          "label": "D",
-          "text": "Parse the event as a message_delta event by default",
-          "isCorrect": false
-        }
-      ],
-      "rationale": "B is correct because Anthropic's versioning policy explicitly states that new event types may be added, and code should handle unknown events gracefully. A is incorrect because this is expected behavior, not a bug. C is incorrect because failing on unknown events is fragile. D is incorrect because you shouldn't assume unknown events match existing types.",
-      "references": ["api-integration.messages-api.streaming"]
-    },
-    {
-      "id": "q-034",
-      "topic": "Prompt Caching",
-      "difficulty": "medium",
-      "scenario": "A code analysis tool caches 80,000 tokens of code context using the 5-minute TTL. During peak usage, requests arrive every 2-3 minutes. Despite this frequency, the team sees cache_creation_input_tokens more often than expected.",
-      "question": "What's the most likely explanation?",
-      "options": [
-        {
-          "label": "A",
-          "text": "Multiple concurrent users each establish separate caches that don't share",
-          "isCorrect": false
-        },
-        {
-          "label": "B",
-          "text": "The effective TTL is closer to 3 minutes despite documentation stating 5 minutes",
-          "isCorrect": true
-        },
-        {
-          "label": "C",
-          "text": "Code context above 50,000 tokens requires the 1-hour TTL option",
-          "isCorrect": false
-        },
-        {
-          "label": "D",
-          "text": "Cache entries are evicted when new users establish different cache patterns",
-          "isCorrect": false
-        }
-      ],
-      "rationale": "B is correct because the synthesis report mentions conflicting information about cache TTL—documentation states 5 minutes, but some users report effective TTL closer to 3 minutes in practice. A is incorrect because caches are workspace-isolated but users within a workspace share caches. C is incorrect because there's no size threshold requiring 1-hour TTL. D is incorrect because cache eviction is time-based, not capacity-based.",
-      "references": ["context-management.caching.basics"]
-    },
-    {
-      "id": "q-035",
-      "topic": "Tool Choice",
-      "difficulty": "medium",
-      "scenario": "A data pipeline forces tool use with tool_choice: {type: \"any\"} to ensure all outputs go through a validation tool. Users complain that Claude no longer explains what it's doing before calling the tool, making the system feel less transparent.",
-      "question": "Why is this happening and what could address it?",
-      "options": [
-        {
-          "label": "A",
-          "text": "The 'any' mode has a bug; use 'tool' mode with a specific tool name instead",
-          "isCorrect": false
-        },
-        {
-          "label": "B",
-          "text": "Modes 'any' and 'tool' prefill the response to skip natural language; use 'auto' with instructions instead",
-          "isCorrect": true
-        },
-        {
-          "label": "C",
-          "text": "Add a system prompt explicitly requesting explanations before tool use",
-          "isCorrect": false
-        },
-        {
-          "label": "D",
-          "text": "Increase the max_tokens limit to allow space for both explanation and tool use",
-          "isCorrect": false
-        }
-      ],
-      "rationale": "B is correct because 'any' and 'tool' modes prefill the assistant response to force immediate tool use, preventing natural language. Using 'auto' with explicit instructions like \"Use the validation tool in your response\" allows both explanation and tool use. A is incorrect because 'tool' mode has the same prefilling behavior. C is incorrect because system prompts can't override the prefilling behavior. D is incorrect because token limits aren't the constraint.",
-      "references": ["tool-use.advanced.tool-choice"]
-    },
-    {
-      "id": "q-036",
-      "topic": "State Management",
-      "difficulty": "medium",
-      "scenario": "A long-running research agent compacts its context by summarizing completed work when approaching token limits. After several compaction cycles, the agent starts making incorrect assumptions about the project architecture, referencing files that were mentioned early but summarized away.",
-      "question": "What state management principle was violated?",
-      "options": [
-        {
-          "label": "A",
-          "text": "Compaction cycles should happen at fixed token intervals, not dynamic thresholds",
-          "isCorrect": false
-        },
-        {
-          "label": "B",
-          "text": "Aggressive summarization discarded architectural decisions that remained relevant",
-          "isCorrect": true
-        },
-        {
-          "label": "C",
-          "text": "The agent should have used git checkpoints instead of summarization",
-          "isCorrect": false
-        },
-        {
-          "label": "D",
-          "text": "Compacted summaries must be stored in vector databases for retrieval",
-          "isCorrect": false
-        }
-      ],
-      "rationale": "B is correct because effective compaction requires selective retention of critical information (architectural decisions, environmental constraints, error patterns) rather than uniform summarization. A is incorrect because dynamic thresholds are fine—the issue is what gets summarized. C is incorrect because git checkpoints and summarization serve different purposes and can be complementary. D is incorrect because vector storage doesn't solve the problem of determining what to retain.",
-      "references": ["agents.long-horizon.state-management"]
-    },
-    {
-      "id": "q-037",
-      "topic": "Parallel Tool Calls",
-      "difficulty": "hard",
-      "scenario": "An agent orchestrates multiple API calls. The team implements parallel execution using asyncio.gather() without return_exceptions=True. One API call fails with a rate limit error, causing all parallel operations to fail even though the others succeeded.",
-      "question": "What's the issue and how should it be fixed?",
-      "options": [
-        {
-          "label": "A",
-          "text": "Parallel tool calls should never be used with external APIs that can fail",
-          "isCorrect": false
-        },
-        {
-          "label": "B",
-          "text": "Use return_exceptions=True to handle failures individually without aborting others",
-          "isCorrect": true
-        },
-        {
-          "label": "C",
-          "text": "Wrap each API call in a try/except block before adding to the gather list",
-          "isCorrect": false
-        },
-        {
-          "label": "D",
-          "text": "Switch to sequential execution to ensure proper error handling",
-          "isCorrect": false
-        }
-      ],
-      "rationale": "B is correct because asyncio.gather() with return_exceptions=True allows individual failures while collecting results from successful operations. This enables proper error isolation in parallel execution. A is incorrect because parallel execution is valuable despite potential failures. C is incorrect because try/except doesn't prevent gather from failing—exceptions propagate unless return_exceptions is set. D is incorrect because sequential execution sacrifices performance unnecessarily.",
+      "rationale": "B is correct because there are clear data dependencies: analyze needs search results, report needs analysis results. Sequential execution is required. A is incorrect because analyze and report cannot execute without their prerequisite data. C is incorrect because analyze cannot run in parallel with search—it needs the search results. D is incorrect because manually controlling tool_choice adds complexity when Claude can correctly infer the sequence from tool descriptions.",
       "references": ["tool-use.advanced.parallel-and-sequential"]
     },
     {
-      "id": "q-038",
-      "topic": "Messages API",
+      "id": "q-027",
+      "topic": "Evaluation Criteria for Agents",
       "difficulty": "medium",
-      "scenario": "A production chatbot handles thousands of requests per hour. During traffic spikes, some requests return 429 rate limit errors. The development team implements retry logic with exponential backoff, but errors persist.",
-      "question": "What's a likely explanation?",
+      "scenario": "A team evaluates their customer service agent and finds: 98% task completion rate, average response time 0.8 seconds, 99.5% factual accuracy. However, users complain the agent feels 'robotic and unhelpful.' The team wants to add evaluation metrics to address this.",
+      "question": "Which evaluation dimension are they currently missing?",
       "options": [
         {
           "label": "A",
-          "text": "The official SDK already implements automatic retries; adding more retry logic causes excessive attempts",
-          "isCorrect": true
-        },
-        {
-          "label": "B",
-          "text": "Rate limits use fixed windows that reset hourly, requiring timing-based retry strategies",
-          "isCorrect": false
-        },
-        {
-          "label": "C",
-          "text": "429 errors indicate spend limits, not rate limits, and cannot be resolved with retries",
-          "isCorrect": false
-        },
-        {
-          "label": "D",
-          "text": "The anthropic-version header needs updating to access higher rate limit tiers",
-          "isCorrect": false
-        }
-      ],
-      "rationale": "A is correct because the official SDKs implement automatic retries for 429 and 500 errors with exponential backoff (2 retries by default). Layering additional retry logic can cause excessive attempts. B is incorrect because rate limits use a token bucket algorithm with continuous replenishment. C is incorrect because 429 can indicate either rate or spend limits, and retries are appropriate for rate limits. D is incorrect because API version headers don't affect rate limits.",
-      "references": ["api-integration.messages-api.basics"]
-    },
-    {
-      "id": "q-039",
-      "topic": "Agent SDK",
-      "difficulty": "medium",
-      "scenario": "An automation agent needs to use custom business logic tools alongside the built-in SDK tools. The team wants to capture the session ID from each query to enable session resumption.",
-      "question": "When is the session ID available?",
-      "options": [
-        {
-          "label": "A",
-          "text": "In the final message when the query completes",
+          "text": "Latency metrics, because 0.8 seconds is too fast and feels automated",
           "isCorrect": false
         },
         {
           "label": "B",
-          "text": "In an early init message during the streaming response",
+          "text": "Tone and style metrics covering empathy, clarity, and helpfulness",
           "isCorrect": true
         },
         {
           "label": "C",
-          "text": "As a return value from the query() function",
+          "text": "Consistency metrics using pass^k to ensure reliable behavior",
           "isCorrect": false
         },
         {
           "label": "D",
-          "text": "In the ClaudeAgentOptions after the first tool execution",
+          "text": "Safety and privacy compliance metrics to prevent data leaks",
           "isCorrect": false
         }
       ],
-      "rationale": "B is correct because the session ID is emitted early in the streaming response as part of an init message. You must capture it during iteration—it's not available after the stream completes. A is incorrect because waiting for completion means you miss the session ID. C is incorrect because query() returns an AsyncIterator, not the session ID directly. D is incorrect because ClaudeAgentOptions is input configuration, not output.",
-      "references": ["agents.sdk.core-concepts"]
-    },
-    {
-      "id": "q-040",
-      "topic": "Evaluation Criteria",
-      "difficulty": "hard",
-      "scenario": "A RAG system for medical information is being evaluated. The team tests faithfulness (factual consistency with source documents), answer relevancy, and context relevancy. They notice the system sometimes generates correct medical information that isn't present in the retrieved context.",
-      "question": "How should this scenario be scored under faithfulness metrics?",
-      "options": [
-        {
-          "label": "A",
-          "text": "High faithfulness score because the medical information is factually correct",
-          "isCorrect": false
-        },
-        {
-          "label": "B",
-          "text": "Low faithfulness score because claims cannot be deduced from provided context",
-          "isCorrect": true
-        },
-        {
-          "label": "C",
-          "text": "Medium faithfulness score weighted by the correctness of the additional information",
-          "isCorrect": false
-        },
-        {
-          "label": "D",
-          "text": "Faithfulness doesn't apply; use answer relevancy instead",
-          "isCorrect": false
-        }
-      ],
-      "rationale": "B is correct because faithfulness penalizes any claims that cannot be deduced from source context, regardless of whether they're factually correct in general. For RAG systems, staying within the provided context is critical. A is incorrect because faithfulness measures consistency with context, not general factual accuracy. C is incorrect because faithfulness is binary regarding context grounding. D is incorrect because faithfulness is the appropriate metric for measuring context adherence.",
+      "rationale": "B is correct because they have strong functional metrics (task fidelity, latency, accuracy) but are missing qualitative assessment of tone, empathy, and conversational quality—exactly what users are complaining about. A is incorrect because fast responses are generally positive; the issue is how the agent communicates. C is incorrect because consistency measures reliability across runs, not communication style. D is incorrect because there's no indication of safety issues.",
       "references": ["evaluation.criteria.definition"]
     },
     {
-      "id": "q-041",
-      "topic": "Strict Tool Use",
-      "difficulty": "medium",
-      "scenario": "A booking system with strict mode enabled occasionally returns stop_reason: \"refusal\" instead of valid tool inputs. The team notices the refused responses don't match their tool schema.",
-      "question": "How should this be handled?",
-      "options": [
-        {
-          "label": "A",
-          "text": "This is a bug in strict mode; disable strict mode to fix it",
-          "isCorrect": false
-        },
-        {
-          "label": "B",
-          "text": "Check stop_reason before parsing; refusals override schema guarantees",
-          "isCorrect": true
-        },
-        {
-          "label": "C",
-          "text": "Increase temperature to reduce refusal frequency",
-          "isCorrect": false
-        },
-        {
-          "label": "D",
-          "text": "Add more examples to the tool definition to prevent refusals",
-          "isCorrect": false
-        }
-      ],
-      "rationale": "B is correct because safety refusals override schema compliance—when Claude refuses for safety reasons, the response may not match your schema. Always check stop_reason before assuming schema validity. A is incorrect because this is expected behavior, not a bug. C is incorrect because temperature doesn't control safety refusals. D is incorrect because examples don't prevent safety-based refusals.",
-      "references": ["tool-use.advanced.strict-tool-use"]
-    },
-    {
-      "id": "q-042",
-      "topic": "Prompt Engineering",
-      "difficulty": "medium",
-      "scenario": "A summarization agent's prompt includes 5 few-shot examples showing different summary styles. The agent produces inconsistent output quality, sometimes excellent and sometimes poor, even with temperature set to 0.0.",
-      "question": "What could be causing the inconsistency?",
-      "options": [
-        {
-          "label": "A",
-          "text": "Temperature 0.0 doesn't guarantee determinism in Claude models",
-          "isCorrect": false
-        },
-        {
-          "label": "B",
-          "text": "The examples show different styles, teaching inconsistent patterns to the model",
-          "isCorrect": true
-        },
-        {
-          "label": "C",
-          "text": "Five examples is too many; reduce to 2-3 examples",
-          "isCorrect": false
-        },
-        {
-          "label": "D",
-          "text": "Few-shot examples must be wrapped in <example> tags to work properly",
-          "isCorrect": false
-        }
-      ],
-      "rationale": "B is correct because inconsistent examples teach the model that variation is acceptable. Examples should demonstrate the desired consistent style. A is incorrect because low temperature does increase determinism. C is incorrect because 3-5 examples is the recommended range. D is incorrect because while tags help organization, they're not required for examples to work.",
-      "references": ["prompt-engineering.fundamentals.clarity-and-structure"]
-    },
-    {
-      "id": "q-043",
-      "topic": "Interleaved Thinking",
+      "id": "q-028",
+      "topic": "Cache Invalidation Rules",
       "difficulty": "hard",
-      "scenario": "A multi-agent system uses Claude Opus 4.6 for complex reasoning tasks. The team wants to use interleaved thinking but finds conflicting documentation about whether to use adaptive mode or manual mode with the beta header.",
-      "question": "What's the correct configuration for Claude Opus 4.6 with interleaved thinking?",
+      "scenario": "A developer has a cached conversation with: tools (with cache_control), system prompt (with cache_control), and 10 message turns (with cache_control on the last message). They want to add a new image to the latest user message while preserving as much cache as possible.",
+      "question": "What cache behavior will occur?",
       "options": [
         {
           "label": "A",
-          "text": "Use thinking: {type: \"adaptive\"} with no beta header (beta header is deprecated for Opus 4.6)",
-          "isCorrect": true
-        },
-        {
-          "label": "B",
-          "text": "Use thinking: {type: \"enabled\", budget_tokens: 10000} with interleaved-thinking beta header",
+          "text": "Only the message cache is invalidated; tools and system prompt remain cached",
           "isCorrect": false
         },
         {
+          "label": "B",
+          "text": "All caches (tools, system, messages) are invalidated because image changes invalidate everything",
+          "isCorrect": true
+        },
+        {
           "label": "C",
-          "text": "Use thinking: {type: \"enabled\", mode: \"interleaved\"} with no beta header",
+          "text": "The entire cache remains valid because adding content doesn't invalidate prefix matches",
           "isCorrect": false
         },
         {
           "label": "D",
-          "text": "Interleaved thinking is not available for Claude Opus 4.6",
+          "text": "Tools and system remain cached; only the specific message with the image is invalidated",
           "isCorrect": false
         }
       ],
-      "rationale": "A is correct because Claude Opus 4.6 uses adaptive thinking mode and the beta header is deprecated for this model—interleaved behavior is automatic. B is incorrect because while manual mode works for other models, Opus 4.6 has deprecated manual budget_tokens. C is incorrect because there's no \"mode\" parameter. D is incorrect because Opus 4.6 fully supports interleaved thinking.",
-      "references": ["agents.thinking.interleaved-thinking", "agents.thinking.extended-thinking"]
+      "rationale": "B is correct because adding or removing images anywhere in the prompt invalidates message-level caches, and this cascades through the cache hierarchy (tools → system → messages). Image changes are explicitly listed as cache invalidators. A and D are incorrect because the invalidation isn't limited to message cache—it affects downstream caches. C is incorrect because image modifications trigger invalidation regardless of prefix matching.",
+      "references": ["context-management.caching.basics", "context-management.caching.with-thinking"]
     },
     {
-      "id": "q-044",
-      "topic": "Caching",
-      "difficulty": "hard",
-      "scenario": "A document analysis pipeline caches tool definitions (rarely change), system prompt (rarely changes), and a document corpus (updated daily). They want to optimize cache hit rates across these three components that change at different frequencies.",
-      "question": "What's the optimal cache strategy?",
+      "id": "q-029",
+      "topic": "SDK Tool Runner",
+      "difficulty": "easy",
+      "scenario": "A developer is manually implementing tool use loops with while response.stop_reason == 'tool_use' but finds the code becoming complex with error handling, parallel tool execution, and result correlation. They're using the official Python SDK.",
+      "question": "What SDK feature should they use instead?",
       "options": [
         {
           "label": "A",
-          "text": "Use a single cache_control breakpoint at the end of all content",
+          "text": "Enable auto_execute_tools: true in the messages.create() parameters",
           "isCorrect": false
         },
         {
           "label": "B",
-          "text": "Use separate cache_control breakpoints for tools, system prompt, and documents (up to 4 breakpoints allowed)",
+          "text": "Use client.beta.messages.tool_runner() which handles the loop automatically",
           "isCorrect": true
         },
         {
           "label": "C",
-          "text": "Cache only the document corpus since it's the largest component",
+          "text": "Switch to streaming mode which automatically handles tool execution",
           "isCorrect": false
         },
         {
           "label": "D",
-          "text": "Use 1-hour TTL for all components to maximize cache lifetime",
+          "text": "Use the Agent SDK instead of the Anthropic SDK for built-in tool orchestration",
           "isCorrect": false
         }
       ],
-      "rationale": "B is correct because using multiple cache breakpoints (up to 4 allowed) enables independent invalidation—tools and system stay cached when documents update daily. A is incorrect because a single breakpoint means changing any component invalidates everything. C is incorrect because caching stable components (tools, system) provides consistent savings. D is incorrect because TTL doesn't solve the invalidation frequency problem.",
+      "rationale": "B is correct because the SDK provides tool_runner specifically to automate tool execution loops, error handling, and result correlation. A is incorrect because no such parameter exists. C is incorrect because streaming provides incremental delivery but doesn't execute tools. D is incorrect while the Agent SDK does provide this, the question asks about the Anthropic SDK solution, and switching SDKs is unnecessary.",
+      "references": ["tool-use.basics.tool-results"]
+    },
+    {
+      "id": "q-030",
+      "topic": "Rate Limit Token Bucket Behavior",
+      "difficulty": "hard",
+      "scenario": "A Tier 2 Claude API user has 100 RPM and 300K ITPM limits. Their application normally makes 50 requests/minute of 3K tokens each (150K ITPM). During a traffic spike, they suddenly receive 100 requests at once and process them immediately.",
+      "question": "What will happen?",
+      "options": [
+        {
+          "label": "A",
+          "text": "All 100 requests will be rejected because they exceed the 100 RPM rate limit",
+          "isCorrect": false
+        },
+        {
+          "label": "B",
+          "text": "The first 100 requests succeed due to burst capacity, then subsequent requests are rate limited",
+          "isCorrect": true
+        },
+        {
+          "label": "C",
+          "text": "50 requests succeed and 50 are rejected to maintain the 50 req/min average",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "Requests are queued and processed at 100 req/min until the queue clears",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "B is correct because the token bucket algorithm allows bursting up to the bucket capacity (100 RPM). After the burst, the bucket is empty and capacity refills continuously at the rate limit. A is incorrect because the bucket has capacity for 100 requests. C is incorrect because rate limits are based on capacity, not averages. D is incorrect because exceeded requests return 429 errors, they're not automatically queued.",
+      "references": ["enterprise.platform.rate-limits"]
+    },
+    {
+      "id": "q-031",
+      "topic": "Agent Permissions and Safety",
+      "difficulty": "medium",
+      "scenario": "A developer builds an automated deployment agent using the Agent SDK with permission_mode: 'bypassPermissions' for CI/CD pipelines. They spawn subagents for different deployment stages (build, test, deploy) with more restrictive system prompts.",
+      "question": "What is the security implication of this configuration?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Subagents inherit bypassPermissions and cannot be restricted, giving them full system access",
+          "isCorrect": true
+        },
+        {
+          "label": "B",
+          "text": "Each subagent can have its own permission_mode, allowing safer isolation",
+          "isCorrect": false
+        },
+        {
+          "label": "C",
+          "text": "System prompts provide sufficient restriction even with bypassPermissions",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "The allowed_tools parameter on subagents limits their capabilities regardless of permission mode",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "A is correct because bypassPermissions is inherited by all subagents and cannot be overridden. This is a documented security consideration—subagents get full autonomous system access. B is incorrect because subagents cannot override the parent's permission mode. C is incorrect because system prompts are guidelines, not hard restrictions. D is incorrect while allowed_tools does limit which tools are available, it doesn't change the auto-approval behavior of bypassPermissions.",
+      "references": ["agents.sdk.core-concepts", "safety-alignment.principles.autonomy-balance"]
+    },
+    {
+      "id": "q-032",
+      "topic": "Compaction with Tool Results",
+      "difficulty": "hard",
+      "scenario": "A code review agent uses compaction with a 100,000 token threshold. During a review session, the agent reads 50 files (each about 1,000 tokens) via a read_file tool. After compaction occurs, the agent needs to reference specific lines from a file it read before compaction.",
+      "question": "What is the most likely behavior and how should it be mitigated?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Compaction preserves all tool results, so file contents remain accessible",
+          "isCorrect": false
+        },
+        {
+          "label": "B",
+          "text": "Tool results are summarized; the agent will need to re-read files, adding latency",
+          "isCorrect": true
+        },
+        {
+          "label": "C",
+          "text": "Setting pause_after_compaction: false prevents tool result summarization",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "Use custom instructions to tell the compaction system to preserve tool outputs",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "B is correct because compaction summarizes context including tool results. When specific file contents are needed later, the agent must re-fetch them. This re-fetch overhead can outweigh token savings in iterative workflows. A is incorrect because compaction does summarize tool results. C is incorrect because pause_after_compaction lets you preserve recent messages but doesn't prevent summarization of compacted content. D is incorrect while custom instructions can guide summarization, they can't guarantee raw tool outputs are preserved.",
+      "references": ["context-management.optimization.compaction", "agents.long-horizon.state-management"]
+    },
+    {
+      "id": "q-033",
+      "topic": "Thinking Budget Optimization",
+      "difficulty": "medium",
+      "scenario": "A developer tests extended thinking on a complex proof task with budget_tokens values of 1024, 8000, 16000, and 32000. They notice quality improvements plateau after 16000 tokens, and Claude rarely uses more than 20,000 tokens even with 32000 budget.",
+      "question": "What is the optimal budget_tokens setting for this task?",
+      "options": [
+        {
+          "label": "A",
+          "text": "32000 to ensure maximum reasoning capacity is always available",
+          "isCorrect": false
+        },
+        {
+          "label": "B",
+          "text": "16000 because quality plateaus and higher budgets add unnecessary cost without benefit",
+          "isCorrect": true
+        },
+        {
+          "label": "C",
+          "text": "8000 to reduce costs while maintaining acceptable quality",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "Use adaptive thinking instead of manual budgets for automatic optimization",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "B is correct because the sweet spot is where quality plateaus—16000 provides maximum benefit without paying for unused budget. A is incorrect because Claude rarely uses above 20K, and you're billed for actual usage, but setting unnecessarily high budgets can affect other behaviors. C is incorrect because quality improvements exist between 8K and 16K. D is incorrect while adaptive thinking is useful, the question asks about optimal manual budget based on observed behavior.",
+      "references": ["agents.thinking.extended-thinking"]
+    },
+    {
+      "id": "q-034",
+      "topic": "Parallel Tool Execution Implementation",
+      "difficulty": "medium",
+      "scenario": "A developer receives a response with three parallel tool_use blocks. They implement execution as: result1 = execute(tool1); result2 = execute(tool2); result3 = execute(tool3), where each execute() call takes 2 seconds. Total execution time is 6 seconds.",
+      "question": "How should they modify the implementation to minimize latency?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Use asyncio.gather() to execute all three tool calls concurrently",
+          "isCorrect": true
+        },
+        {
+          "label": "B",
+          "text": "Set disable_parallel_tool_use: true to avoid coordination overhead",
+          "isCorrect": false
+        },
+        {
+          "label": "C",
+          "text": "Use threading instead of async for true parallel execution",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "This is expected behavior; parallel tool calls refer to the API response, not execution",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "A is correct because asyncio.gather() executes all tool calls concurrently, reducing total time from 6 seconds to ~2 seconds (the longest individual call). B is incorrect because that prevents Claude from requesting parallel calls, but doesn't help with execution. C is incorrect while threading could work, async is the recommended pattern for I/O-bound operations like API calls. D is incorrect because the value of parallel tool calls comes from concurrent execution—sequential execution wastes the opportunity.",
+      "references": ["tool-use.advanced.parallel-and-sequential"]
+    },
+    {
+      "id": "q-035",
+      "topic": "Batch API Validation",
+      "difficulty": "medium",
+      "scenario": "A developer submits a batch with 10,000 requests for sentiment analysis. All requests have the same structure but different input text. After 30 minutes, they check the batch status and find 2,000 succeeded, 7,500 processing, and 500 errored due to invalid schema.",
+      "question": "What mistake did the developer make and how should they prevent it?",
+      "options": [
+        {
+          "label": "A",
+          "text": "They exceeded the batch size limit; split into multiple batches of 5,000 requests",
+          "isCorrect": false
+        },
+        {
+          "label": "B",
+          "text": "Batch validation is asynchronous; they should test individual requests with Messages API first to catch schema errors",
+          "isCorrect": true
+        },
+        {
+          "label": "C",
+          "text": "They didn't set stream: false which is required for batch processing",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "Batch API has stricter schema validation; they need to use simpler request structures",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "B is correct because batch request validation happens asynchronously during processing, not at submission time. Testing a sample with the synchronous Messages API first would have caught the schema errors before submitting 10,000 requests. A is incorrect because 10,000 is within the 100,000 request limit. C is incorrect because stream is automatically ignored in batches. D is incorrect because batch and Messages API use identical validation.",
+      "references": ["api-integration.batch-processing.basics"]
+    },
+    {
+      "id": "q-036",
+      "topic": "Subagent Communication Patterns",
+      "difficulty": "hard",
+      "scenario": "A multi-agent system has a research coordinator that spawns 5 specialist subagents. The coordinator needs to share user preferences and constraints with all subagents, then collect their findings for synthesis. The team debates between using shared session state vs. explicit invocation.",
+      "question": "What are the trade-offs between these approaches?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Shared session state is asynchronous and passive, better for pipelines; explicit invocation is synchronous and controlled, better for request-response patterns",
+          "isCorrect": true
+        },
+        {
+          "label": "B",
+          "text": "Shared session state provides better isolation and security between subagents",
+          "isCorrect": false
+        },
+        {
+          "label": "C",
+          "text": "Explicit invocation allows parallel execution while session state forces sequential processing",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "Session state has lower token costs because it avoids passing context explicitly",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "A is correct because shared session state (write once, read by many) suits pipeline architectures, while explicit invocation (direct calls with structured responses) suits request-response patterns. For this scenario, session state for sharing preferences + explicit invocation for collecting findings would work well. B is incorrect because shared state reduces isolation, not increases it. C is incorrect because both approaches can support parallel execution. D is incorrect because session state still includes context in messages, just differently organized.",
+      "references": ["agents.orchestration.subagents"]
+    },
+    {
+      "id": "q-037",
+      "topic": "Stop Reason Handling",
+      "difficulty": "easy",
+      "scenario": "An application processes API responses with this code: result = response.content[0].text. In production, it occasionally crashes with 'IndexError: list index out of range' when response.stop_reason is 'tool_use'.",
+      "question": "What is the issue and how should it be fixed?",
+      "options": [
+        {
+          "label": "A",
+          "text": "When stop_reason is 'tool_use', content may only contain tool_use blocks, not text; check stop_reason first",
+          "isCorrect": true
+        },
+        {
+          "label": "B",
+          "text": "The response.content array is empty due to a caching issue; disable prompt caching",
+          "isCorrect": false
+        },
+        {
+          "label": "C",
+          "text": "Set tool_choice: 'none' to prevent tool_use stop reasons",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "Use response.message.text instead of response.content[0].text for safety",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "A is correct because responses with stop_reason='tool_use' may not have text blocks—content could start with tool_use blocks. The code should check stop_reason and handle tool use appropriately. B is incorrect because content is never empty; it contains different block types. C is incorrect because this prevents the intended functionality rather than handling it correctly. D is incorrect because there's no response.message.text accessor.",
+      "references": ["api-integration.messages-api.basics", "tool-use.basics.tool-results"]
+    },
+    {
+      "id": "q-038",
+      "topic": "Structured Output Schema Constraints",
+      "difficulty": "hard",
+      "scenario": "A developer creates a structured output schema for product data with this structure: {properties: {name: {type: 'string'}, price: {type: 'number', minimum: 0, maximum: 10000}, stock: {type: 'integer'}}, required: ['name', 'price', 'stock'], additionalProperties: false}. They enable strict mode and receive errors.",
+      "question": "What is wrong with this schema for strict mode?",
+      "options": [
+        {
+          "label": "A",
+          "text": "The stock field should be type 'number' instead of 'integer' for strict mode compatibility",
+          "isCorrect": false
+        },
+        {
+          "label": "B",
+          "text": "Strict mode doesn't support minimum and maximum constraints on numbers; remove them",
+          "isCorrect": true
+        },
+        {
+          "label": "C",
+          "text": "All three fields must be marked required; strict mode doesn't allow optional properties",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "The schema has too many properties; strict mode limits schemas to 2 properties maximum",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "B is correct because minimum and maximum are explicitly listed as unsupported features in strict mode. The developer must remove these constraints and validate ranges in application code. A is incorrect because integer is a supported type. C is incorrect because all three fields are already marked required (this is actually recommended but not the issue here). D is incorrect because there's no such low property limit.",
+      "references": ["prompt-engineering.output-control.structured-outputs", "tool-use.advanced.strict-tool-use"]
+    },
+    {
+      "id": "q-039",
+      "topic": "Evaluation Metrics Selection",
+      "difficulty": "medium",
+      "scenario": "A team builds a medical diagnosis assistant and wants to evaluate it before deployment. They're debating between using BLEU scores, LLM-as-judge with GPT-4, and human expert review. The application generates diagnostic explanations based on patient symptoms.",
+      "question": "Which evaluation approach is most appropriate and why?",
+      "options": [
+        {
+          "label": "A",
+          "text": "BLEU scores because they provide objective, reproducible measurements of output quality",
+          "isCorrect": false
+        },
+        {
+          "label": "B",
+          "text": "LLM-as-judge for cost-effective automation with >80% agreement with human judgment",
+          "isCorrect": false
+        },
+        {
+          "label": "C",
+          "text": "Human expert review because medical accuracy and nuanced appropriateness require domain expertise",
+          "isCorrect": true
+        },
+        {
+          "label": "D",
+          "text": "A combination of all three: BLEU for fluency, LLM-as-judge for relevance, humans for accuracy",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "C is correct because medical diagnosis requires domain expertise to evaluate factual accuracy, clinical appropriateness, and subtle nuances that neither BLEU nor LLM-as-judge can reliably assess. Safety-critical applications demand human expert evaluation. A is incorrect because BLEU measures n-gram overlap, not medical accuracy or appropriateness. B is incorrect because LLMs can't reliably evaluate medical correctness and could miss dangerous errors. D is incorrect because BLEU and LLM-as-judge add cost without sufficient value for this domain.",
+      "references": ["evaluation.criteria.definition"]
+    },
+    {
+      "id": "q-040",
+      "topic": "Cache Control Placement Strategy",
+      "difficulty": "hard",
+      "scenario": "A developer has four types of content that change at different frequencies: (1) tool definitions (never change), (2) system instructions (weekly), (3) product catalog (daily), (4) conversation history (every message). They want to optimize caching with explicit breakpoints.",
+      "question": "How many cache breakpoints should they use and where?",
+      "options": [
+        {
+          "label": "A",
+          "text": "One breakpoint at the conversation history for simplicity",
+          "isCorrect": false
+        },
+        {
+          "label": "B",
+          "text": "Four breakpoints: after tools, after system instructions, after catalog, after conversation history",
+          "isCorrect": true
+        },
+        {
+          "label": "C",
+          "text": "Two breakpoints: after tools and after conversation history",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "Three breakpoints: after tools, after system instructions, after catalog (conversation doesn't need a breakpoint)",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "B is correct because you can use up to 4 explicit breakpoints, and this structure aligns breakpoints with content that changes at different frequencies. Tools stay cached long-term, system weekly, catalog daily, conversation per-message. This maximizes cache reuse. A is incorrect because it misses opportunities to cache stable content. C is incorrect because it doesn't separate system and catalog, which change at different rates. D is incorrect because the conversation also benefits from a breakpoint for caching previous turns.",
       "references": ["context-management.caching.basics"]
     },
     {
-      "id": "q-045",
-      "topic": "Token Management",
+      "id": "q-041",
+      "topic": "Tool Definition Naming and Descriptions",
       "difficulty": "medium",
-      "scenario": "An application uses extended thinking with a 10,000 token budget. The usage response shows output_tokens: 8,000 but the visible text response is only about 1,500 tokens. The team is concerned about billing discrepancies.",
-      "question": "What explains the token count difference?",
+      "scenario": "A developer builds a system with three search tools: search_web, search_database, and search_documents. They give each tool a one-sentence description: 'Searches the web', 'Searches the database', 'Searches documents'. Claude frequently calls the wrong search tool for user queries.",
+      "question": "What improvements would most help Claude select the correct tool?",
       "options": [
         {
           "label": "A",
-          "text": "The API is incorrectly billing for tokens that weren't generated",
+          "text": "Use tool_choice to force the correct tool based on query classification logic",
           "isCorrect": false
         },
         {
           "label": "B",
-          "text": "Claude 4 models return summarized thinking; you're billed for full thinking tokens, not the summary",
+          "text": "Expand descriptions to 3-4 sentences explaining when to use each tool, what it searches, and example use cases",
           "isCorrect": true
         },
         {
           "label": "C",
-          "text": "The output_tokens field includes input tokens processed during thinking",
+          "text": "Rename tools to more descriptive names like web_search_engine, internal_db_search, doc_search",
           "isCorrect": false
         },
         {
           "label": "D",
-          "text": "Extended thinking adds a fixed overhead of ~6,500 tokens per request",
+          "text": "Consolidate into a single search tool with a source parameter to simplify selection",
           "isCorrect": false
         }
       ],
-      "rationale": "B is correct because Claude 4 models return condensed summaries of thinking while billing for the full internal reasoning tokens generated. The usage field reflects actual cost. A is incorrect because this is documented behavior, not a billing error. C is incorrect because output_tokens only includes generated output, not input processing. D is incorrect because there's no fixed overhead—thinking token use varies by task.",
-      "references": ["agents.thinking.extended-thinking", "context-management.caching.with-thinking"]
+      "rationale": "B is correct because detailed descriptions (3-4 sentences minimum) explaining when, what, and how are the most important factor in tool performance. Current descriptions are too vague. A is incorrect because it adds complexity and removes Claude's ability to intelligently select tools. C is incorrect while better names help, descriptions are more important. D is incorrect because this changes the architecture rather than fixing the root issue (insufficient description clarity).",
+      "references": ["tool-use.basics.tool-definitions"]
+    },
+    {
+      "id": "q-042",
+      "topic": "Thinking Mode Transitions and Cache",
+      "difficulty": "hard",
+      "scenario": "A developer has a working workflow with thinking: {type: 'enabled', budget_tokens: 10000}. They want to test adaptive thinking for comparison, so they switch to thinking: {type: 'adaptive'} while keeping all other parameters (model, system, tools, messages) identical.",
+      "question": "What happens to the prompt cache on this first request after the mode change?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Cache is fully preserved because only the thinking mode changed, not the content",
+          "isCorrect": false
+        },
+        {
+          "label": "B",
+          "text": "Message cache is invalidated but tools and system prompt caches remain valid",
+          "isCorrect": true
+        },
+        {
+          "label": "C",
+          "text": "All caches are invalidated because adaptive thinking uses a different cache key",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "Cache is invalidated only if the model actually uses a different amount of thinking tokens",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "B is correct because switching thinking modes (enabled ↔ adaptive) invalidates message cache breakpoints while preserving system and tool caches. This is explicitly documented behavior. A is incorrect because mode transitions do invalidate message caches. C is incorrect because system and tool caches survive the transition. D is incorrect because invalidation happens at request time based on mode change, not actual token usage.",
+      "references": ["context-management.caching.with-thinking"]
+    },
+    {
+      "id": "q-043",
+      "topic": "Agent SDK Permission Modes",
+      "difficulty": "medium",
+      "scenario": "A developer wants to build a code analysis agent that can read files and search code but should never modify anything. They want the agent to run without user prompts for permission.",
+      "question": "Which permission configuration should they use?",
+      "options": [
+        {
+          "label": "A",
+          "text": "permission_mode: 'bypassPermissions' with allowed_tools: ['Read', 'Glob', 'Grep']",
+          "isCorrect": true
+        },
+        {
+          "label": "B",
+          "text": "permission_mode: 'acceptEdits' because it only auto-approves safe operations",
+          "isCorrect": false
+        },
+        {
+          "label": "C",
+          "text": "permission_mode: 'default' with a canUseTool callback that returns true for read operations",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "permission_mode: 'plan' to analyze without executing any operations",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "A is correct because bypassPermissions with restricted allowed_tools gives autonomous operation (no prompts) while limiting capabilities to safe, read-only tools. B is incorrect because acceptEdits auto-approves Write and Edit operations, which violates the 'never modify' requirement. C is incorrect because the callback would still prompt the user, not run autonomously. D is incorrect because plan mode prevents all execution, including reads.",
+      "references": ["agents.sdk.core-concepts"]
+    },
+    {
+      "id": "q-044",
+      "topic": "Streaming Error Handling",
+      "difficulty": "medium",
+      "scenario": "A developer implements streaming and handles events in a try/except block. They notice that sometimes they receive HTTP 200 status but then get error messages mid-stream about rate limits or overloaded servers, which their error handling doesn't catch.",
+      "question": "What is the issue with their error handling approach?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Streaming errors return HTTP 200 initially; errors come as SSE error events that must be checked during iteration",
+          "isCorrect": true
+        },
+        {
+          "label": "B",
+          "text": "They need to set validate_stream: true to enable proper error handling",
+          "isCorrect": false
+        },
+        {
+          "label": "C",
+          "text": "Stream errors are silent; they should monitor the usage field for rate limit warnings",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "They should use non-streaming requests to get proper HTTP error codes",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "A is correct because streaming responses return HTTP 200 immediately to establish the connection. Errors that occur during processing (like rate limits or overloaded servers) come as SSE error events in the stream, not HTTP status codes. B is incorrect because no such parameter exists. C is incorrect because errors are communicated as events, not silently. D is incorrect because streaming is specifically needed for their use case, and proper event type checking solves the issue.",
+      "references": ["api-integration.messages-api.streaming"]
+    },
+    {
+      "id": "q-045",
+      "topic": "Extended Thinking Task Selection",
+      "difficulty": "medium",
+      "scenario": "A developer has four different tasks: (A) translate English to Spanish, (B) prove a complex mathematical theorem, (C) generate creative story ideas, (D) look up a capital city. They want to use extended thinking to improve performance.",
+      "question": "For which tasks would extended thinking likely improve results?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Only task B (mathematical proof) because it requires step-by-step reasoning",
+          "isCorrect": true
+        },
+        {
+          "label": "B",
+          "text": "Tasks A, B, and D because extended thinking improves all factual tasks",
+          "isCorrect": false
+        },
+        {
+          "label": "C",
+          "text": "Tasks B and C because both benefit from exploring multiple approaches",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "All four tasks because extended thinking always improves quality",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "A is correct because extended thinking helps with complex, multi-step reasoning tasks like mathematical proofs. Tasks A (translation), C (creative generation), and D (simple lookup) are intuitive tasks where extended thinking can actually hurt performance by up to 36% due to overthinking. B is incorrect because translation and lookup don't benefit. C is incorrect because creative tasks often suffer from overthinking. D is incorrect because extended thinking isn't universally beneficial.",
+      "references": ["agents.thinking.extended-thinking"]
+    },
+    {
+      "id": "q-046",
+      "topic": "Batch Results Processing",
+      "difficulty": "easy",
+      "scenario": "A developer submits a batch of 1,000 classification requests with custom_id fields like 'doc-1', 'doc-2', etc. When processing results, they iterate through results in order assuming result[0] corresponds to request[0].",
+      "question": "What problem will they encounter?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Batch results are unordered and may not match submission sequence; must use custom_id to correlate",
+          "isCorrect": true
+        },
+        {
+          "label": "B",
+          "text": "Results are delivered in random order each time you fetch them; use result timestamps",
+          "isCorrect": false
+        },
+        {
+          "label": "C",
+          "text": "The first result is always a summary object, so results start at index 1",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "Batch API doesn't guarantee processing of all requests; some may be missing from results",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "A is correct because batch processing is concurrent and unordered—results can return in any sequence. The custom_id field exists specifically to match results back to original requests. B is incorrect because while unordered, the fetching itself doesn't randomize order. C is incorrect because there's no summary object. D is incorrect because all requests that don't expire or error will be in results (though they may have errored or canceled status).",
+      "references": ["api-integration.batch-processing.basics"]
+    },
+    {
+      "id": "q-047",
+      "topic": "Subagent Token Economics",
+      "difficulty": "hard",
+      "scenario": "A single-agent system completes a research task using 50,000 tokens total. The team refactors to use 5 specialized subagents for better organization. The task now uses 750,000 tokens (15× increase) but completes in 40% of the original time due to parallelization.",
+      "question": "How should they evaluate whether the multi-agent approach is justified?",
+      "options": [
+        {
+          "label": "A",
+          "text": "The 15× token cost is expected and worth it because multi-agent systems always cost more",
+          "isCorrect": false
+        },
+        {
+          "label": "B",
+          "text": "The approach is only justified if the 60% latency reduction justifies 15× higher cost for their use case",
+          "isCorrect": true
+        },
+        {
+          "label": "C",
+          "text": "They should optimize the multi-agent system to achieve the documented 50% cost reduction",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "The high token cost indicates a design flaw; refactor to 2-3 agents instead of 5",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "B is correct because the decision depends on use case: for time-critical applications, 15× cost for 60% latency improvement might be justified; for batch processing, it's not. The team should evaluate based on their specific requirements. A is incorrect because 'always worth it' is too absolute—it depends on context. C is incorrect because 15× token increase is documented behavior for multi-agent systems, not a bug. D is incorrect because the issue might not be too many agents—it could be that the task doesn't benefit from decomposition at all.",
+      "references": ["agents.orchestration.subagents"]
+    },
+    {
+      "id": "q-048",
+      "topic": "Tool Results Content Types",
+      "difficulty": "easy",
+      "scenario": "A developer implements a screenshot tool that captures an image of a webpage. They want to return the screenshot to Claude for analysis. Currently they're returning the image file path as a string.",
+      "question": "How should they modify the tool result to include the actual image?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Return the image as a base64-encoded string in the content field",
+          "isCorrect": false
+        },
+        {
+          "label": "B",
+          "text": "Return an array with a text block describing the image and an image block with base64 data",
+          "isCorrect": true
+        },
+        {
+          "label": "C",
+          "text": "Images cannot be included in tool results; use a separate vision API call",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "Set content_type: 'image/jpeg' and include the base64 data in content",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "B is correct because tool results support multimodal content arrays containing both text and image blocks. The image block should have type: 'image' with source containing base64 data and media_type. A is incorrect because returning base64 as a string in content doesn't tell Claude it's an image. C is incorrect because tool results explicitly support image content blocks. D is incorrect because content_type is not a valid field; images use structured content blocks.",
+      "references": ["tool-use.basics.tool-results"]
+    },
+    {
+      "id": "q-049",
+      "topic": "Rate Limit Response Headers",
+      "difficulty": "medium",
+      "scenario": "A developer receives a 429 rate limit error. The response headers show: anthropic-ratelimit-requests-remaining: 0, anthropic-ratelimit-requests-reset: 2026-03-01T12:01:30Z, retry-after: 2. The current time is 12:01:00.",
+      "question": "When should they retry the request?",
+      "options": [
+        {
+          "label": "A",
+          "text": "At 12:01:30 when the rate limit resets according to the reset header",
+          "isCorrect": false
+        },
+        {
+          "label": "B",
+          "text": "At 12:01:02, respecting the retry-after header value of 2 seconds",
+          "isCorrect": true
+        },
+        {
+          "label": "C",
+          "text": "Immediately, because rate limits use token bucket with continuous refill",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "Wait 30 seconds until 12:01:30 to ensure capacity is fully restored",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "B is correct because the retry-after header provides the specific wait time in seconds before retrying. This is the authoritative guidance for retry timing. A is incorrect because the reset header shows when the counter resets, but retry-after is more precise. C is incorrect because you should respect the retry-after header. D is incorrect because 30 seconds is excessive when retry-after says 2 seconds.",
+      "references": ["enterprise.platform.rate-limits"]
+    },
+    {
+      "id": "q-050",
+      "topic": "Context Window and Token Budgets",
+      "difficulty": "hard",
+      "scenario": "A developer uses Claude Sonnet 4.6 (200K context window) with extended thinking. They set: max_tokens: 180000, thinking: {type: 'enabled', budget_tokens: 50000}. Their prompt is 30,000 tokens. The request fails with a validation error.",
+      "question": "What is the issue?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Total tokens (30K prompt + 180K max + 50K budget = 260K) exceeds the 200K context window",
+          "isCorrect": false
+        },
+        {
+          "label": "B",
+          "text": "budget_tokens must be less than max_tokens, but budget (50K) < max (180K), so this should work",
+          "isCorrect": false
+        },
+        {
+          "label": "C",
+          "text": "prompt_tokens + max_tokens (30K + 180K = 210K) exceeds 200K context window; thinking budget is separate",
+          "isCorrect": true
+        },
+        {
+          "label": "D",
+          "text": "The budget_tokens of 50K is too high; maximum allowed is 32K for non-batch requests",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "C is correct because Claude 3.7+ enforces prompt_tokens + max_tokens ≤ context_window strictly. 30K + 180K = 210K exceeds the 200K limit. The thinking budget is separate from this calculation—it allows exceeding max_tokens for thinking specifically. A is incorrect because thinking budget isn't part of the context window calculation. B is incorrect because while that constraint exists, it's not the issue here. D is incorrect because 50K budget is allowed, especially with batch processing.",
+      "references": ["agents.thinking.extended-thinking", "api-integration.messages-api.basics"]
     }
   ]
 }

@@ -1,148 +1,105 @@
-import { useState } from 'react'
-import { Radio } from 'lucide-react'
+import { useState, useEffect } from 'react'
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '../components/ui/card'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '../components/ui/tabs'
-import { Badge } from '../components/ui/badge'
 import PodcastPlayer from '../components/PodcastPlayer'
-import { useManifest } from '../hooks/useManifest'
-import { cn } from '../lib/utils'
 
 export default function Podcast() {
-  const { manifest, loading } = useManifest()
+  const [manifest, setManifest] = useState(null)
   const [selectedEpisode, setSelectedEpisode] = useState(null)
-  const [selectedTopic, setSelectedTopic] = useState('all')
+  const [episodesByTopic, setEpisodesByTopic] = useState({})
 
-  const topics = manifest?.topics || []
-  const episodes = manifest?.podcastEpisodes || []
+  useEffect(() => {
+    // Load manifest
+    fetch('/manifest.json')
+      .then(res => res.json())
+      .then(data => {
+        setManifest(data)
 
-  const filteredEpisodes = selectedTopic === 'all'
-    ? episodes
-    : episodes.filter(ep => ep.topicId === selectedTopic)
+        // Group episodes by topic
+        const grouped = {}
+        data.podcastEpisodes?.forEach(episode => {
+          if (!grouped[episode.topicId]) {
+            grouped[episode.topicId] = []
+          }
+          grouped[episode.topicId].push(episode)
+        })
+        setEpisodesByTopic(grouped)
 
-  const groupedEpisodes = filteredEpisodes.reduce((acc, episode) => {
-    const topicId = episode.topicId
-    if (!acc[topicId]) {
-      acc[topicId] = []
-    }
-    acc[topicId].push(episode)
-    return acc
-  }, {})
+        // Set first episode as selected
+        if (data.podcastEpisodes?.[0]) {
+          setSelectedEpisode(data.podcastEpisodes[0])
+        }
+      })
+      .catch(err => console.error('Failed to load manifest:', err))
+  }, [])
 
-  const handleEpisodeEnded = () => {
-    const currentIndex = filteredEpisodes.findIndex(
-      ep => ep.audioPath === selectedEpisode?.audioPath
-    )
-    if (currentIndex < filteredEpisodes.length - 1) {
-      setSelectedEpisode(filteredEpisodes[currentIndex + 1])
-    }
+  const topicIdToTitle = (topicId) => {
+    return topicId
+      .split('-')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ')
   }
 
-  if (loading) {
-    return (
-      <div className="space-y-6">
-        <div className="animate-pulse space-y-4">
-          <div className="h-8 bg-muted rounded w-1/3"></div>
-          <div className="h-64 bg-muted rounded"></div>
-        </div>
-      </div>
-    )
-  }
+  const topics = Object.keys(episodesByTopic)
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center gap-3">
-        <Radio className="h-8 w-8 text-primary" />
-        <div>
-          <h1 className="text-3xl font-bold">Podcast Episodes</h1>
-          <p className="text-muted-foreground">
-            Listen to audio explanations of key concepts
-          </p>
-        </div>
+      <div className="space-y-2">
+        <h1 className="text-3xl font-bold tracking-tight">Podcast Episodes</h1>
+        <p className="text-muted-foreground">
+          Listen to comprehensive audio lessons covering all certification topics
+        </p>
       </div>
 
-      {/* Player */}
-      <PodcastPlayer episode={selectedEpisode} onEnded={handleEpisodeEnded} />
-
-      {/* Episodes List */}
-      <Tabs value={selectedTopic} onValueChange={setSelectedTopic}>
-        <TabsList className="flex-wrap h-auto">
-          <TabsTrigger value="all">All Episodes</TabsTrigger>
-          {topics.map(topic => (
-            <TabsTrigger key={topic.id} value={topic.id}>
-              {topic.name}
-            </TabsTrigger>
-          ))}
-        </TabsList>
-
-        <TabsContent value={selectedTopic} className="mt-6">
-          {selectedTopic === 'all' ? (
-            <div className="space-y-6">
-              {Object.entries(groupedEpisodes).map(([topicId, topicEpisodes]) => {
-                const topic = topics.find(t => t.id === topicId)
-                return (
-                  <div key={topicId}>
-                    <h2 className="text-xl font-semibold mb-3">
-                      {topic?.name || topicId}
-                    </h2>
-                    <div className="grid gap-3">
-                      {topicEpisodes.map((episode, index) => (
-                        <EpisodeCard
-                          key={episode.audioPath}
-                          episode={episode}
-                          index={index}
-                          isPlaying={selectedEpisode?.audioPath === episode.audioPath}
-                          onClick={() => setSelectedEpisode(episode)}
-                        />
-                      ))}
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
-          ) : (
-            <div className="grid gap-3">
-              {filteredEpisodes.map((episode, index) => (
-                <EpisodeCard
-                  key={episode.audioPath}
-                  episode={episode}
-                  index={index}
-                  isPlaying={selectedEpisode?.audioPath === episode.audioPath}
-                  onClick={() => setSelectedEpisode(episode)}
-                />
-              ))}
-            </div>
-          )}
-        </TabsContent>
-      </Tabs>
-    </div>
-  )
-}
-
-function EpisodeCard({ episode, index, isPlaying, onClick }) {
-  return (
-    <Card
-      className={cn(
-        'cursor-pointer transition-all hover:shadow-md',
-        isPlaying && 'ring-2 ring-primary'
-      )}
-      onClick={onClick}
-    >
-      <CardHeader className="pb-3">
-        <div className="flex items-start justify-between gap-4">
-          <div className="flex-1">
-            <div className="flex items-center gap-2 mb-1">
-              <Badge variant="outline">Episode {index + 1}</Badge>
-              {isPlaying && <Badge>Now Playing</Badge>}
-            </div>
-            <CardTitle className="text-base">{episode.title}</CardTitle>
-            <CardDescription className="mt-1">
-              Duration: {episode.duration}
+      <div className="grid gap-6 lg:grid-cols-[1fr_400px]">
+        {/* Episode List */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Episodes by Topic</CardTitle>
+            <CardDescription>
+              {manifest?.podcastEpisodes?.length || 0} episodes available
             </CardDescription>
-          </div>
-          <Radio className={cn('h-5 w-5', isPlaying && 'text-primary')} />
+          </CardHeader>
+          <CardContent>
+            <Tabs value={topics[0]} className="w-full">
+              <TabsList className="grid w-full grid-cols-2 lg:grid-cols-3 mb-4">
+                {topics.slice(0, 6).map(topicId => (
+                  <TabsTrigger key={topicId} value={topicId}>
+                    {topicIdToTitle(topicId).split(' ').slice(0, 2).join(' ')}
+                  </TabsTrigger>
+                ))}
+              </TabsList>
+
+              {topics.map(topicId => (
+                <TabsContent key={topicId} value={topicId} className="space-y-2">
+                  <h3 className="font-semibold mb-3">{topicIdToTitle(topicId)}</h3>
+                  {episodesByTopic[topicId]?.map((episode, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => setSelectedEpisode(episode)}
+                      className={`w-full text-left p-3 rounded-lg border transition-colors ${
+                        selectedEpisode?.audioPath === episode.audioPath
+                          ? 'bg-accent border-primary'
+                          : 'hover:bg-accent/50'
+                      }`}
+                    >
+                      <div className="font-medium">{episode.title}</div>
+                      <div className="text-sm text-muted-foreground mt-1">
+                        Duration: {episode.duration}
+                      </div>
+                    </button>
+                  ))}
+                </TabsContent>
+              ))}
+            </Tabs>
+          </CardContent>
+        </Card>
+
+        {/* Audio Player */}
+        <div className="lg:sticky lg:top-20 h-fit">
+          <PodcastPlayer episode={selectedEpisode} />
         </div>
-      </CardHeader>
-    </Card>
+      </div>
+    </div>
   )
 }

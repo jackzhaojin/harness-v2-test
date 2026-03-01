@@ -1,327 +1,275 @@
 {
-  "title": "Study Environment",
-  "topics": [
-    {
-      "id": "tool-use",
-      "name": "Tool Use",
-      "description": "Master API tool integration, definitions, and execution patterns",
-      "children": [
-        {
-          "id": "tool-use-basics",
-          "name": "Basics",
-          "children": [
-            { "id": "tool-definitions", "name": "Tool Definitions and Input Schemas" },
-            { "id": "tool-results", "name": "Tool Results and Response Handling" }
-          ]
-        },
-        {
-          "id": "tool-use-advanced",
-          "name": "Advanced",
-          "children": [
-            { "id": "tool-choice", "name": "Tool Choice Configuration" },
-            { "id": "strict-tool-use", "name": "Strict Tool Use" },
-            { "id": "parallel-sequential", "name": "Parallel and Sequential Tool Calls" }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "prompt-engineering",
-      "name": "Prompt Engineering",
-      "description": "Craft effective prompts for optimal AI responses",
-      "children": [
-        {
-          "id": "prompt-fundamentals",
-          "name": "Fundamentals",
-          "children": [
-            { "id": "clarity-structure", "name": "Clarity and Structure" }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "agents",
-      "name": "Agent SDK",
-      "description": "Build autonomous agents with state management and thinking patterns",
-      "children": [
-        {
-          "id": "agents-core",
-          "name": "Core Concepts",
-          "children": [
-            { "id": "agent-sdk", "name": "Agent SDK Core Concepts" }
-          ]
-        },
-        {
-          "id": "agents-thinking",
-          "name": "Thinking Patterns",
-          "children": [
-            { "id": "extended-thinking", "name": "Extended Thinking" },
-            { "id": "interleaved-thinking", "name": "Interleaved Thinking" }
-          ]
-        },
-        {
-          "id": "agents-long-horizon",
-          "name": "Long Horizon Tasks",
-          "children": [
-            { "id": "state-management", "name": "State Management and Progress Tracking" }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "api-integration",
-      "name": "Messages API",
-      "description": "Integrate Claude via API with streaming and token management",
-      "children": [
-        {
-          "id": "api-fundamentals",
-          "name": "Fundamentals",
-          "children": [
-            { "id": "messages-api", "name": "Messages API Fundamentals" }
-          ]
-        },
-        {
-          "id": "api-streaming",
-          "name": "Streaming",
-          "children": [
-            { "id": "streaming", "name": "Streaming Responses" }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "context-management",
-      "name": "Context Management",
-      "description": "Optimize context windows, caching, and token efficiency",
-      "children": [
-        {
-          "id": "context-caching",
-          "name": "Caching",
-          "children": [
-            { "id": "prompt-caching", "name": "Prompt Caching" },
-            { "id": "caching-thinking", "name": "Caching with Thinking" },
-            { "id": "caching-extended", "name": "Caching with Extended Thinking" }
-          ]
-        },
-        {
-          "id": "context-optimization",
-          "name": "Token Management",
-          "children": [
-            { "id": "token-management", "name": "Token Management" }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "evaluation",
-      "name": "Evaluation",
-      "description": "Define success criteria and measure AI system performance",
-      "children": [
-        {
-          "id": "evaluation-criteria",
-          "name": "Criteria",
-          "children": [
-            { "id": "defining-success", "name": "Defining Success Criteria" },
-            { "id": "evaluation-criteria", "name": "Evaluation Criteria" }
-          ]
-        }
-      ]
-    }
-  ],
+  "title": "Claude Developer Certification Study Environment",
+  "examTitle": "Claude Developer Certification",
+  "generatedAt": "2026-03-01T00:00:00Z",
+  "topicTreePath": "research/topic-tree.json",
   "quizPath": "quizzes.json",
   "researchDir": "research",
+  "podcastDir": "podcasts/audio",
   "podcastEpisodes": [
     {
-      "topicId": "tool-use",
-      "title": "Tool Use - Part 1: Fundamentals",
-      "audioPath": "podcasts/audio/tool-use_part1.mp3",
-      "duration": "15:42"
-    },
-    {
-      "topicId": "tool-use",
-      "title": "Tool Use - Part 2: Advanced Patterns",
-      "audioPath": "podcasts/audio/tool-use_part2.mp3",
-      "duration": "18:23"
-    },
-    {
-      "topicId": "prompt-engineering",
-      "title": "Prompt Engineering - Part 1: Basics",
-      "audioPath": "podcasts/audio/prompt-engineering_part1.mp3",
-      "duration": "14:15"
-    },
-    {
-      "topicId": "prompt-engineering",
-      "title": "Prompt Engineering - Part 2: Structure",
-      "audioPath": "podcasts/audio/prompt-engineering_part2.mp3",
-      "duration": "16:30"
-    },
-    {
-      "topicId": "prompt-engineering",
-      "title": "Prompt Engineering - Part 3: Examples",
-      "audioPath": "podcasts/audio/prompt-engineering_part3.mp3",
-      "duration": "17:45"
-    },
-    {
-      "topicId": "prompt-engineering",
-      "title": "Prompt Engineering - Part 4: Advanced",
-      "audioPath": "podcasts/audio/prompt-engineering_part4.mp3",
-      "duration": "15:20"
-    },
-    {
-      "topicId": "prompt-engineering",
-      "title": "Prompt Engineering - Part 5: Context",
-      "audioPath": "podcasts/audio/prompt-engineering_part5.mp3",
-      "duration": "19:10"
-    },
-    {
-      "topicId": "prompt-engineering",
-      "title": "Prompt Engineering - Part 6: Optimization",
-      "audioPath": "podcasts/audio/prompt-engineering_part6.mp3",
-      "duration": "16:55"
-    },
-    {
-      "topicId": "prompt-engineering",
-      "title": "Prompt Engineering - Part 7: Best Practices",
-      "audioPath": "podcasts/audio/prompt-engineering_part7.mp3",
-      "duration": "14:40"
-    },
-    {
       "topicId": "agents",
-      "title": "Agents - Part 1: Introduction",
+      "title": "Agentic Patterns - Part 1",
       "audioPath": "podcasts/audio/agents_part1.mp3",
-      "duration": "13:25"
+      "duration": "15:00"
     },
     {
       "topicId": "agents",
-      "title": "Agents - Part 2: Architecture",
+      "title": "Agentic Patterns - Part 2",
       "audioPath": "podcasts/audio/agents_part2.mp3",
-      "duration": "17:15"
+      "duration": "15:00"
     },
     {
       "topicId": "agents",
-      "title": "Agents - Part 3: State Management",
+      "title": "Agentic Patterns - Part 3",
       "audioPath": "podcasts/audio/agents_part3.mp3",
-      "duration": "18:50"
+      "duration": "15:00"
     },
     {
       "topicId": "agents",
-      "title": "Agents - Part 4: Thinking Patterns",
+      "title": "Agentic Patterns - Part 4",
       "audioPath": "podcasts/audio/agents_part4.mp3",
-      "duration": "16:30"
+      "duration": "15:00"
     },
     {
       "topicId": "agents",
-      "title": "Agents - Part 5: Error Handling",
+      "title": "Agentic Patterns - Part 5",
       "audioPath": "podcasts/audio/agents_part5.mp3",
-      "duration": "15:40"
-    },
-    {
-      "topicId": "agents",
-      "title": "Agents - Part 6: Production Tips",
-      "audioPath": "podcasts/audio/agents_part6.mp3",
-      "duration": "19:20"
+      "duration": "15:00"
     },
     {
       "topicId": "api-integration",
-      "title": "API Integration - Part 1: Setup",
+      "title": "API Integration - Part 1",
       "audioPath": "podcasts/audio/api-integration_part1.mp3",
-      "duration": "12:30"
+      "duration": "15:00"
     },
     {
       "topicId": "api-integration",
-      "title": "API Integration - Part 2: Messages API",
+      "title": "API Integration - Part 2",
       "audioPath": "podcasts/audio/api-integration_part2.mp3",
-      "duration": "16:45"
+      "duration": "15:00"
     },
     {
       "topicId": "api-integration",
-      "title": "API Integration - Part 3: Streaming",
+      "title": "API Integration - Part 3",
       "audioPath": "podcasts/audio/api-integration_part3.mp3",
-      "duration": "18:10"
+      "duration": "15:00"
     },
     {
       "topicId": "api-integration",
-      "title": "API Integration - Part 4: Error Handling",
+      "title": "API Integration - Part 4",
       "audioPath": "podcasts/audio/api-integration_part4.mp3",
-      "duration": "14:55"
+      "duration": "15:00"
     },
     {
-      "topicId": "api-integration",
-      "title": "API Integration - Part 5: Best Practices",
-      "audioPath": "podcasts/audio/api-integration_part5.mp3",
-      "duration": "17:25"
+      "topicId": "claude-code",
+      "title": "Claude Code and Skills - Part 1",
+      "audioPath": "podcasts/audio/claude-code_part1.mp3",
+      "duration": "15:00"
+    },
+    {
+      "topicId": "claude-code",
+      "title": "Claude Code and Skills - Part 2",
+      "audioPath": "podcasts/audio/claude-code_part2.mp3",
+      "duration": "15:00"
+    },
+    {
+      "topicId": "claude-code",
+      "title": "Claude Code and Skills - Part 3",
+      "audioPath": "podcasts/audio/claude-code_part3.mp3",
+      "duration": "15:00"
+    },
+    {
+      "topicId": "claude-code",
+      "title": "Claude Code and Skills - Part 4",
+      "audioPath": "podcasts/audio/claude-code_part4.mp3",
+      "duration": "15:00"
+    },
+    {
+      "topicId": "claude-code",
+      "title": "Claude Code and Skills - Part 5",
+      "audioPath": "podcasts/audio/claude-code_part5.mp3",
+      "duration": "15:00"
+    },
+    {
+      "topicId": "claude-code",
+      "title": "Claude Code and Skills - Part 6",
+      "audioPath": "podcasts/audio/claude-code_part6.mp3",
+      "duration": "15:00"
     },
     {
       "topicId": "context-management",
-      "title": "Context Management - Part 1: Windows",
+      "title": "Context Window Management - Part 1",
       "audioPath": "podcasts/audio/context-management_part1.mp3",
-      "duration": "15:15"
+      "duration": "15:00"
     },
     {
       "topicId": "context-management",
-      "title": "Context Management - Part 2: Caching",
+      "title": "Context Window Management - Part 2",
       "audioPath": "podcasts/audio/context-management_part2.mp3",
-      "duration": "18:40"
+      "duration": "15:00"
     },
     {
       "topicId": "context-management",
-      "title": "Context Management - Part 3: Token Optimization",
+      "title": "Context Window Management - Part 3",
       "audioPath": "podcasts/audio/context-management_part3.mp3",
-      "duration": "16:20"
+      "duration": "15:00"
     },
     {
       "topicId": "context-management",
-      "title": "Context Management - Part 4: Advanced Techniques",
+      "title": "Context Window Management - Part 4",
       "audioPath": "podcasts/audio/context-management_part4.mp3",
-      "duration": "19:05"
+      "duration": "15:00"
     },
     {
       "topicId": "context-management",
-      "title": "Context Management - Part 5: Performance",
+      "title": "Context Window Management - Part 5",
       "audioPath": "podcasts/audio/context-management_part5.mp3",
-      "duration": "17:30"
+      "duration": "15:00"
     },
     {
-      "topicId": "context-management",
-      "title": "Context Management - Part 6: Troubleshooting",
-      "audioPath": "podcasts/audio/context-management_part6.mp3",
-      "duration": "14:45"
+      "topicId": "enterprise",
+      "title": "Enterprise Patterns - Part 1",
+      "audioPath": "podcasts/audio/enterprise_part1.mp3",
+      "duration": "15:00"
+    },
+    {
+      "topicId": "enterprise",
+      "title": "Enterprise Patterns - Part 2",
+      "audioPath": "podcasts/audio/enterprise_part2.mp3",
+      "duration": "15:00"
+    },
+    {
+      "topicId": "enterprise",
+      "title": "Enterprise Patterns - Part 3",
+      "audioPath": "podcasts/audio/enterprise_part3.mp3",
+      "duration": "15:00"
+    },
+    {
+      "topicId": "enterprise",
+      "title": "Enterprise Patterns - Part 4",
+      "audioPath": "podcasts/audio/enterprise_part4.mp3",
+      "duration": "15:00"
     },
     {
       "topicId": "evaluation",
-      "title": "Evaluation - Part 1: Metrics",
+      "title": "Evaluation and Testing - Part 1",
       "audioPath": "podcasts/audio/evaluation_part1.mp3",
-      "duration": "13:50"
+      "duration": "15:00"
     },
     {
       "topicId": "evaluation",
-      "title": "Evaluation - Part 2: Success Criteria",
+      "title": "Evaluation and Testing - Part 2",
       "audioPath": "podcasts/audio/evaluation_part2.mp3",
-      "duration": "16:15"
+      "duration": "15:00"
     },
     {
       "topicId": "evaluation",
-      "title": "Evaluation - Part 3: Testing",
+      "title": "Evaluation and Testing - Part 3",
       "audioPath": "podcasts/audio/evaluation_part3.mp3",
-      "duration": "18:25"
+      "duration": "15:00"
     },
     {
       "topicId": "evaluation",
-      "title": "Evaluation - Part 4: Benchmarking",
+      "title": "Evaluation and Testing - Part 4",
       "audioPath": "podcasts/audio/evaluation_part4.mp3",
-      "duration": "15:40"
+      "duration": "15:00"
     },
     {
-      "topicId": "evaluation",
-      "title": "Evaluation - Part 5: Iteration",
-      "audioPath": "podcasts/audio/evaluation_part5.mp3",
-      "duration": "17:10"
+      "topicId": "multimodal",
+      "title": "Multimodal Capabilities - Part 1",
+      "audioPath": "podcasts/audio/multimodal_part1.mp3",
+      "duration": "15:00"
     },
     {
-      "topicId": "evaluation",
-      "title": "Evaluation - Part 6: Production Monitoring",
-      "audioPath": "podcasts/audio/evaluation_part6.mp3",
-      "duration": "19:35"
+      "topicId": "multimodal",
+      "title": "Multimodal Capabilities - Part 2",
+      "audioPath": "podcasts/audio/multimodal_part2.mp3",
+      "duration": "15:00"
+    },
+    {
+      "topicId": "multimodal",
+      "title": "Multimodal Capabilities - Part 3",
+      "audioPath": "podcasts/audio/multimodal_part3.mp3",
+      "duration": "15:00"
+    },
+    {
+      "topicId": "prompt-engineering",
+      "title": "Prompt Engineering - Part 1",
+      "audioPath": "podcasts/audio/prompt-engineering_part1.mp3",
+      "duration": "15:00"
+    },
+    {
+      "topicId": "prompt-engineering",
+      "title": "Prompt Engineering - Part 2",
+      "audioPath": "podcasts/audio/prompt-engineering_part2.mp3",
+      "duration": "15:00"
+    },
+    {
+      "topicId": "prompt-engineering",
+      "title": "Prompt Engineering - Part 3",
+      "audioPath": "podcasts/audio/prompt-engineering_part3.mp3",
+      "duration": "15:00"
+    },
+    {
+      "topicId": "prompt-engineering",
+      "title": "Prompt Engineering - Part 4",
+      "audioPath": "podcasts/audio/prompt-engineering_part4.mp3",
+      "duration": "15:00"
+    },
+    {
+      "topicId": "prompt-engineering",
+      "title": "Prompt Engineering - Part 5",
+      "audioPath": "podcasts/audio/prompt-engineering_part5.mp3",
+      "duration": "15:00"
+    },
+    {
+      "topicId": "safety-alignment",
+      "title": "Safety and Alignment - Part 1",
+      "audioPath": "podcasts/audio/safety-alignment_part1.mp3",
+      "duration": "15:00"
+    },
+    {
+      "topicId": "safety-alignment",
+      "title": "Safety and Alignment - Part 2",
+      "audioPath": "podcasts/audio/safety-alignment_part2.mp3",
+      "duration": "15:00"
+    },
+    {
+      "topicId": "safety-alignment",
+      "title": "Safety and Alignment - Part 3",
+      "audioPath": "podcasts/audio/safety-alignment_part3.mp3",
+      "duration": "15:00"
+    },
+    {
+      "topicId": "tool-use",
+      "title": "Tool Use and Function Calling - Part 1",
+      "audioPath": "podcasts/audio/tool-use_part1.mp3",
+      "duration": "15:00"
+    },
+    {
+      "topicId": "tool-use",
+      "title": "Tool Use and Function Calling - Part 2",
+      "audioPath": "podcasts/audio/tool-use_part2.mp3",
+      "duration": "15:00"
+    },
+    {
+      "topicId": "tool-use",
+      "title": "Tool Use and Function Calling - Part 3",
+      "audioPath": "podcasts/audio/tool-use_part3.mp3",
+      "duration": "15:00"
+    },
+    {
+      "topicId": "tool-use",
+      "title": "Tool Use and Function Calling - Part 4",
+      "audioPath": "podcasts/audio/tool-use_part4.mp3",
+      "duration": "15:00"
+    },
+    {
+      "topicId": "tool-use",
+      "title": "Tool Use and Function Calling - Part 5",
+      "audioPath": "podcasts/audio/tool-use_part5.mp3",
+      "duration": "15:00"
     }
   ]
 }

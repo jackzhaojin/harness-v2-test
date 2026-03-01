@@ -1,179 +1,227 @@
-# Study Environment - Interactive Learning Platform
+# Claude Developer Certification Study Environment
 
-A comprehensive React application for interactive exam preparation, featuring quizzes, podcast episodes, teach-back exercises, and research materials.
+A comprehensive React-based study application for interactive exam preparation featuring quizzes, podcasts, research materials, and teach-back exercises.
 
 ## Features
 
 ### 🏠 Home Dashboard
-- Topic overview with progress tracking
-- Quick access to all learning activities
-- Study progress visualization
-
-### 🎧 Podcast Player
-- HTML5 audio player with custom controls
-- Playback speed control (1x, 1.5x, 2x)
-- Episodes organized by topic
-- Auto-play next episode
-
-### 📝 Practice Quiz
-- Scenario-based questions
-- Multiple difficulty levels (Easy, Medium, Hard)
-- Rationale input before answer submission
-- AI coaching feedback panel (agent-ready)
-- Detailed explanations and references
-
-### 💬 Teach-Back Exercise
-- Explain concepts in your own words
-- AI evaluation and feedback (agent-ready)
-- Follow-up questions for deeper learning
-- Voice input placeholder (coming soon)
+- Overview of all study modes with progress tracking
+- Quick stats on topics, questions, and episodes
+- Direct navigation to all study tools
 
 ### 📚 Research Browser
-- Browse 55+ markdown documents
-- Organized by topic categories
-- Full-text search
-- Rich markdown rendering
+- Browse comprehensive study materials organized by topic
+- Rich markdown rendering with syntax highlighting
+- 10 main topic areas covering all certification content
+- Responsive layout with topic navigation
 
-## Tech Stack
+### 🎧 Podcast Player
+- 44 audio episodes grouped by topic
+- HTML5 audio player with custom controls
+- Playback speed control (1x, 1.5x, 2x)
+- Seek bar and time display
+- Episodes cover all certification topics
 
-- **Framework**: React 18 with Vite
-- **Routing**: React Router v6
-- **Styling**: Tailwind CSS v3
-- **UI Components**: Custom ShadCN/ui implementation
-- **Markdown**: react-markdown
-- **Icons**: Lucide React
+### ❓ Quiz Practice
+- 50 scenario-based certification questions
+- Filter by topic and difficulty (easy, medium, hard)
+- Write rationale before revealing answers
+- Instant feedback with detailed explanations
+- Coaching panel with personalized study tips
+- Track progress across all questions
 
-## Getting Started
+### 💬 Teach-Back
+- Practice explaining concepts in your own words
+- AI evaluation placeholder (ready for agent integration)
+- Follow-up questions to deepen understanding
+- Active recall and knowledge reinforcement
+- Voice input placeholder (coming soon)
 
-### Prerequisites
-- Node.js 18+ and npm
+## Technology Stack
 
-### Installation
-
-1. Install dependencies:
-```bash
-npm install
-```
-
-2. Start the development server:
-```bash
-npm run dev
-```
-
-3. Build for production:
-```bash
-npm run build
-```
-
-4. Preview production build:
-```bash
-npm run preview
-```
+- **React 19** - Modern UI framework
+- **Vite 7** - Fast build tool and dev server
+- **React Router 6** - Client-side routing
+- **Tailwind CSS v4** - Utility-first styling
+- **ShadCN/ui** - High-quality component library
+- **React Markdown** - Markdown rendering
+- **Lucide React** - Beautiful icon library
 
 ## Project Structure
 
 ```
-├── public/
-│   ├── manifest.json        # App configuration and topic tree
-│   ├── quizzes.json         # Quiz questions database
-│   ├── podcasts/            # Audio files
-│   └── research/            # Markdown documentation
+harness-v2-test/
 ├── src/
 │   ├── components/
-│   │   ├── ui/              # ShadCN UI components
+│   │   ├── ui/              # ShadCN/ui components
 │   │   ├── Layout.jsx       # Main layout with nav and sidebar
 │   │   ├── TopicSidebar.jsx # Collapsible topic navigation
-│   │   ├── PodcastPlayer.jsx
-│   │   ├── QuizCard.jsx
-│   │   ├── CoachingPanel.jsx
-│   │   └── ResearchViewer.jsx
+│   │   ├── PodcastPlayer.jsx # Audio player component
+│   │   ├── QuizCard.jsx     # Question display with rationale
+│   │   ├── CoachingPanel.jsx # AI coaching feedback
+│   │   ├── TeachBackInput.jsx # Teach-back exercise component
+│   │   └── ResearchViewer.jsx # Markdown content renderer
 │   ├── pages/
-│   │   ├── Home.jsx
-│   │   ├── Podcast.jsx
-│   │   ├── Quiz.jsx
-│   │   ├── TeachBack.jsx
-│   │   └── Research.jsx
+│   │   ├── Home.jsx         # Dashboard
+│   │   ├── Podcast.jsx      # Podcast episodes
+│   │   ├── Quiz.jsx         # Quiz interface
+│   │   ├── TeachBack.jsx    # Teach-back exercises
+│   │   └── Research.jsx     # Research materials
 │   ├── hooks/
-│   │   ├── useManifest.js
-│   │   └── useQuizData.js
+│   │   └── useTheme.jsx     # Dark/light mode theme hook
 │   ├── lib/
-│   │   └── utils.js
-│   └── App.jsx
-└── manifest.json            # Source manifest
+│   │   └── utils.js         # Utility functions
+│   ├── App.jsx              # Main app component
+│   ├── main.jsx             # Entry point
+│   └── index.css            # Global styles
+├── public/
+│   ├── manifest.json        # Study content manifest
+│   ├── quizzes.json         # Quiz questions
+│   ├── research/            # Markdown study materials
+│   └── podcasts/            # Audio episodes
+├── index.html               # HTML template
+├── vite.config.js           # Vite configuration
+├── tailwind.config.js       # Tailwind configuration
+└── package.json             # Dependencies
+
 ```
 
-## Configuration
+## Getting Started
 
-### Manifest Structure
+### Installation
 
-The `manifest.json` file drives the entire application:
+```bash
+# Install dependencies
+npm install
 
-```json
-{
-  "title": "Study Environment Title",
-  "topics": [...],              // Hierarchical topic tree
-  "quizPath": "quizzes.json",
-  "researchDir": "research",
-  "podcastEpisodes": [...]      // Episode metadata
-}
+# Start development server
+npm run dev
+
+# Build for production
+npm run build
+
+# Preview production build
+npm run preview
 ```
 
-### Adding Content
+### Development
 
-**Quizzes**: Add questions to `public/quizzes.json`
+The app runs on `http://localhost:5173` by default. Hot module replacement is enabled for instant updates during development.
 
-**Podcasts**: Place MP3 files in `public/podcasts/audio/` and add metadata to manifest
+## Data Files
 
-**Research**: Add markdown files to `public/research/` directory
+### manifest.json
+Contains metadata about the study environment including:
+- Title and exam information
+- Paths to data files
+- Podcast episode list with topics and durations
 
-## Features for AI Agent Integration
+### quizzes.json
+50 quiz questions with:
+- Scenarios and questions
+- Multiple choice options
+- Correct answers and detailed rationales
+- Topic tags and difficulty levels
+- Reference materials
 
-### Coaching Panel (Quiz)
-The `CoachingPanel` component is designed to receive personalized feedback from an external AI agent. It displays:
-- Assessment of correctness
-- Key learning points
-- Next steps
-- Context-aware coaching
+### research/topic-tree.json
+Hierarchical topic structure with:
+- Main topics and subtopics
+- Descriptions and complexity estimates
+- 38 leaf topics across 10 main areas
 
-### Evaluation Display (Teach-Back)
-The teach-back evaluation system can receive:
-- Detailed scoring
-- Strengths and weaknesses analysis
-- Follow-up questions
-- Personalized recommendations
+### research/*.md
+Comprehensive study materials:
+- Detailed explanations of concepts
+- Code examples and best practices
+- API documentation
+- Real-world use cases
 
-Both features include placeholder data but are structured to accept real-time agent responses.
+### podcasts/audio/*.mp3
+Audio episodes covering all topics:
+- Organized by topic ID
+- Multiple parts per topic
+- ~15 minutes per episode
 
-## Dark Mode
+## Features in Detail
 
-Dark mode is enabled by default and can be toggled via the sun/moon icon in the top navigation bar. The theme is managed through Tailwind CSS custom properties and the `dark` class.
+### Dark Mode
+- Default dark theme
+- Toggle between light and dark modes
+- Persistent theme preference in localStorage
+- Smooth transitions
 
-## Responsive Design
+### Responsive Design
+- Mobile-first approach
+- Collapsible sidebar on mobile
+- Touch-friendly controls
+- Optimized for all screen sizes
 
-- **Mobile**: Sidebar collapses with hamburger menu
-- **Tablet**: Optimized layouts for medium screens
-- **Desktop**: Full sidebar and multi-column layouts
+### Accessibility
+- Semantic HTML structure
+- ARIA labels for interactive elements
+- Keyboard navigation support
+- Screen reader friendly
+
+### Quiz Flow
+1. Read scenario and question
+2. Select an answer option
+3. Write your rationale
+4. Submit to see results
+5. Review official explanation
+6. Get coaching feedback
+7. Navigate between questions
+
+### Audio Player Features
+- Standard HTML5 audio controls
+- Custom seek bar
+- Time display (current/total)
+- Playback speed selector
+- Skip forward/backward 10 seconds
+- Episode playlist by topic
+
+### Research Viewer
+- Syntax-highlighted code blocks
+- Responsive tables
+- Styled blockquotes and lists
+- External link handling
+- Print-friendly layout
+
+## Future Enhancements
+
+### Agent Integration Points
+- **Coaching Panel**: Connect to AI agent for personalized feedback based on quiz answers
+- **Teach-Back Evaluation**: AI agent to evaluate explanations and provide targeted feedback
+- **Voice Input**: Speech-to-text for teach-back exercises
+- **Progress Tracking**: Real-time study analytics and recommendations
+- **Adaptive Learning**: AI-suggested next topics based on performance
+
+### Planned Features
+- Study session timer
+- Bookmark favorite questions/topics
+- Custom study plans
+- Flashcard mode
+- Practice exam mode
+- Progress export/import
+
+## Build Output
+
+The production build generates:
+- Optimized JavaScript bundle (~420KB, gzipped: ~131KB)
+- Minified CSS bundle (~27KB, gzipped: ~5.4KB)
+- Static HTML entry point
+- All assets copied to dist/
 
 ## Browser Support
 
-- Chrome/Edge (latest)
-- Firefox (latest)
-- Safari (latest)
-
-## Development
-
-### Run in Development
-```bash
-npm run dev
-```
-The app will be available at `http://localhost:5173`
-
-### Build for Production
-```bash
-npm run build
-```
-Output will be in the `dist/` directory
+- Modern browsers with ES2020+ support
+- Chrome, Firefox, Safari, Edge (latest versions)
+- Mobile browsers on iOS and Android
 
 ## License
 
-This project is for educational purposes.
+ISC
+
+## Acknowledgments
+
+Built for the Claude Developer Certification Study Environment using modern web technologies and best practices.
