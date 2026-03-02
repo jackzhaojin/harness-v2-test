@@ -1,0 +1,38 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+dist-ssr/
+
+# Vite
+.vite/
+.vite-temp/
+
+# Environment secrets
+.env
+.env.local
+.env.*.local
+.env.production
+.env.staging
+
+# OS / editor
+.DS_Store
+Thumbs.db
+*.local
+.idea/
+.vscode/
+
+# Logs and coverage
+*.log
+coverage/
+
+# Temp files
+research/_combined_*.md
+
+# Playwright
+.playwright-mcp/
+
+# TTS model files (large binaries)
+*.onnx
+*.bin
