@@ -8,7 +8,7 @@ Each project lives in its own directory under `projects/`. Projects are generate
 
 ```
 projects/
-├── claude-cert/     ← Claude certification study environment
+├── claude-cert-v1/  ← Claude certification study environment
 └── (future projects...)
 ```
 
@@ -16,4 +16,4 @@ projects/
 
 | Project | Generator | Description |
 |---------|-----------|-------------|
-| `claude-cert` | study-harness-v2026-03-v1 | Interactive study environment for the Claude Developer Certification exam |
+| `claude-cert-v1` | study-harness-v2026-03-v1 | Interactive study environment for the Claude Developer Certification exam |
