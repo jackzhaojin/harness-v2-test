@@ -1,0 +1,461 @@
+{
+  "version": "1.0",
+  "title": "Claude Developer Certification",
+  "generatedAt": "2026-03-02T03:40:00.000Z",
+  "generatedBy": "study-agent-harness",
+  "topics": [
+    "agents_agent-loops_basic-pattern",
+    "agents_agent-loops_long-running",
+    "agents_agent-sdk_task-tool",
+    "agents_multi-agent_agent-teams",
+    "agents_multi-agent_specialization",
+    "agents_multi-agent_subagents",
+    "api-integration_batching_implementation",
+    "api-integration_messages-api_request-format",
+    "api-integration_messages-api_stop-reasons",
+    "api-integration_rate-limits_handling",
+    "api-integration_rate-limits_tiers",
+    "api-integration_streaming_events",
+    "claude-code_hooks_configuration",
+    "claude-code_ide_editors",
+    "claude-code_mcp_connector",
+    "claude-code_mcp_integration",
+    "claude-code_mcp_tool-search",
+    "claude-code_skills_creation",
+    "claude-code_skills_vs-mcp",
+    "context-management_compaction_usage",
+    "context-management_context-awareness_budget-tracking",
+    "context-management_prompt-caching_implementation",
+    "context-management_prompt-caching_rate-limits",
+    "context-management_token-limits_token-counting",
+    "context-management_token-limits_window-sizes",
+    "enterprise_cost-optimization_caching",
+    "enterprise_cost-optimization_model-routing",
+    "enterprise_cost-optimization_monitoring",
+    "enterprise_deployment_cloud",
+    "enterprise_deployment_patterns",
+    "enterprise_workspaces_organization",
+    "enterprise_workspaces_projects",
+    "evaluation_console-tool_features",
+    "evaluation_llm-judge_grading",
+    "evaluation_rubrics_design",
+    "evaluation_rubrics_weighting",
+    "evaluation_success-criteria_definition",
+    "multimodal_pdf_batch-processing",
+    "multimodal_pdf_extraction",
+    "multimodal_prompting_describe-answer",
+    "multimodal_vision_analysis-types",
+    "multimodal_vision_image-formats",
+    "prompt-engineering_chain-of-thought_extended-thinking",
+    "prompt-engineering_chain-of-thought_thinking-tags",
+    "prompt-engineering_few-shot_example-design",
+    "prompt-engineering_few-shot_negative-examples",
+    "prompt-engineering_prompt-chaining_task-decomposition",
+    "prompt-engineering_system-prompts_structure",
+    "prompt-engineering_system-prompts_xml-tags",
+    "safety-alignment_constitutional-ai_2026-constitution",
+    "safety-alignment_constitutional-ai_methodology",
+    "safety-alignment_jailbreak-prevention_classifiers",
+    "safety-alignment_rlhf_multi-dimensional",
+    "safety-alignment_usage-policies_restrictions",
+    "tool-use_client-tools_execution-flow",
+    "tool-use_client-tools_tool-results",
+    "tool-use_parallel-tools_result-formatting",
+    "tool-use_server-tools_pause-turn",
+    "tool-use_server-tools_web-search",
+    "tool-use_tool-choice_modes",
+    "tool-use_tool-definitions_input-schemas",
+    "tool-use_tool-definitions_strict-mode"
+  ],
+  "topicTree": {
+    "examTitle": "Claude Developer Certification",
+    "sourceDocument": "/Users/jackjin/dev/jack-dev-server-configs/local/study-harness-v2026-03-v1/input/claude-certification/manifest.yaml",
+    "generatedAt": "2026-03-01T12:00:00.000Z",
+    "totalLeafTopics": 44,
+    "topics": [
+      {
+        "id": "prompt-engineering",
+        "title": "Prompt Engineering",
+        "description": "Techniques and best practices for crafting effective prompts for Claude, including system prompts, few-shot examples, chain-of-thought reasoning, and structured outputs.",
+        "depth": 0,
+        "estimatedComplexity": "high",
+        "subtopics": [
+          {
+            "id": "prompt-engineering.system-prompts",
+            "title": "System Prompts",
+            "subtopics": [
+              {"id": "prompt-engineering.system-prompts.structure", "title": "System Prompt Structure", "subtopics": []},
+              {"id": "prompt-engineering.system-prompts.xml-tags", "title": "XML Tags and Formatting", "subtopics": []}
+            ]
+          },
+          {
+            "id": "prompt-engineering.few-shot",
+            "title": "Few-Shot Prompting",
+            "subtopics": [
+              {"id": "prompt-engineering.few-shot.example-design", "title": "Example Design and Selection", "subtopics": []},
+              {"id": "prompt-engineering.few-shot.negative-examples", "title": "Negative Examples", "subtopics": []}
+            ]
+          },
+          {
+            "id": "prompt-engineering.chain-of-thought",
+            "title": "Chain-of-Thought Reasoning",
+            "subtopics": [
+              {"id": "prompt-engineering.chain-of-thought.thinking-tags", "title": "Thinking Tags Pattern", "subtopics": []},
+              {"id": "prompt-engineering.chain-of-thought.extended-thinking", "title": "Extended Thinking Mode", "subtopics": []}
+            ]
+          },
+          {
+            "id": "prompt-engineering.prompt-chaining",
+            "title": "Prompt Chaining",
+            "subtopics": [
+              {"id": "prompt-engineering.prompt-chaining.task-decomposition", "title": "Task Decomposition", "subtopics": []}
+            ]
+          }
+        ]
+      },
+      {
+        "id": "tool-use",
+        "title": "Tool Use and Function Calling",
+        "description": "Enabling Claude to interact with external tools and functions, including tool definitions, execution patterns, and error handling.",
+        "depth": 0,
+        "estimatedComplexity": "high",
+        "subtopics": [
+          {
+            "id": "tool-use.tool-definitions",
+            "title": "Tool Definitions",
+            "subtopics": [
+              {"id": "tool-use.tool-definitions.input-schemas", "title": "Input Schema Design", "subtopics": []},
+              {"id": "tool-use.tool-definitions.strict-mode", "title": "Strict Tool Use", "subtopics": []}
+            ]
+          },
+          {
+            "id": "tool-use.client-tools",
+            "title": "Client Tools",
+            "subtopics": [
+              {"id": "tool-use.client-tools.execution-flow", "title": "Tool Execution Flow", "subtopics": []},
+              {"id": "tool-use.client-tools.tool-results", "title": "Tool Results", "subtopics": []}
+            ]
+          },
+          {
+            "id": "tool-use.server-tools",
+            "title": "Server Tools",
+            "subtopics": [
+              {"id": "tool-use.server-tools.web-search", "title": "Web Search Tool", "subtopics": []},
+              {"id": "tool-use.server-tools.pause-turn", "title": "Handling pause_turn", "subtopics": []}
+            ]
+          },
+          {
+            "id": "tool-use.parallel-tools",
+            "title": "Parallel Tool Use",
+            "subtopics": [
+              {"id": "tool-use.parallel-tools.result-formatting", "title": "Parallel Result Formatting", "subtopics": []}
+            ]
+          },
+          {
+            "id": "tool-use.tool-choice",
+            "title": "Tool Choice Control",
+            "subtopics": [
+              {"id": "tool-use.tool-choice.modes", "title": "Tool Choice Modes", "subtopics": []}
+            ]
+          }
+        ]
+      },
+      {
+        "id": "agents",
+        "title": "Agentic Patterns",
+        "description": "Building autonomous agents with Claude, including agent loops, multi-agent orchestration, and context management.",
+        "depth": 0,
+        "estimatedComplexity": "high",
+        "subtopics": [
+          {
+            "id": "agents.agent-loops",
+            "title": "Agent Loops",
+            "subtopics": [
+              {"id": "agents.agent-loops.basic-pattern", "title": "Basic Agent Loop Pattern", "subtopics": []},
+              {"id": "agents.agent-loops.long-running", "title": "Long-Running Agents", "subtopics": []}
+            ]
+          },
+          {
+            "id": "agents.multi-agent",
+            "title": "Multi-Agent Orchestration",
+            "subtopics": [
+              {"id": "agents.multi-agent.agent-teams", "title": "Agent Teams", "subtopics": []},
+              {"id": "agents.multi-agent.subagents", "title": "Subagents vs Teams", "subtopics": []},
+              {"id": "agents.multi-agent.specialization", "title": "Role Specialization", "subtopics": []}
+            ]
+          },
+          {
+            "id": "agents.agent-sdk",
+            "title": "Claude Agent SDK",
+            "subtopics": [
+              {"id": "agents.agent-sdk.task-tool", "title": "Task Tool for Spawning", "subtopics": []}
+            ]
+          }
+        ]
+      },
+      {
+        "id": "context-management",
+        "title": "Context Window Management",
+        "description": "Strategies for managing Claude's context window, including token limits, caching, and summarization.",
+        "depth": 0,
+        "estimatedComplexity": "high",
+        "subtopics": [
+          {
+            "id": "context-management.token-limits",
+            "title": "Token Limits",
+            "subtopics": [
+              {"id": "context-management.token-limits.window-sizes", "title": "Context Window Sizes", "subtopics": []},
+              {"id": "context-management.token-limits.token-counting", "title": "Token Counting API", "subtopics": []}
+            ]
+          },
+          {
+            "id": "context-management.prompt-caching",
+            "title": "Prompt Caching",
+            "subtopics": [
+              {"id": "context-management.prompt-caching.implementation", "title": "Cache Implementation", "subtopics": []},
+              {"id": "context-management.prompt-caching.rate-limits", "title": "Cache and Rate Limits", "subtopics": []}
+            ]
+          },
+          {
+            "id": "context-management.compaction",
+            "title": "Server-Side Compaction",
+            "subtopics": [
+              {"id": "context-management.compaction.usage", "title": "Compaction Usage", "subtopics": []}
+            ]
+          },
+          {
+            "id": "context-management.context-awareness",
+            "title": "Context Awareness",
+            "subtopics": [
+              {"id": "context-management.context-awareness.budget-tracking", "title": "Token Budget Tracking", "subtopics": []}
+            ]
+          }
+        ]
+      },
+      {
+        "id": "safety-alignment",
+        "title": "Safety and Alignment",
+        "description": "Understanding Claude's safety mechanisms, Constitutional AI, and responsible AI practices.",
+        "depth": 0,
+        "estimatedComplexity": "high",
+        "subtopics": [
+          {
+            "id": "safety-alignment.constitutional-ai",
+            "title": "Constitutional AI",
+            "subtopics": [
+              {"id": "safety-alignment.constitutional-ai.methodology", "title": "CAI Methodology", "subtopics": []},
+              {"id": "safety-alignment.constitutional-ai.2026-constitution", "title": "The 2026 Constitution", "subtopics": []}
+            ]
+          },
+          {
+            "id": "safety-alignment.rlhf",
+            "title": "RLHF Fundamentals",
+            "subtopics": [
+              {"id": "safety-alignment.rlhf.multi-dimensional", "title": "Multi-Dimensional Feedback", "subtopics": []}
+            ]
+          },
+          {
+            "id": "safety-alignment.usage-policies",
+            "title": "Usage Policies",
+            "subtopics": [
+              {"id": "safety-alignment.usage-policies.restrictions", "title": "Usage Restrictions", "subtopics": []}
+            ]
+          },
+          {
+            "id": "safety-alignment.jailbreak-prevention",
+            "title": "Jailbreak Prevention",
+            "subtopics": [
+              {"id": "safety-alignment.jailbreak-prevention.classifiers", "title": "Constitutional Classifiers", "subtopics": []}
+            ]
+          }
+        ]
+      },
+      {
+        "id": "api-integration",
+        "title": "API Integration",
+        "description": "Working with the Claude Messages API, including streaming, batching, rate limits, and SDKs.",
+        "depth": 0,
+        "estimatedComplexity": "medium",
+        "subtopics": [
+          {
+            "id": "api-integration.messages-api",
+            "title": "Messages API",
+            "subtopics": [
+              {"id": "api-integration.messages-api.request-format", "title": "Request Format", "subtopics": []},
+              {"id": "api-integration.messages-api.stop-reasons", "title": "Stop Reasons", "subtopics": []}
+            ]
+          },
+          {
+            "id": "api-integration.streaming",
+            "title": "Streaming",
+            "subtopics": [
+              {"id": "api-integration.streaming.events", "title": "Streaming Events", "subtopics": []}
+            ]
+          },
+          {
+            "id": "api-integration.batching",
+            "title": "Batch Processing",
+            "subtopics": [
+              {"id": "api-integration.batching.implementation", "title": "Batch API Implementation", "subtopics": []}
+            ]
+          },
+          {
+            "id": "api-integration.rate-limits",
+            "title": "Rate Limits",
+            "subtopics": [
+              {"id": "api-integration.rate-limits.tiers", "title": "Usage Tiers", "subtopics": []},
+              {"id": "api-integration.rate-limits.handling", "title": "Rate Limit Handling", "subtopics": []}
+            ]
+          }
+        ]
+      },
+      {
+        "id": "multimodal",
+        "title": "Multimodal Capabilities",
+        "description": "Using Claude's vision capabilities for image and document understanding.",
+        "depth": 0,
+        "estimatedComplexity": "medium",
+        "subtopics": [
+          {
+            "id": "multimodal.vision",
+            "title": "Vision",
+            "subtopics": [
+              {"id": "multimodal.vision.image-formats", "title": "Image Formats and Limits", "subtopics": []},
+              {"id": "multimodal.vision.analysis-types", "title": "Image Analysis Types", "subtopics": []}
+            ]
+          },
+          {
+            "id": "multimodal.pdf",
+            "title": "PDF Processing",
+            "subtopics": [
+              {"id": "multimodal.pdf.extraction", "title": "PDF Content Extraction", "subtopics": []},
+              {"id": "multimodal.pdf.batch-processing", "title": "PDF Batch Processing", "subtopics": []}
+            ]
+          },
+          {
+            "id": "multimodal.prompting",
+            "title": "Multimodal Prompting",
+            "subtopics": [
+              {"id": "multimodal.prompting.describe-answer", "title": "Describe Then Answer Pattern", "subtopics": []}
+            ]
+          }
+        ]
+      },
+      {
+        "id": "evaluation",
+        "title": "Evaluation and Testing",
+        "description": "Building evaluation frameworks for testing Claude applications, including success criteria, rubrics, and automated grading.",
+        "depth": 0,
+        "estimatedComplexity": "high",
+        "subtopics": [
+          {
+            "id": "evaluation.success-criteria",
+            "title": "Success Criteria",
+            "subtopics": [
+              {"id": "evaluation.success-criteria.definition", "title": "Criteria Definition", "subtopics": []}
+            ]
+          },
+          {
+            "id": "evaluation.rubrics",
+            "title": "Scoring Rubrics",
+            "subtopics": [
+              {"id": "evaluation.rubrics.design", "title": "Rubric Design Principles", "subtopics": []},
+              {"id": "evaluation.rubrics.weighting", "title": "Criteria Weighting", "subtopics": []}
+            ]
+          },
+          {
+            "id": "evaluation.llm-judge",
+            "title": "LLM-as-Judge",
+            "subtopics": [
+              {"id": "evaluation.llm-judge.grading", "title": "Model-Based Grading", "subtopics": []}
+            ]
+          },
+          {
+            "id": "evaluation.console-tool",
+            "title": "Console Evaluation Tool",
+            "subtopics": [
+              {"id": "evaluation.console-tool.features", "title": "Evaluation Tool Features", "subtopics": []}
+            ]
+          }
+        ]
+      },
+      {
+        "id": "claude-code",
+        "title": "Claude Code and Skills",
+        "description": "Using Claude Code CLI with skills, MCP servers, hooks, and IDE integration.",
+        "depth": 0,
+        "estimatedComplexity": "high",
+        "subtopics": [
+          {
+            "id": "claude-code.skills",
+            "title": "Skills System",
+            "subtopics": [
+              {"id": "claude-code.skills.creation", "title": "Skill Creation", "subtopics": []},
+              {"id": "claude-code.skills.vs-mcp", "title": "Skills vs MCP", "subtopics": []}
+            ]
+          },
+          {
+            "id": "claude-code.mcp",
+            "title": "MCP Servers",
+            "subtopics": [
+              {"id": "claude-code.mcp.integration", "title": "MCP Integration", "subtopics": []},
+              {"id": "claude-code.mcp.tool-search", "title": "MCP Tool Search", "subtopics": []},
+              {"id": "claude-code.mcp.connector", "title": "MCP Connector", "subtopics": []}
+            ]
+          },
+          {
+            "id": "claude-code.hooks",
+            "title": "Hooks",
+            "subtopics": [
+              {"id": "claude-code.hooks.configuration", "title": "Hook Configuration", "subtopics": []}
+            ]
+          },
+          {
+            "id": "claude-code.ide",
+            "title": "IDE Integration",
+            "subtopics": [
+              {"id": "claude-code.ide.editors", "title": "Editor Support", "subtopics": []}
+            ]
+          }
+        ]
+      },
+      {
+        "id": "enterprise",
+        "title": "Enterprise Patterns",
+        "description": "Enterprise deployment patterns including workspaces, API key management, cost optimization, and scaling strategies.",
+        "depth": 0,
+        "estimatedComplexity": "medium",
+        "subtopics": [
+          {
+            "id": "enterprise.workspaces",
+            "title": "Workspaces",
+            "subtopics": [
+              {"id": "enterprise.workspaces.organization", "title": "Workspace Organization", "subtopics": []},
+              {"id": "enterprise.workspaces.projects", "title": "Projects and RAG", "subtopics": []}
+            ]
+          },
+          {
+            "id": "enterprise.cost-optimization",
+            "title": "Cost Optimization",
+            "subtopics": [
+              {"id": "enterprise.cost-optimization.caching", "title": "Caching for Cost Savings", "subtopics": []},
+              {"id": "enterprise.cost-optimization.model-routing", "title": "Model Routing", "subtopics": []},
+              {"id": "enterprise.cost-optimization.monitoring", "title": "Usage Monitoring", "subtopics": []}
+            ]
+          },
+          {
+            "id": "enterprise.deployment",
+            "title": "Deployment Patterns",
+            "subtopics": [
+              {"id": "enterprise.deployment.patterns", "title": "Common Product Patterns", "subtopics": []},
+              {"id": "enterprise.deployment.cloud", "title": "Cloud Integration", "subtopics": []}
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "quizPath": "quizzes.json",
+  "researchDir": "research/",
+  "podcastEpisodes": []
+}

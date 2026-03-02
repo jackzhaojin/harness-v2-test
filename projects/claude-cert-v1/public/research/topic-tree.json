@@ -1,0 +1,936 @@
+{
+  "examTitle": "Claude Developer Certification",
+  "sourceDocument": "/Users/jackjin/dev/jack-dev-server-configs/local/study-harness-v2026-03-v1/input/claude-certification/manifest.yaml",
+  "generatedAt": "2026-03-01T12:00:00.000Z",
+  "totalLeafTopics": 44,
+  "topics": [
+    {
+      "id": "prompt-engineering",
+      "title": "Prompt Engineering",
+      "description": "Techniques and best practices for crafting effective prompts for Claude, including system prompts, few-shot examples, chain-of-thought reasoning, and structured outputs.",
+      "depth": 0,
+      "estimatedComplexity": "high",
+      "subtopics": [
+        {
+          "id": "prompt-engineering.system-prompts",
+          "title": "System Prompts",
+          "description": "Design and structure of system prompts that define Claude's role, constraints, and behavior patterns.",
+          "depth": 1,
+          "estimatedComplexity": "medium",
+          "subtopics": [
+            {
+              "id": "prompt-engineering.system-prompts.structure",
+              "title": "System Prompt Structure",
+              "description": "Best practices for structuring system prompts including role definition, goals, constraints, 'if unsure' instructions, and output format specifications.",
+              "depth": 2,
+              "estimatedComplexity": "medium",
+              "subtopics": []
+            },
+            {
+              "id": "prompt-engineering.system-prompts.xml-tags",
+              "title": "XML Tags and Formatting",
+              "description": "Using XML tags to structure prompts, wrap documents, and organize multi-document inputs for improved response quality.",
+              "depth": 2,
+              "estimatedComplexity": "low",
+              "subtopics": []
+            }
+          ]
+        },
+        {
+          "id": "prompt-engineering.few-shot",
+          "title": "Few-Shot Prompting",
+          "description": "Providing examples to guide Claude's responses, including one-shot, few-shot, and edge case examples.",
+          "depth": 1,
+          "estimatedComplexity": "medium",
+          "subtopics": [
+            {
+              "id": "prompt-engineering.few-shot.example-design",
+              "title": "Example Design and Selection",
+              "description": "Crafting realistic, specific examples including edge cases and challenging scenarios to improve model output quality.",
+              "depth": 2,
+              "estimatedComplexity": "medium",
+              "subtopics": []
+            },
+            {
+              "id": "prompt-engineering.few-shot.negative-examples",
+              "title": "Negative Examples",
+              "description": "Using negative examples to define boundaries and show Claude what not to do.",
+              "depth": 2,
+              "estimatedComplexity": "low",
+              "subtopics": []
+            }
+          ]
+        },
+        {
+          "id": "prompt-engineering.chain-of-thought",
+          "title": "Chain-of-Thought Reasoning",
+          "description": "Techniques for encouraging step-by-step reasoning to improve accuracy and transparency.",
+          "depth": 1,
+          "estimatedComplexity": "medium",
+          "subtopics": [
+            {
+              "id": "prompt-engineering.chain-of-thought.thinking-tags",
+              "title": "Thinking Tags Pattern",
+              "description": "Using thinking tags to encourage Claude to reason through problems before providing final answers.",
+              "depth": 2,
+              "estimatedComplexity": "low",
+              "subtopics": []
+            },
+            {
+              "id": "prompt-engineering.chain-of-thought.extended-thinking",
+              "title": "Extended Thinking Mode",
+              "description": "API features for extended thinking, token management for thinking blocks, and when to use extended reasoning.",
+              "depth": 2,
+              "estimatedComplexity": "medium",
+              "subtopics": []
+            }
+          ]
+        },
+        {
+          "id": "prompt-engineering.prompt-chaining",
+          "title": "Prompt Chaining",
+          "description": "Breaking complex tasks into subtasks and using outputs from one prompt as inputs for the next.",
+          "depth": 1,
+          "estimatedComplexity": "medium",
+          "subtopics": [
+            {
+              "id": "prompt-engineering.prompt-chaining.task-decomposition",
+              "title": "Task Decomposition",
+              "description": "Strategies for breaking complex tasks into manageable subtasks for improved accuracy and debuggability.",
+              "depth": 2,
+              "estimatedComplexity": "medium",
+              "subtopics": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tool-use",
+      "title": "Tool Use and Function Calling",
+      "description": "Enabling Claude to interact with external tools and functions, including tool definitions, execution patterns, and error handling.",
+      "depth": 0,
+      "estimatedComplexity": "high",
+      "subtopics": [
+        {
+          "id": "tool-use.tool-definitions",
+          "title": "Tool Definitions",
+          "description": "Defining tools with names, descriptions, and JSON schemas for input parameters.",
+          "depth": 1,
+          "estimatedComplexity": "medium",
+          "subtopics": [
+            {
+              "id": "tool-use.tool-definitions.input-schemas",
+              "title": "Input Schema Design",
+              "description": "Creating JSON schemas for tool inputs including properties, required fields, enums, and descriptions.",
+              "depth": 2,
+              "estimatedComplexity": "medium",
+              "subtopics": []
+            },
+            {
+              "id": "tool-use.tool-definitions.strict-mode",
+              "title": "Strict Tool Use",
+              "description": "Using strict: true for guaranteed schema validation and eliminating type mismatches in tool inputs.",
+              "depth": 2,
+              "estimatedComplexity": "low",
+              "subtopics": []
+            }
+          ]
+        },
+        {
+          "id": "tool-use.client-tools",
+          "title": "Client Tools",
+          "description": "Tools that execute on client systems, including the tool use workflow and result handling.",
+          "depth": 1,
+          "estimatedComplexity": "medium",
+          "subtopics": [
+            {
+              "id": "tool-use.client-tools.execution-flow",
+              "title": "Tool Execution Flow",
+              "description": "The complete workflow from tool definition to execution and result return, including stop_reason handling.",
+              "depth": 2,
+              "estimatedComplexity": "medium",
+              "subtopics": []
+            },
+            {
+              "id": "tool-use.client-tools.tool-results",
+              "title": "Tool Results",
+              "description": "Formatting and returning tool_result content blocks to Claude for response synthesis.",
+              "depth": 2,
+              "estimatedComplexity": "low",
+              "subtopics": []
+            }
+          ]
+        },
+        {
+          "id": "tool-use.server-tools",
+          "title": "Server Tools",
+          "description": "Anthropic-provided tools that execute on Anthropic servers, including web search and web fetch.",
+          "depth": 1,
+          "estimatedComplexity": "medium",
+          "subtopics": [
+            {
+              "id": "tool-use.server-tools.web-search",
+              "title": "Web Search Tool",
+              "description": "Using the web_search server tool for real-time information retrieval.",
+              "depth": 2,
+              "estimatedComplexity": "low",
+              "subtopics": []
+            },
+            {
+              "id": "tool-use.server-tools.pause-turn",
+              "title": "Handling pause_turn",
+              "description": "Managing pause_turn stop reason when server-side sampling loops reach iteration limits.",
+              "depth": 2,
+              "estimatedComplexity": "medium",
+              "subtopics": []
+            }
+          ]
+        },
+        {
+          "id": "tool-use.parallel-tools",
+          "title": "Parallel Tool Use",
+          "description": "Handling multiple simultaneous tool calls and returning results correctly.",
+          "depth": 1,
+          "estimatedComplexity": "medium",
+          "subtopics": [
+            {
+              "id": "tool-use.parallel-tools.result-formatting",
+              "title": "Parallel Result Formatting",
+              "description": "Correctly formatting multiple tool_result blocks in a single user message for parallel tool calls.",
+              "depth": 2,
+              "estimatedComplexity": "medium",
+              "subtopics": []
+            }
+          ]
+        },
+        {
+          "id": "tool-use.tool-choice",
+          "title": "Tool Choice Control",
+          "description": "Controlling when and how Claude uses tools via tool_choice parameter.",
+          "depth": 1,
+          "estimatedComplexity": "low",
+          "subtopics": [
+            {
+              "id": "tool-use.tool-choice.modes",
+              "title": "Tool Choice Modes",
+              "description": "Understanding auto, none, any, and specific tool choice modes and their effects on Claude's behavior.",
+              "depth": 2,
+              "estimatedComplexity": "low",
+              "subtopics": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "agents",
+      "title": "Agentic Patterns",
+      "description": "Building autonomous agents with Claude, including agent loops, multi-agent orchestration, and context management.",
+      "depth": 0,
+      "estimatedComplexity": "high",
+      "subtopics": [
+        {
+          "id": "agents.agent-loops",
+          "title": "Agent Loops",
+          "description": "Core patterns for building autonomous agent loops that iterate until task completion.",
+          "depth": 1,
+          "estimatedComplexity": "high",
+          "subtopics": [
+            {
+              "id": "agents.agent-loops.basic-pattern",
+              "title": "Basic Agent Loop Pattern",
+              "description": "The fundamental while-loop pattern where agents receive tasks, pick tools, execute, and evaluate results.",
+              "depth": 2,
+              "estimatedComplexity": "medium",
+              "subtopics": []
+            },
+            {
+              "id": "agents.agent-loops.long-running",
+              "title": "Long-Running Agents",
+              "description": "Patterns for agents that run across multiple sessions, including initialization and session continuity.",
+              "depth": 2,
+              "estimatedComplexity": "high",
+              "subtopics": []
+            }
+          ]
+        },
+        {
+          "id": "agents.multi-agent",
+          "title": "Multi-Agent Orchestration",
+          "description": "Coordinating multiple Claude instances working together on complex tasks.",
+          "depth": 1,
+          "estimatedComplexity": "high",
+          "subtopics": [
+            {
+              "id": "agents.multi-agent.agent-teams",
+              "title": "Agent Teams",
+              "description": "Anthropic's native agent teams feature for coordinating multiple Claude Code instances with team leads and teammates.",
+              "depth": 2,
+              "estimatedComplexity": "high",
+              "subtopics": []
+            },
+            {
+              "id": "agents.multi-agent.subagents",
+              "title": "Subagents vs Teams",
+              "description": "Understanding when to use subagents (single session, isolated reports) versus agent teams (direct collaboration).",
+              "depth": 2,
+              "estimatedComplexity": "medium",
+              "subtopics": []
+            },
+            {
+              "id": "agents.multi-agent.specialization",
+              "title": "Role Specialization",
+              "description": "Designing specialized agents for different reasoning modes: architecture, implementation, testing, documentation.",
+              "depth": 2,
+              "estimatedComplexity": "medium",
+              "subtopics": []
+            }
+          ]
+        },
+        {
+          "id": "agents.agent-sdk",
+          "title": "Claude Agent SDK",
+          "description": "Using Anthropic's Agent SDK for building production agent applications.",
+          "depth": 1,
+          "estimatedComplexity": "medium",
+          "subtopics": [
+            {
+              "id": "agents.agent-sdk.task-tool",
+              "title": "Task Tool for Spawning",
+              "description": "Using the Task tool to spawn sub-agents with isolated contexts and controlled tool access.",
+              "depth": 2,
+              "estimatedComplexity": "medium",
+              "subtopics": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "context-management",
+      "title": "Context Window Management",
+      "description": "Strategies for managing Claude's context window, including token limits, caching, and summarization.",
+      "depth": 0,
+      "estimatedComplexity": "high",
+      "subtopics": [
+        {
+          "id": "context-management.token-limits",
+          "title": "Token Limits",
+          "description": "Understanding context window sizes across models and tiers.",
+          "depth": 1,
+          "estimatedComplexity": "medium",
+          "subtopics": [
+            {
+              "id": "context-management.token-limits.window-sizes",
+              "title": "Context Window Sizes",
+              "description": "Standard 200K context, 500K for Sonnet 4.5 Enterprise, and 1M beta for Opus 4.6 (Tier 4 only).",
+              "depth": 2,
+              "estimatedComplexity": "low",
+              "subtopics": []
+            },
+            {
+              "id": "context-management.token-limits.token-counting",
+              "title": "Token Counting API",
+              "description": "Using the token counting endpoint to estimate usage before sending requests.",
+              "depth": 2,
+              "estimatedComplexity": "low",
+              "subtopics": []
+            }
+          ]
+        },
+        {
+          "id": "context-management.prompt-caching",
+          "title": "Prompt Caching",
+          "description": "Caching static content to reduce costs and improve throughput.",
+          "depth": 1,
+          "estimatedComplexity": "medium",
+          "subtopics": [
+            {
+              "id": "context-management.prompt-caching.implementation",
+              "title": "Cache Implementation",
+              "description": "Setting up prompt caching with 1-hour TTL, cache hit optimization, and cost savings (90% discount on cached content).",
+              "depth": 2,
+              "estimatedComplexity": "medium",
+              "subtopics": []
+            },
+            {
+              "id": "context-management.prompt-caching.rate-limits",
+              "title": "Cache and Rate Limits",
+              "description": "Understanding that cached tokens don't count toward ITPM limits, enabling 5-10x effective throughput.",
+              "depth": 2,
+              "estimatedComplexity": "medium",
+              "subtopics": []
+            }
+          ]
+        },
+        {
+          "id": "context-management.compaction",
+          "title": "Server-Side Compaction",
+          "description": "Using server-side summarization to condense earlier conversation parts for long-running conversations.",
+          "depth": 1,
+          "estimatedComplexity": "medium",
+          "subtopics": [
+            {
+              "id": "context-management.compaction.usage",
+              "title": "Compaction Usage",
+              "description": "Enabling and using compaction beta for Opus 4.6 to extend conversations beyond context limits.",
+              "depth": 2,
+              "estimatedComplexity": "medium",
+              "subtopics": []
+            }
+          ]
+        },
+        {
+          "id": "context-management.context-awareness",
+          "title": "Context Awareness",
+          "description": "Model features for tracking remaining token budget during conversations.",
+          "depth": 1,
+          "estimatedComplexity": "low",
+          "subtopics": [
+            {
+              "id": "context-management.context-awareness.budget-tracking",
+              "title": "Token Budget Tracking",
+              "description": "How Claude Sonnet 4.6, Sonnet 4.5, and Haiku 4.5 track and manage remaining context window capacity.",
+              "depth": 2,
+              "estimatedComplexity": "low",
+              "subtopics": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "safety-alignment",
+      "title": "Safety and Alignment",
+      "description": "Understanding Claude's safety mechanisms, Constitutional AI, and responsible AI practices.",
+      "depth": 0,
+      "estimatedComplexity": "high",
+      "subtopics": [
+        {
+          "id": "safety-alignment.constitutional-ai",
+          "title": "Constitutional AI",
+          "description": "Anthropic's approach to AI alignment using explicit principles rather than purely human labeling.",
+          "depth": 1,
+          "estimatedComplexity": "high",
+          "subtopics": [
+            {
+              "id": "safety-alignment.constitutional-ai.methodology",
+              "title": "CAI Methodology",
+              "description": "The two-phase training process: supervised learning with self-critique and RLAIF with AI-generated preferences.",
+              "depth": 2,
+              "estimatedComplexity": "high",
+              "subtopics": []
+            },
+            {
+              "id": "safety-alignment.constitutional-ai.2026-constitution",
+              "title": "The 2026 Constitution",
+              "description": "Understanding the 23,000-word reason-based constitution with four primary pillars for decision-making.",
+              "depth": 2,
+              "estimatedComplexity": "medium",
+              "subtopics": []
+            }
+          ]
+        },
+        {
+          "id": "safety-alignment.rlhf",
+          "title": "RLHF Fundamentals",
+          "description": "Reinforcement learning from human feedback and its evolution.",
+          "depth": 1,
+          "estimatedComplexity": "high",
+          "subtopics": [
+            {
+              "id": "safety-alignment.rlhf.multi-dimensional",
+              "title": "Multi-Dimensional Feedback",
+              "description": "Modern RLHF systems collecting feedback across helpfulness, harmlessness, honesty, and task-specific criteria.",
+              "depth": 2,
+              "estimatedComplexity": "medium",
+              "subtopics": []
+            }
+          ]
+        },
+        {
+          "id": "safety-alignment.usage-policies",
+          "title": "Usage Policies",
+          "description": "Anthropic's acceptable use policies and restrictions.",
+          "depth": 1,
+          "estimatedComplexity": "medium",
+          "subtopics": [
+            {
+              "id": "safety-alignment.usage-policies.restrictions",
+              "title": "Usage Restrictions",
+              "description": "Prohibited uses including mass surveillance, autonomous weapons, and other restricted applications.",
+              "depth": 2,
+              "estimatedComplexity": "low",
+              "subtopics": []
+            }
+          ]
+        },
+        {
+          "id": "safety-alignment.jailbreak-prevention",
+          "title": "Jailbreak Prevention",
+          "description": "Constitutional classifiers and adaptive techniques for preventing jailbreaks.",
+          "depth": 1,
+          "estimatedComplexity": "medium",
+          "subtopics": [
+            {
+              "id": "safety-alignment.jailbreak-prevention.classifiers",
+              "title": "Constitutional Classifiers",
+              "description": "Anthropic's system for detecting and blocking jailbreak attempts, tested against 3,000+ hours of red teaming.",
+              "depth": 2,
+              "estimatedComplexity": "medium",
+              "subtopics": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "api-integration",
+      "title": "API Integration",
+      "description": "Working with the Claude Messages API, including streaming, batching, rate limits, and SDKs.",
+      "depth": 0,
+      "estimatedComplexity": "medium",
+      "subtopics": [
+        {
+          "id": "api-integration.messages-api",
+          "title": "Messages API",
+          "description": "Core API endpoints and request/response formats.",
+          "depth": 1,
+          "estimatedComplexity": "medium",
+          "subtopics": [
+            {
+              "id": "api-integration.messages-api.request-format",
+              "title": "Request Format",
+              "description": "Structuring API requests with model, max_tokens, messages, and optional parameters.",
+              "depth": 2,
+              "estimatedComplexity": "low",
+              "subtopics": []
+            },
+            {
+              "id": "api-integration.messages-api.stop-reasons",
+              "title": "Stop Reasons",
+              "description": "Handling different stop_reason values: end_turn, tool_use, max_tokens, pause_turn.",
+              "depth": 2,
+              "estimatedComplexity": "medium",
+              "subtopics": []
+            }
+          ]
+        },
+        {
+          "id": "api-integration.streaming",
+          "title": "Streaming",
+          "description": "Real-time response streaming for responsive applications.",
+          "depth": 1,
+          "estimatedComplexity": "medium",
+          "subtopics": [
+            {
+              "id": "api-integration.streaming.events",
+              "title": "Streaming Events",
+              "description": "Handling streaming events including text_delta, content_block_stop, and thinking_delta.",
+              "depth": 2,
+              "estimatedComplexity": "medium",
+              "subtopics": []
+            }
+          ]
+        },
+        {
+          "id": "api-integration.batching",
+          "title": "Batch Processing",
+          "description": "Asynchronous processing of large request volumes at reduced cost.",
+          "depth": 1,
+          "estimatedComplexity": "medium",
+          "subtopics": [
+            {
+              "id": "api-integration.batching.implementation",
+              "title": "Batch API Implementation",
+              "description": "Creating batches up to 100,000 requests or 256MB, 50% cost reduction, and mixing request types.",
+              "depth": 2,
+              "estimatedComplexity": "medium",
+              "subtopics": []
+            }
+          ]
+        },
+        {
+          "id": "api-integration.rate-limits",
+          "title": "Rate Limits",
+          "description": "Understanding and managing API rate limits across tiers.",
+          "depth": 1,
+          "estimatedComplexity": "medium",
+          "subtopics": [
+            {
+              "id": "api-integration.rate-limits.tiers",
+              "title": "Usage Tiers",
+              "description": "Four-tier system from Tier 1 ($5 deposit, 50 RPM) to Tier 4 ($400+, 4,000 RPM) with organization-level enforcement.",
+              "depth": 2,
+              "estimatedComplexity": "low",
+              "subtopics": []
+            },
+            {
+              "id": "api-integration.rate-limits.handling",
+              "title": "Rate Limit Handling",
+              "description": "Token bucket algorithm, retry-after headers, and strategies for staying within limits.",
+              "depth": 2,
+              "estimatedComplexity": "medium",
+              "subtopics": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "multimodal",
+      "title": "Multimodal Capabilities",
+      "description": "Using Claude's vision capabilities for image and document understanding.",
+      "depth": 0,
+      "estimatedComplexity": "medium",
+      "subtopics": [
+        {
+          "id": "multimodal.vision",
+          "title": "Vision",
+          "description": "Image analysis and understanding capabilities.",
+          "depth": 1,
+          "estimatedComplexity": "medium",
+          "subtopics": [
+            {
+              "id": "multimodal.vision.image-formats",
+              "title": "Image Formats and Limits",
+              "description": "Supported formats (PNG, JPEG, WEBP, GIF), size limits (8000x8000), and optimal dimensions (1568px).",
+              "depth": 2,
+              "estimatedComplexity": "low",
+              "subtopics": []
+            },
+            {
+              "id": "multimodal.vision.analysis-types",
+              "title": "Image Analysis Types",
+              "description": "Charts, diagrams, photographs, screenshots, documents, and visual reasoning capabilities.",
+              "depth": 2,
+              "estimatedComplexity": "medium",
+              "subtopics": []
+            }
+          ]
+        },
+        {
+          "id": "multimodal.pdf",
+          "title": "PDF Processing",
+          "description": "Extracting and analyzing content from PDF documents.",
+          "depth": 1,
+          "estimatedComplexity": "medium",
+          "subtopics": [
+            {
+              "id": "multimodal.pdf.extraction",
+              "title": "PDF Content Extraction",
+              "description": "Extracting text, tables, charts, and visual content from PDFs with 1,500-3,000 tokens per page.",
+              "depth": 2,
+              "estimatedComplexity": "medium",
+              "subtopics": []
+            },
+            {
+              "id": "multimodal.pdf.batch-processing",
+              "title": "PDF Batch Processing",
+              "description": "High-volume document processing and using tool use to extract specific information from documents.",
+              "depth": 2,
+              "estimatedComplexity": "medium",
+              "subtopics": []
+            }
+          ]
+        },
+        {
+          "id": "multimodal.prompting",
+          "title": "Multimodal Prompting",
+          "description": "Best practices for prompting with visual content.",
+          "depth": 1,
+          "estimatedComplexity": "medium",
+          "subtopics": [
+            {
+              "id": "multimodal.prompting.describe-answer",
+              "title": "Describe Then Answer Pattern",
+              "description": "Prompting Claude to describe visuals in detail before answering specific questions for improved accuracy.",
+              "depth": 2,
+              "estimatedComplexity": "low",
+              "subtopics": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "evaluation",
+      "title": "Evaluation and Testing",
+      "description": "Building evaluation frameworks for testing Claude applications, including success criteria, rubrics, and automated grading.",
+      "depth": 0,
+      "estimatedComplexity": "high",
+      "subtopics": [
+        {
+          "id": "evaluation.success-criteria",
+          "title": "Success Criteria",
+          "description": "Defining measurable criteria for evaluating Claude performance.",
+          "depth": 1,
+          "estimatedComplexity": "medium",
+          "subtopics": [
+            {
+              "id": "evaluation.success-criteria.definition",
+              "title": "Criteria Definition",
+              "description": "Creating specific, measurable success criteria using quantitative metrics or well-defined qualitative scales.",
+              "depth": 2,
+              "estimatedComplexity": "medium",
+              "subtopics": []
+            }
+          ]
+        },
+        {
+          "id": "evaluation.rubrics",
+          "title": "Scoring Rubrics",
+          "description": "Designing rubrics for automated and human evaluation.",
+          "depth": 1,
+          "estimatedComplexity": "medium",
+          "subtopics": [
+            {
+              "id": "evaluation.rubrics.design",
+              "title": "Rubric Design Principles",
+              "description": "Empirical scoring, reasoning encouragement, calibration for inter-rater reliability, and concrete examples at each level.",
+              "depth": 2,
+              "estimatedComplexity": "medium",
+              "subtopics": []
+            },
+            {
+              "id": "evaluation.rubrics.weighting",
+              "title": "Criteria Weighting",
+              "description": "Weighting criteria appropriately and using thresholds for critical dimensions like security.",
+              "depth": 2,
+              "estimatedComplexity": "low",
+              "subtopics": []
+            }
+          ]
+        },
+        {
+          "id": "evaluation.llm-judge",
+          "title": "LLM-as-Judge",
+          "description": "Using Claude to evaluate its own outputs.",
+          "depth": 1,
+          "estimatedComplexity": "medium",
+          "subtopics": [
+            {
+              "id": "evaluation.llm-judge.grading",
+              "title": "Model-Based Grading",
+              "description": "Setting up Claude as an automated grader with input prompts, outputs, and golden answers for comparison.",
+              "depth": 2,
+              "estimatedComplexity": "medium",
+              "subtopics": []
+            }
+          ]
+        },
+        {
+          "id": "evaluation.console-tool",
+          "title": "Console Evaluation Tool",
+          "description": "Using the Claude Console's built-in evaluation features.",
+          "depth": 1,
+          "estimatedComplexity": "low",
+          "subtopics": [
+            {
+              "id": "evaluation.console-tool.features",
+              "title": "Evaluation Tool Features",
+              "description": "Side-by-side comparison, 5-point quality grading, prompt versioning, and test case generation.",
+              "depth": 2,
+              "estimatedComplexity": "low",
+              "subtopics": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "claude-code",
+      "title": "Claude Code and Skills",
+      "description": "Using Claude Code CLI with skills, MCP servers, hooks, and IDE integration.",
+      "depth": 0,
+      "estimatedComplexity": "high",
+      "subtopics": [
+        {
+          "id": "claude-code.skills",
+          "title": "Skills System",
+          "description": "Defining procedural knowledge in markdown files for on-demand loading.",
+          "depth": 1,
+          "estimatedComplexity": "medium",
+          "subtopics": [
+            {
+              "id": "claude-code.skills.creation",
+              "title": "Skill Creation",
+              "description": "Creating SKILL.md files in ~/.claude/skills/ with procedural instructions that Claude follows when relevant.",
+              "depth": 2,
+              "estimatedComplexity": "medium",
+              "subtopics": []
+            },
+            {
+              "id": "claude-code.skills.vs-mcp",
+              "title": "Skills vs MCP",
+              "description": "Understanding when to use skills (knowledge/process) versus MCP (external tool connections).",
+              "depth": 2,
+              "estimatedComplexity": "low",
+              "subtopics": []
+            }
+          ]
+        },
+        {
+          "id": "claude-code.mcp",
+          "title": "MCP Servers",
+          "description": "Connecting Claude Code to external systems via Model Context Protocol.",
+          "depth": 1,
+          "estimatedComplexity": "high",
+          "subtopics": [
+            {
+              "id": "claude-code.mcp.integration",
+              "title": "MCP Integration",
+              "description": "Setting up MCP servers for GitHub, databases, APIs, browsers, and other external systems.",
+              "depth": 2,
+              "estimatedComplexity": "high",
+              "subtopics": []
+            },
+            {
+              "id": "claude-code.mcp.tool-search",
+              "title": "MCP Tool Search",
+              "description": "Using lazy loading for MCP servers to reduce context usage by up to 95%.",
+              "depth": 2,
+              "estimatedComplexity": "medium",
+              "subtopics": []
+            },
+            {
+              "id": "claude-code.mcp.connector",
+              "title": "MCP Connector",
+              "description": "Using the MCP connector to connect directly to remote MCP servers from the Messages API without implementing a client.",
+              "depth": 2,
+              "estimatedComplexity": "medium",
+              "subtopics": []
+            }
+          ]
+        },
+        {
+          "id": "claude-code.hooks",
+          "title": "Hooks",
+          "description": "Automatic triggers that run at specific events like file edits.",
+          "depth": 1,
+          "estimatedComplexity": "medium",
+          "subtopics": [
+            {
+              "id": "claude-code.hooks.configuration",
+              "title": "Hook Configuration",
+              "description": "Configuring hooks.json with matchers and commands for PostToolUse and other events.",
+              "depth": 2,
+              "estimatedComplexity": "medium",
+              "subtopics": []
+            }
+          ]
+        },
+        {
+          "id": "claude-code.ide",
+          "title": "IDE Integration",
+          "description": "Integrating Claude Code with development environments.",
+          "depth": 1,
+          "estimatedComplexity": "low",
+          "subtopics": [
+            {
+              "id": "claude-code.ide.editors",
+              "title": "Editor Support",
+              "description": "VS Code, Emacs, Neovim, JetBrains family, and Cursor integrations with LSP support.",
+              "depth": 2,
+              "estimatedComplexity": "low",
+              "subtopics": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "enterprise",
+      "title": "Enterprise Patterns",
+      "description": "Enterprise deployment patterns including workspaces, API key management, cost optimization, and scaling strategies.",
+      "depth": 0,
+      "estimatedComplexity": "medium",
+      "subtopics": [
+        {
+          "id": "enterprise.workspaces",
+          "title": "Workspaces",
+          "description": "Organizing teams and projects with workspace-scoped resources.",
+          "depth": 1,
+          "estimatedComplexity": "medium",
+          "subtopics": [
+            {
+              "id": "enterprise.workspaces.organization",
+              "title": "Workspace Organization",
+              "description": "Creating separate workspaces for development, staging, and production with scoped API keys.",
+              "depth": 2,
+              "estimatedComplexity": "low",
+              "subtopics": []
+            },
+            {
+              "id": "enterprise.workspaces.projects",
+              "title": "Projects and RAG",
+              "description": "Using Projects for shared materials with automatic RAG mode when content exceeds context limits.",
+              "depth": 2,
+              "estimatedComplexity": "medium",
+              "subtopics": []
+            }
+          ]
+        },
+        {
+          "id": "enterprise.cost-optimization",
+          "title": "Cost Optimization",
+          "description": "Strategies for reducing API costs while maintaining quality.",
+          "depth": 1,
+          "estimatedComplexity": "medium",
+          "subtopics": [
+            {
+              "id": "enterprise.cost-optimization.caching",
+              "title": "Caching for Cost Savings",
+              "description": "Leveraging prompt caching for 90% discount on repeated context in enterprise applications.",
+              "depth": 2,
+              "estimatedComplexity": "medium",
+              "subtopics": []
+            },
+            {
+              "id": "enterprise.cost-optimization.model-routing",
+              "title": "Model Routing",
+              "description": "Routing tasks to appropriate models: Haiku for simple edits, Sonnet for refactoring, Opus for complex review.",
+              "depth": 2,
+              "estimatedComplexity": "medium",
+              "subtopics": []
+            },
+            {
+              "id": "enterprise.cost-optimization.monitoring",
+              "title": "Usage Monitoring",
+              "description": "Using Usage and Cost API for per-workspace chargebacks, cache efficiency tracking, and budget alerts.",
+              "depth": 2,
+              "estimatedComplexity": "low",
+              "subtopics": []
+            }
+          ]
+        },
+        {
+          "id": "enterprise.deployment",
+          "title": "Deployment Patterns",
+          "description": "Common enterprise deployment architectures.",
+          "depth": 1,
+          "estimatedComplexity": "medium",
+          "subtopics": [
+            {
+              "id": "enterprise.deployment.patterns",
+              "title": "Common Product Patterns",
+              "description": "Customer support copilots, internal knowledge assistants, IDE code assistants, and agentic workflow orchestrators.",
+              "depth": 2,
+              "estimatedComplexity": "medium",
+              "subtopics": []
+            },
+            {
+              "id": "enterprise.deployment.cloud",
+              "title": "Cloud Integration",
+              "description": "Accessing Claude via AWS Bedrock and Google Cloud for existing infrastructure integration.",
+              "depth": 2,
+              "estimatedComplexity": "low",
+              "subtopics": []
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
