@@ -3,13 +3,23 @@ const CLAUDE_MODEL = 'claude-haiku-4-5'
 
 /**
  * Evaluate a teach-back explanation using the Claude API.
+ * Output schema matches the deposited score-explanation skill.
  *
  * @param {Object} params
  * @param {string} params.apiKey - Claude API key from localStorage
  * @param {string} params.explanation - The learner's explanation text
  * @param {string} params.topicTitle - Human-readable topic title
  * @param {string} params.researchContent - Source research markdown for the topic
- * @returns {Promise<{ logicAccuracy: number, depth: number, flow: string, suggestions: string[], semanticGaps: { name: string, status: string }[] }>}
+ * @returns {Promise<{
+ *   completeness: number,
+ *   accuracy: number,
+ *   depth: "surface" | "moderate" | "deep",
+ *   coveredWell: string[],
+ *   partiallyCorrect: string[],
+ *   missing: string[],
+ *   followUpQuestion: string,
+ *   overallFeedback: string
+ * }>}
  */
 export async function evaluateExplanation({ apiKey, explanation, topicTitle, researchContent }) {
   const systemPrompt = `You are an expert technical educator evaluating a learner's explanation of a topic.
@@ -17,19 +27,32 @@ You must return ONLY a valid JSON object — no prose, no markdown fences, no ex
 
 The JSON must match this exact schema:
 {
-  "logicAccuracy": <number 0-100>,
-  "depth": <number 0-100>,
-  "flow": <"Optimal" | "Good" | "Fair" | "Needs Work">,
-  "suggestions": [<string>, ...],
-  "semanticGaps": [{ "name": <string>, "status": <"covered" | "missing"> }, ...]
+  "completeness": <number 0-100>,
+  "accuracy": <number 0-100>,
+  "depth": <"surface" | "moderate" | "deep">,
+  "coveredWell": [<string>, ...],
+  "partiallyCorrect": [<string>, ...],
+  "missing": [<string>, ...],
+  "followUpQuestion": <string>,
+  "overallFeedback": <string>
 }
 
-Scoring guidelines:
-- logicAccuracy: What percentage of statements are technically correct? (0-100)
-- depth: How deeply does the learner go beyond surface definitions? (0-100)
-- flow: How well does the explanation flow logically and didactically?
-- suggestions: 2-4 actionable improvement suggestions
-- semanticGaps: 3-6 key concepts from the research, each marked "covered" or "missing"`
+Evaluation dimensions:
+- completeness (0-100): What percentage of key concepts from the research did the learner cover? Count covered concepts against total key concepts.
+- accuracy (0-100): Were the learner's statements technically correct? Deduct for factual errors, overgeneralizations, or misleading claims.
+- depth: Classify overall depth as one of:
+  "surface" — Recites definitions or bullet points without elaboration
+  "moderate" — Explains how and why, not just what
+  "deep" — Demonstrates genuine understanding through examples, analogies, trade-off analysis, or connections to other topics
+- coveredWell: List 2-5 concepts the learner explained accurately and thoroughly. Be specific.
+- partiallyCorrect: List concepts the learner addressed but got partially wrong or missed important nuance. Briefly note what was missing.
+- missing: List 2-5 key concepts from the research that the learner did not mention at all.
+- followUpQuestion: Craft one targeted Socratic question probing their weakest area. Invite deeper thinking, not just fact recall.
+- overallFeedback: A 2-3 sentence summary of where they stand and what to focus on next. Be specific and actionable.
+
+Coaching principles:
+- Do not penalize for informal language or unconventional structure. Judge understanding, not polish.
+- A learner who uses their own examples or analogies (even imperfect ones) demonstrates deeper understanding than one who parrots the source material.`
 
   const userPrompt = `Topic: ${topicTitle}
 
@@ -86,17 +109,16 @@ Evaluate the explanation against the research material and return the JSON gradi
     throw new Error('Claude returned an unexpected response format. Please try again.')
   }
 
-  // Validate and normalise required fields
-  const logicAccuracy = typeof parsed.logicAccuracy === 'number' ? Math.max(0, Math.min(100, parsed.logicAccuracy)) : 70
-  const depth = typeof parsed.depth === 'number' ? Math.max(0, Math.min(100, parsed.depth)) : 60
-  const flow = typeof parsed.flow === 'string' ? parsed.flow : 'Fair'
-  const suggestions = Array.isArray(parsed.suggestions) ? parsed.suggestions.slice(0, 4) : []
-  const semanticGaps = Array.isArray(parsed.semanticGaps)
-    ? parsed.semanticGaps.map(g => ({
-        name: String(g.name || ''),
-        status: g.status === 'covered' ? 'covered' : 'missing',
-      }))
-    : []
+  // Validate and normalise all fields with sensible defaults
+  const completeness = typeof parsed.completeness === 'number' ? Math.max(0, Math.min(100, parsed.completeness)) : 60
+  const accuracy = typeof parsed.accuracy === 'number' ? Math.max(0, Math.min(100, parsed.accuracy)) : 70
+  const depthValues = ['surface', 'moderate', 'deep']
+  const depth = depthValues.includes(parsed.depth) ? parsed.depth : 'moderate'
+  const coveredWell = Array.isArray(parsed.coveredWell) ? parsed.coveredWell.slice(0, 6) : []
+  const partiallyCorrect = Array.isArray(parsed.partiallyCorrect) ? parsed.partiallyCorrect.slice(0, 6) : []
+  const missing = Array.isArray(parsed.missing) ? parsed.missing.slice(0, 6) : []
+  const followUpQuestion = typeof parsed.followUpQuestion === 'string' ? parsed.followUpQuestion : ''
+  const overallFeedback = typeof parsed.overallFeedback === 'string' ? parsed.overallFeedback : ''
 
-  return { logicAccuracy, depth, flow, suggestions, semanticGaps }
+  return { completeness, accuracy, depth, coveredWell, partiallyCorrect, missing, followUpQuestion, overallFeedback }
 }

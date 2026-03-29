@@ -1,6 +1,6 @@
 {
   "version": "1.1",
-  "pipeline": "COMPLETE",
+  "pipeline": "ENHANCE",
   "currentPhase": null,
   "currentActivity": null,
   "regenFrom": null,
@@ -82,25 +82,22 @@
       }
     },
     "VALIDATE": {
-      "status": "complete",
-      "attempts": 1,
+      "status": "pending",
+      "attempts": 0,
       "error": null,
-      "startedAt": "2026-03-29T17:35:34.120Z",
-      "completedAt": "2026-03-29T17:38:28.520Z",
-      "durationSeconds": 174,
+      "startedAt": null,
+      "completedAt": null,
+      "durationSeconds": null,
       "progress": null,
-      "metrics": {
-        "passed": 6,
-        "total": 8
-      }
+      "metrics": null
     },
     "ENHANCE": {
       "status": "complete",
       "attempts": 1,
       "error": null,
-      "startedAt": "2026-03-29T17:31:34.124Z",
-      "completedAt": "2026-03-29T17:35:18.364Z",
-      "durationSeconds": 224,
+      "startedAt": "2026-03-29T18:36:58.764Z",
+      "completedAt": "2026-03-29T18:41:36.796Z",
+      "durationSeconds": 278,
       "progress": null,
       "metrics": {
         "enhancements": 1
@@ -109,5 +106,5 @@
   },
   "topicCount": 0,
   "startedAt": "2026-03-29T02:07:33.584Z",
-  "updatedAt": "2026-03-29T17:38:28.521Z"
+  "updatedAt": "2026-03-29T18:41:36.797Z"
 }

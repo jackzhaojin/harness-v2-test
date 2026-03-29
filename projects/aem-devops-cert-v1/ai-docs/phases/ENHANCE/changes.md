@@ -1,48 +1,46 @@
-# Enhancement Changes — 2026-03-29
+# ENHANCE Phase — Change Log
 
-## Enhancements Applied
+Generated: 2026-03-29
+Enhancements applied: 1
 
-### teach-back-api-key: Teach-Back Real AI Grading via Client-Side Claude API
+---
 
-- **Files created:**
-  - `src/lib/claude-client.js`
-  - `src/components/ApiKeyModal.jsx`
-- **Files modified:**
-  - `src/components/TeachBackInput.jsx`
-- **Dependencies added:** none
+# Enhancement: teach-back-skill-schema
 
-- **Description:**
+**Date:** 2026-03-29
+**Status:** Applied and verified
 
-  Replaced the hardcoded `setTimeout` mock in `TeachBackInput.jsx` with real AI-powered evaluation
-  using the Claude API (`claude-haiku-4-5`). The user supplies their own API key, which is
-  persisted in `localStorage` under the key `claude-api-key`.
+## Summary
 
-  **`src/lib/claude-client.js`**
-  A thin client-side wrapper that sends the learner's explanation plus source research content to
-  `https://api.anthropic.com/v1/messages`. The system prompt instructs Claude to return a JSON
-  object matching the existing grading schema:
-  `{ logicAccuracy, depth, flow, suggestions, semanticGaps }`.
-  Handles 401 (invalid key), 429 (rate limit), network failures, and malformed JSON responses with
-  descriptive thrown errors.
+Upgraded the teach-back grading system to use the skill-aligned schema from
+`.claude/skills/score-explanation/SKILL.md`, replacing the simplified grading
+schema with a richer evaluation framework that produces higher-quality Socratic
+coaching feedback.
 
-  **`src/components/ApiKeyModal.jsx`**
-  A centered overlay modal with backdrop blur following the glassmorphism design system. Features:
-  - Password-type input with visibility toggle
-  - Status badge (key stored / not stored)
-  - Save / Cancel / Clear key actions
-  - Closes on backdrop click
+## Files Modified
 
-  **`src/components/TeachBackInput.jsx`**
-  - `handleSubmit` is now `async`: checks `localStorage` for the key first (shows modal if absent),
-    fetches the topic research file from `/public/research/{topicId}.md`, then calls
-    `evaluateExplanation()`.
-  - On `invalid-api-key` error the modal reopens automatically.
-  - Other API errors are shown inline via a dismissible error banner above the textarea.
-  - A `key` icon button added to the input header opens the API key modal at any time.
-  - Existing loading overlay (`grading` state) is preserved and shown during the API call.
-  - All existing result display (DotBar, MetricBar, Semantic Gaps, Neural Suggestions) is populated
-    from the live API response.
+### 1. `src/lib/claude-client.js`
 
-## Build Status
-- Build: PASS
-- Errors fixed: 0
+**Old schema (removed):**
+- `logicAccuracy` (number 0-100)
+- `depth` (number 0-100)
+- `flow` ("Optimal" | "Good" | "Fair" | "Needs Work")
+- `suggestions` (string[])
+- `semanticGaps` ({ name, status }[])
+
+**New schema (aligned with score-explanation skill):**
+- `completeness` (number 0-100)
+- `accuracy` (number 0-100)
+- `depth` ("surface" | "moderate" | "deep")
+- `coveredWell` (string[])
+- `partiallyCorrect` (string[])
+- `missing` (string[])
+- `followUpQuestion` (string)
+- `overallFeedback` (string)
+
+### 2. `src/components/TeachBackInput.jsx`
+
+- Replaced DotBar/percentage depth/semanticGaps with MetricBar pair, DepthBadge, three-tier concept breakdown
+- Added Follow-Up Question coaching card and Overall Feedback paragraph
+
+## Build: PASS (zero errors, 215 modules, 740ms)

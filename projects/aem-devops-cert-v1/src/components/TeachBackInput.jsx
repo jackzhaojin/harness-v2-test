@@ -6,12 +6,12 @@ import { getAssetUrl } from '@/lib/sitePaths'
 
 const STORAGE_KEY = 'claude-api-key'
 
-function MetricBar({ label, value, color = 'bg-primary', displayValue }) {
+function MetricBar({ label, value, color = 'bg-primary' }) {
   return (
     <div>
       <div className="flex justify-between items-end mb-1.5">
         <span className="text-xs text-on-surface-variant uppercase font-medium">{label}</span>
-        <span className="text-lg font-headline font-bold text-on-background">{displayValue || `${value}%`}</span>
+        <span className="text-lg font-headline font-bold text-on-background">{value}%</span>
       </div>
       <div className="h-1.5 bg-surface-variant rounded-full overflow-hidden">
         <div className={cn('h-full rounded-full transition-all duration-700', color)} style={{ width: `${value}%` }} />
@@ -20,14 +20,33 @@ function MetricBar({ label, value, color = 'bg-primary', displayValue }) {
   )
 }
 
-function DotBar({ value, max = 10 }) {
-  const filled = Math.round((value / 100) * max)
+function DepthBadge({ depth }) {
+  const config = {
+    surface: { label: 'Surface', className: 'bg-error/15 text-error border-error/30' },
+    moderate: { label: 'Moderate', className: 'bg-primary/15 text-primary border-primary/30' },
+    deep: { label: 'Deep', className: 'bg-secondary/15 text-secondary border-secondary/30 shadow-[0_0_8px_rgba(180,212,0,0.2)]' },
+  }
+  const { label, className } = config[depth] || config.moderate
   return (
-    <div className="grid gap-1" style={{ gridTemplateColumns: `repeat(${max}, 1fr)` }}>
-      {Array.from({ length: max }).map((_, i) => (
-        <div key={i} className={cn('h-1.5 rounded-full', i < filled ? 'bg-secondary' : 'bg-surface-variant')} />
+    <span className={cn('inline-block px-3 py-1 text-xs font-headline font-black uppercase tracking-widest rounded-lg border', className)}>
+      {label}
+    </span>
+  )
+}
+
+function ConceptList({ items, color, emptyText }) {
+  if (!items || items.length === 0) {
+    return <p className="text-xs text-outline italic">{emptyText}</p>
+  }
+  return (
+    <ul className="space-y-1.5">
+      {items.map((item, i) => (
+        <li key={i} className="flex items-start gap-2">
+          <span className={cn('mt-0.5 text-xs font-bold', color)}>—</span>
+          <span className="text-xs text-on-surface leading-relaxed">{item}</span>
+        </li>
       ))}
-    </div>
+    </ul>
   )
 }
 
@@ -228,38 +247,36 @@ export default function TeachBackInput({ topics = [] }) {
             )}
           </div>
 
-          {/* Visualization panels (post-submit) */}
+          {/* Three-tier concept breakdown (post-submit) */}
           {submitted && results && (
-            <div className="grid grid-cols-2 gap-4">
-              <div className="bg-surface-container-high rounded-xl p-5 border border-outline-variant/5">
-                <h3 className="text-[10px] font-headline font-bold text-on-surface-variant uppercase tracking-widest mb-5">
-                  Node Map
+            <div className="space-y-4">
+              {/* Covered Well */}
+              <div className="bg-surface-container-high rounded-xl p-5 border border-secondary/10">
+                <h3 className="text-[10px] font-headline font-bold text-secondary uppercase tracking-widest mb-4">
+                  Covered Well
                 </h3>
-                <div className="h-28 flex items-end gap-1">
-                  {[30, 50, 35, 100, 25, 15, 75, 40].map((h, i) => (
-                    <div
-                      key={i}
-                      className={cn('flex-1 rounded-t-sm transition-all duration-500', i === 3 ? 'bg-secondary shadow-[0_0_10px_#b4d400]' : 'bg-primary/30')}
-                      style={{ height: `${h}%` }}
-                    />
-                  ))}
-                </div>
+                <ConceptList items={results.coveredWell} color="text-secondary" emptyText="Nothing identified as covered well." />
               </div>
-              <div className="bg-surface-container-high rounded-xl p-5 border border-outline-variant/5">
-                <h3 className="text-[10px] font-headline font-bold text-on-surface-variant uppercase tracking-widest mb-4">
-                  Semantic Gaps
-                </h3>
-                <div className="space-y-3">
-                  {results.semanticGaps.map((gap, i) => (
-                    <div key={i} className="flex items-center justify-between">
-                      <span className="text-xs text-on-surface font-medium">{gap.name}</span>
-                      <span className={cn('text-[10px] font-bold uppercase tracking-tighter', gap.status === 'missing' ? 'text-error' : 'text-secondary')}>
-                        {gap.status === 'missing' ? 'Missing' : 'Covered'}
-                      </span>
-                    </div>
-                  ))}
+
+              {/* Partially Correct */}
+              {results.partiallyCorrect.length > 0 && (
+                <div className="bg-surface-container-high rounded-xl p-5 border border-tertiary/10">
+                  <h3 className="text-[10px] font-headline font-bold text-tertiary uppercase tracking-widest mb-4">
+                    Partially Correct
+                  </h3>
+                  <ConceptList items={results.partiallyCorrect} color="text-tertiary" emptyText="No partially correct concepts identified." />
                 </div>
-              </div>
+              )}
+
+              {/* Missing */}
+              {results.missing.length > 0 && (
+                <div className="bg-surface-container-high rounded-xl p-5 border border-error/10">
+                  <h3 className="text-[10px] font-headline font-bold text-error uppercase tracking-widest mb-4">
+                    Missing
+                  </h3>
+                  <ConceptList items={results.missing} color="text-error" emptyText="No key concepts identified as missing." />
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -279,40 +296,40 @@ export default function TeachBackInput({ topics = [] }) {
               </div>
             ) : results ? (
               <div className="space-y-7">
+                {/* Completeness metric bar */}
+                <MetricBar label="Completeness" value={results.completeness} color="bg-secondary" />
+
+                {/* Accuracy metric bar */}
+                <MetricBar label="Accuracy" value={results.accuracy} color="bg-primary" />
+
+                {/* Depth qualitative badge */}
                 <div>
-                  <div className="flex justify-between items-end mb-2">
-                    <span className="text-xs text-on-surface-variant uppercase font-medium">Logic Accuracy</span>
-                    <span className="text-xl font-headline font-bold text-on-background">
-                      {results.logicAccuracy >= 90 ? 'A+' : results.logicAccuracy >= 80 ? 'A' : results.logicAccuracy >= 70 ? 'B' : 'C'}
-                    </span>
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-xs text-on-surface-variant uppercase font-medium">Depth of Understanding</span>
                   </div>
-                  <DotBar value={results.logicAccuracy} />
-                </div>
-                <MetricBar label="Depth of Understanding" value={results.depth} color="bg-primary" />
-                <div>
-                  <div className="flex justify-between items-end mb-2">
-                    <span className="text-xs text-on-surface-variant uppercase font-medium">Instructional Flow</span>
-                    <span className="text-xl font-headline font-bold text-on-background">{results.flow}</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <div className="flex-1 h-3 bg-surface-variant rounded-sm border border-outline-variant/10" />
-                    <div className="flex-1 h-3 bg-secondary rounded-sm shadow-[0_0_8px_#b4d400]" />
-                    <div className="flex-1 h-3 bg-surface-variant rounded-sm border border-outline-variant/10" />
-                  </div>
+                  <DepthBadge depth={results.depth} />
                 </div>
 
-                {results.suggestions.length > 0 && (
+                {/* Follow-Up Question coaching card */}
+                {results.followUpQuestion && (
                   <div className="pt-6 border-t border-outline-variant/10">
-                    <h4 className="text-[10px] font-headline font-black text-on-surface-variant uppercase tracking-widest mb-4">
-                      Neural Suggestions
+                    <h4 className="text-[10px] font-headline font-black text-on-surface-variant uppercase tracking-widest mb-3">
+                      Follow-Up Question
                     </h4>
-                    <div className="space-y-3">
-                      {results.suggestions.map((s, i) => (
-                        <div key={i} className={cn('p-3 bg-surface-container-low rounded-lg border-l-2', i === 0 ? 'border-primary/40' : 'border-tertiary/40')}>
-                          <p className="text-xs text-on-surface-variant leading-relaxed">{s}</p>
-                        </div>
-                      ))}
+                    <div className="p-4 bg-surface-container-low rounded-xl border border-primary/20 border-l-2 border-l-primary">
+                      <span className="material-symbols-outlined text-primary text-sm mb-2 block">help_outline</span>
+                      <p className="text-sm text-on-surface leading-relaxed italic">{results.followUpQuestion}</p>
                     </div>
+                  </div>
+                )}
+
+                {/* Overall Feedback paragraph */}
+                {results.overallFeedback && (
+                  <div className="pt-2">
+                    <h4 className="text-[10px] font-headline font-black text-on-surface-variant uppercase tracking-widest mb-3">
+                      Overall Feedback
+                    </h4>
+                    <p className="text-xs text-on-surface-variant leading-relaxed">{results.overallFeedback}</p>
                   </div>
                 )}
               </div>
