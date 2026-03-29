@@ -2,7 +2,7 @@
   "version": "1.1",
   "pipeline": "COMPLETE",
   "currentPhase": null,
-  "currentActivity": null,
+  "currentActivity": "fix iteration 2/3: updating test spec selectors for quiz submit",
   "regenFrom": null,
   "phases": {
     "DECOMPOSE": {
@@ -97,5 +97,5 @@
   },
   "topicCount": 0,
   "startedAt": "2026-03-29T02:07:33.584Z",
-  "updatedAt": "2026-03-29T15:44:43.521Z"
+  "updatedAt": "2026-03-29T15:49:51.288Z"
 }
