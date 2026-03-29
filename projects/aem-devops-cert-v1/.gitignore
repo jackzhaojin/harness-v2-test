@@ -1,0 +1,42 @@
+# Dependencies
+node_modules/
+
+# Vite build cache
+.vite/
+.vite-temp/
+
+# Build output (regenerate with npm run build)
+dist/
+dist-ssr/
+
+# Temp files written by coordinator during pipeline
+research/_combined_*.md
+
+# Environment secrets — never commit
+.env
+.env.local
+.env.*.local
+.env.production
+.env.staging
+
+# OS / editor
+.DS_Store
+Thumbs.db
+*.local
+.idea/
+.vscode/
+
+# Logs and test coverage
+*.log
+coverage/
+
+# Coordinator run logs (regenerated each run)
+ai-docs/phases/COORDINATOR/
+
+# Playwright test artifacts
+.playwright-mcp/
+test-results/
+
+# TTS model files (large binaries)
+*.onnx
+*.bin
