@@ -57,3 +57,8 @@
 [2026-03-29T15:44:43.521Z] VALIDATE -- completed (3m 24s) -- 6 passed, 8 total
 [2026-03-29T15:53:21.185Z] FIX loop: 1 real failure resolved after 2 iterations. Check 3 (podcast) is expected content dependency (--include-podcasts=false), not a code bug.
 [2026-03-29T15:53:55.459Z] Coordinator agent finished — pipeline: COMPLETE
+[2026-03-29T17:30:39.565Z] ENHANCE STARTED — 1 enhancements: teach-back-api-key
+[2026-03-29T17:31:18.482Z] ENHANCE STARTED — 1 enhancements: teach-back-api-key
+[2026-03-29T17:31:34.125Z] ENHANCE -- started
+[2026-03-29T17:31:45.411Z] ENHANCE   Enhancement: teach-back-api-key — Teach-Back Real AI Grading via Client-Side Claude API
+[2026-03-29T17:35:18.365Z] ENHANCE -- completed (3m 44s) -- 1 enhancements
