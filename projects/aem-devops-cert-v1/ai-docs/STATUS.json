@@ -1,0 +1,88 @@
+{
+  "version": "1.1",
+  "pipeline": "RESEARCH",
+  "currentPhase": null,
+  "currentActivity": null,
+  "regenFrom": null,
+  "phases": {
+    "DECOMPOSE": {
+      "status": "complete",
+      "attempts": 1,
+      "error": null,
+      "startedAt": "2026-03-29T02:08:27.921Z",
+      "completedAt": "2026-03-29T02:10:46.428Z",
+      "durationSeconds": 139,
+      "progress": null,
+      "metrics": {
+        "domains": 6,
+        "leafTopics": 52
+      }
+    },
+    "RESEARCH": {
+      "status": "complete",
+      "attempts": 9,
+      "error": null,
+      "startedAt": "2026-03-29T13:38:20.919Z",
+      "completedAt": "2026-03-29T13:55:55.347Z",
+      "durationSeconds": 1054,
+      "progress": null,
+      "metrics": {
+        "topics": 52,
+        "sources": 4
+      }
+    },
+    "SYNTHESIZE": {
+      "status": "pending",
+      "attempts": 0,
+      "error": null,
+      "startedAt": null,
+      "completedAt": null,
+      "durationSeconds": null,
+      "progress": null,
+      "metrics": null
+    },
+    "CONTENT": {
+      "status": "pending",
+      "attempts": 0,
+      "error": null,
+      "startedAt": null,
+      "completedAt": null,
+      "durationSeconds": null,
+      "progress": null,
+      "metrics": null
+    },
+    "TTS": {
+      "status": "pending",
+      "attempts": 0,
+      "error": null,
+      "startedAt": null,
+      "completedAt": null,
+      "durationSeconds": null,
+      "progress": null,
+      "metrics": null
+    },
+    "DEPOSIT": {
+      "status": "pending",
+      "attempts": 0,
+      "error": null,
+      "startedAt": null,
+      "completedAt": null,
+      "durationSeconds": null,
+      "progress": null,
+      "metrics": null
+    },
+    "VALIDATE": {
+      "status": "pending",
+      "attempts": 0,
+      "error": null,
+      "startedAt": null,
+      "completedAt": null,
+      "durationSeconds": null,
+      "progress": null,
+      "metrics": null
+    }
+  },
+  "topicCount": 0,
+  "startedAt": "2026-03-29T02:07:33.584Z",
+  "updatedAt": "2026-03-29T13:55:55.347Z"
+}
