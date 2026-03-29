@@ -56,3 +56,4 @@
 [2026-03-29T15:41:19.192Z] VALIDATE -- started
 [2026-03-29T15:44:43.521Z] VALIDATE -- completed (3m 24s) -- 6 passed, 8 total
 [2026-03-29T15:53:21.185Z] FIX loop: 1 real failure resolved after 2 iterations. Check 3 (podcast) is expected content dependency (--include-podcasts=false), not a code bug.
+[2026-03-29T15:53:55.459Z] Coordinator agent finished — pipeline: COMPLETE
