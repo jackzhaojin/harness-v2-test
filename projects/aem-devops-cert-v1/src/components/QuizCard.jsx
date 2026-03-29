@@ -100,10 +100,11 @@ export default function QuizCard({ question, questionIndex, totalQuestions, onNe
             return (
               <button
                 key={letter}
+                data-testid={`option-${letter}`}
                 disabled={submitted}
                 onClick={() => !submitted && setSelected(letter)}
                 className={cn(
-                  'answer-card w-full p-4 lg:p-5 flex items-center gap-4 rounded-lg text-left transition-all',
+                  'answer-card btn-option w-full p-4 lg:p-5 flex items-center gap-4 rounded-lg text-left transition-all',
                   !submitted && isSelected && 'answer-card-selected',
                   submitted && isCorrect && 'answer-card-correct',
                   submitted && isWrong && 'answer-card-wrong',
@@ -135,10 +136,11 @@ export default function QuizCard({ question, questionIndex, totalQuestions, onNe
 
         {!submitted && (
           <button
+            data-testid="submit-answer"
             onClick={handleSubmit}
             disabled={!selected}
             className={cn(
-              'mt-8 w-full py-4 gradient-cta text-on-primary-container font-headline font-bold tracking-widest uppercase rounded-xl transition-all',
+              'mt-8 w-full py-4 gradient-cta btn-submit text-on-primary-container font-headline font-bold tracking-widest uppercase rounded-xl transition-all',
               selected ? 'opacity-100 hover:shadow-[0_0_20px_rgba(157,143,255,0.4)] cursor-pointer' : 'opacity-40 cursor-not-allowed'
             )}
           >
