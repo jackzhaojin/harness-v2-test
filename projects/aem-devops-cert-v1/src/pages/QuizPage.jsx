@@ -3,6 +3,7 @@ import { useManifest } from '@/hooks/useManifest'
 import QuizCard from '@/components/QuizCard'
 import PerformancePanel from '@/components/PerformancePanel'
 import { cn } from '@/lib/utils'
+import { getAssetUrl } from '@/lib/sitePaths'
 
 function shuffleArray(arr) {
   const a = [...arr]
@@ -37,7 +38,7 @@ export default function QuizPage() {
   useEffect(() => {
     if (manifestLoading) return
     const quizPath = manifest?.quizPath || 'quizzes.json'
-    fetch(`/${quizPath}`)
+    fetch(getAssetUrl(quizPath))
       .then(res => {
         if (!res.ok) throw new Error(`HTTP ${res.status}`)
         return res.json()

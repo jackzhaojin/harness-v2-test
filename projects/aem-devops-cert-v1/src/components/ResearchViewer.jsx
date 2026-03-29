@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import ReactMarkdown from 'react-markdown'
 import TopicSidebar from './TopicSidebar'
 import { cn } from '@/lib/utils'
+import { getAssetUrl } from '@/lib/sitePaths'
 
 function CitationBadge({ num }) {
   return (
@@ -52,7 +53,7 @@ export default function ResearchViewer({ topicTree }) {
 
     // Convert topic id to filename format
     const filename = selectedTopic.id.replace(/\./g, '_') + '.md'
-    fetch(`/research/${filename}`)
+    fetch(getAssetUrl(`research/${filename}`))
       .then(res => {
         if (!res.ok) throw new Error(`HTTP ${res.status}: Research file not found`)
         return res.text()

@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Play, Pause } from 'lucide-react'
+import { getAssetUrl } from '@/lib/sitePaths'
 
 function formatTime(seconds) {
   if (!seconds || isNaN(seconds)) return '0:00'
@@ -67,7 +68,7 @@ export default function PodcastPlayer({ episode }) {
       <CardContent className="space-y-4">
         <audio
           ref={audioRef}
-          src={episode.audioPath ? `/${episode.audioPath}` : undefined}
+          src={episode.audioPath ? getAssetUrl(episode.audioPath) : undefined}
           onTimeUpdate={() => setCurrentTime(audioRef.current?.currentTime || 0)}
           onLoadedMetadata={() => setDuration(audioRef.current?.duration || 0)}
           onEnded={() => setPlaying(false)}

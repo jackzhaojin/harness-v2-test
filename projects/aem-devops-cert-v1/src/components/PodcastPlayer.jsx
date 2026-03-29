@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 import { cn } from '@/lib/utils'
+import { getAssetUrl } from '@/lib/sitePaths'
 
 const SPEEDS = [0.75, 1, 1.25, 1.5, 2]
 
@@ -23,7 +24,7 @@ export default function PodcastPlayer({ episode }) {
   const [speedIndex, setSpeedIndex] = useState(1)
   const [volume, setVolume] = useState(0.8)
 
-  const audioSrc = episode?.audioSrc || episode?.audioPath || null
+  const audioSrc = episode?.audioSrc || (episode?.audioPath ? getAssetUrl(episode.audioPath) : null)
 
   useEffect(() => {
     setPlaying(false)

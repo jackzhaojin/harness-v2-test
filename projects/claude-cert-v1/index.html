@@ -2,12 +2,27 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231f2937'/%3E%3Cpath d='M18 18h12c9.941 0 18 8.059 18 18v10H36V36c0-3.314-2.686-6-6-6H18V18z' fill='%2314b8a6'/%3E%3Ccircle cx='42' cy='46' r='6' fill='%23f59e0b'/%3E%3C/svg%3E" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Claude Developer Certification - Study Environment</title>
+    <script>
+      (function () {
+        var params = new URLSearchParams(window.location.search);
+        var ghPath = params.get('gh_path');
+        if (!ghPath) {
+          return;
+        }
+
+        var appEntryPath = window.location.pathname.endsWith('/')
+          ? window.location.pathname
+          : window.location.pathname + '/';
+        var restoredUrl = new URL(ghPath, window.location.origin + appEntryPath);
+        window.history.replaceState(null, '', restoredUrl.pathname + restoredUrl.search + restoredUrl.hash);
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
+    <script type="module" src="./src/main.jsx"></script>
   </body>
 </html>

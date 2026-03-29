@@ -10,6 +10,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
+import { getAssetUrl } from '@/lib/sitePaths'
 
 function getLeafTopics(topics, result = []) {
   if (!topics) return result
@@ -179,7 +180,7 @@ export default function ResearchViewer({ topicTree, researchDir }) {
     // Convert topic ID like "prompt-engineering.system-prompts.structure"
     // to filename like "prompt-engineering_system-prompts_structure.md"
     const sanitized = selectedTopicId.replace(/\./g, '_')
-    const filePath = `/${researchDir}${sanitized}.md`
+    const filePath = getAssetUrl(`${researchDir}${sanitized}.md`)
 
     async function load() {
       try {

@@ -5,10 +5,11 @@ import ResearchPage from '@/pages/ResearchPage'
 import QuizPage from '@/pages/QuizPage'
 import PodcastPage from '@/pages/PodcastPage'
 import TeachBackPage from '@/pages/TeachBackPage'
+import { getRouterBasename } from '@/lib/sitePaths'
 
 export default function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename={getRouterBasename()}>
       <Routes>
         <Route element={<AppLayout />}>
           <Route index element={<HomePage />} />

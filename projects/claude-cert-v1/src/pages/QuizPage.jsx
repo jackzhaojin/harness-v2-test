@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
 import { Badge } from '@/components/ui/badge'
 import { HelpCircle, RotateCcw, Trophy } from 'lucide-react'
+import { getAssetUrl } from '@/lib/sitePaths'
 
 function shuffleArray(arr) {
   const shuffled = [...arr]
@@ -34,7 +35,7 @@ export default function QuizPage() {
 
     async function loadQuiz() {
       try {
-        const res = await fetch('/' + manifest.quizPath)
+        const res = await fetch(getAssetUrl(manifest.quizPath))
         if (!res.ok) throw new Error(`Failed to load quiz: ${res.status}`)
         const data = await res.json()
         const questionArray = data.questions || []

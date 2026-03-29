@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { getAssetUrl } from '@/lib/sitePaths'
 
 let cachedManifest = null
 
@@ -18,7 +19,7 @@ export default function useManifest() {
 
     async function load() {
       try {
-        const res = await fetch('/manifest.json')
+        const res = await fetch(getAssetUrl('manifest.json'))
         if (!res.ok) throw new Error(`Failed to load manifest: ${res.status}`)
         const data = await res.json()
         cachedManifest = data
