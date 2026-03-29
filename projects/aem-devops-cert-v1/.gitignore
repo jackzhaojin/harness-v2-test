@@ -35,6 +35,8 @@ ai-docs/phases/COORDINATOR/
 
 # Playwright test artifacts
 .playwright-mcp/
+playwright-report/
+blob-report/
 test-results/
 
 # TTS model files (large binaries)
