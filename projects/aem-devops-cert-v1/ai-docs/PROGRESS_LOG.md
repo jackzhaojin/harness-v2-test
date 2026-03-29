@@ -31,3 +31,20 @@
 [2026-03-29T13:55:55.348Z] RESEARCH -- completed (17m 34s) -- 52 topics, 4 sources
 [2026-03-29T13:56:21.252Z] SYNTHESIZE -- started
 [2026-03-29T14:06:29.300Z] SYNTHESIZE -- completed (10m 8s) -- 6 sections
+[2026-03-29T14:06:53.396Z] CONTENT -- started
+[2026-03-29T14:07:01.074Z] CONTENT   Skipping podcast script generation (--include-podcasts not set)
+[2026-03-29T14:24:32.798Z] PIPELINE STARTED — AEM DevOps Engineer Expert Certification (6 topics, 6 domains)
+[2026-03-29T14:25:35.151Z] CONTENT -- started
+[2026-03-29T14:25:40.267Z] CONTENT   Skipping podcast script generation (--include-podcasts not set)
+[2026-03-29T14:40:23.721Z] PIPELINE STARTED — AEM DevOps Engineer Expert Certification (6 topics, 6 domains)
+[2026-03-29T14:41:20.908Z] CONTENT -- started
+[2026-03-29T14:41:25.127Z] CONTENT   Skipping podcast script generation (--include-podcasts not set)
+[2026-03-29T14:49:32.628Z] PIPELINE STARTED — AEM DevOps Engineer Expert Certification (6 topics, 6 domains)
+[2026-03-29T14:50:34.645Z] CONTENT -- started
+[2026-03-29T14:50:44.253Z] CONTENT   Skipping podcast script generation (--include-podcasts not set)
+[2026-03-29T14:51:06.190Z] PIPELINE STARTED — AEM DevOps Engineer Expert Certification (6 topics, 6 domains)
+[2026-03-29T14:52:12.303Z] CONTENT -- started
+[2026-03-29T15:06:49.717Z] PIPELINE STARTED — AEM DevOps Engineer Expert Certification (6 topics, 6 domains)
+[2026-03-29T15:07:52.514Z] CONTENT -- started
+[2026-03-29T15:08:07.513Z] CONTENT   Skipping podcast script generation (--include-podcasts not set)
+[2026-03-29T15:25:27.245Z] CONTENT -- completed (17m 35s) -- 48 quizQuestions, 0 podcastScripts
