@@ -1,6 +1,6 @@
 {
   "version": "1.1",
-  "pipeline": "CONTENT",
+  "pipeline": "DEPOSIT",
   "currentPhase": null,
   "currentActivity": null,
   "regenFrom": null,
@@ -57,24 +57,29 @@
       }
     },
     "TTS": {
-      "status": "pending",
-      "attempts": 0,
+      "status": "complete",
+      "attempts": 1,
       "error": null,
-      "startedAt": null,
-      "completedAt": null,
-      "durationSeconds": null,
+      "startedAt": "2026-03-29T15:25:43.894Z",
+      "completedAt": "2026-03-29T15:25:43.937Z",
+      "durationSeconds": 0,
       "progress": null,
-      "metrics": null
+      "metrics": {
+        "skipped": true
+      }
     },
     "DEPOSIT": {
-      "status": "pending",
-      "attempts": 0,
+      "status": "complete",
+      "attempts": 1,
       "error": null,
-      "startedAt": null,
-      "completedAt": null,
-      "durationSeconds": null,
+      "startedAt": "2026-03-29T15:25:53.755Z",
+      "completedAt": "2026-03-29T15:41:00.083Z",
+      "durationSeconds": 906,
       "progress": null,
-      "metrics": null
+      "metrics": {
+        "routes": 5,
+        "skills": 4
+      }
     },
     "VALIDATE": {
       "status": "pending",
@@ -89,5 +94,5 @@
   },
   "topicCount": 0,
   "startedAt": "2026-03-29T02:07:33.584Z",
-  "updatedAt": "2026-03-29T15:25:27.244Z"
+  "updatedAt": "2026-03-29T15:41:00.083Z"
 }

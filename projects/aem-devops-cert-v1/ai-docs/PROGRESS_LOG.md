@@ -48,3 +48,8 @@
 [2026-03-29T15:07:52.514Z] CONTENT -- started
 [2026-03-29T15:08:07.513Z] CONTENT   Skipping podcast script generation (--include-podcasts not set)
 [2026-03-29T15:25:27.245Z] CONTENT -- completed (17m 35s) -- 48 quizQuestions, 0 podcastScripts
+[2026-03-29T15:25:43.895Z] TTS -- started
+[2026-03-29T15:25:43.916Z] TTS   Skipping TTS phase (--include-podcasts not set)
+[2026-03-29T15:25:43.938Z] TTS -- completed (0s) -- true skipped
+[2026-03-29T15:25:53.756Z] DEPOSIT -- started
+[2026-03-29T15:41:00.084Z] DEPOSIT -- completed (15m 6s) -- 5 routes, 4 skills
