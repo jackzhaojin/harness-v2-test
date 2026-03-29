@@ -1,9 +1,13 @@
+import scoreExplanationSkill from '../../.claude/skills/score-explanation/SKILL.md?raw'
+
 const CLAUDE_API_URL = 'https://api.anthropic.com/v1/messages'
 const CLAUDE_MODEL = 'claude-haiku-4-5'
 
 /**
  * Evaluate a teach-back explanation using the Claude API.
- * Output schema matches the deposited score-explanation skill.
+ * System prompt is loaded from the score-explanation skill definition
+ * (.claude/skills/score-explanation/SKILL.md) so the skill is the single
+ * source of truth for evaluation criteria.
  *
  * @param {Object} params
  * @param {string} params.apiKey - Claude API key from localStorage
@@ -25,34 +29,9 @@ export async function evaluateExplanation({ apiKey, explanation, topicTitle, res
   const systemPrompt = `You are an expert technical educator evaluating a learner's explanation of a topic.
 You must return ONLY a valid JSON object — no prose, no markdown fences, no extra text.
 
-The JSON must match this exact schema:
-{
-  "completeness": <number 0-100>,
-  "accuracy": <number 0-100>,
-  "depth": <"surface" | "moderate" | "deep">,
-  "coveredWell": [<string>, ...],
-  "partiallyCorrect": [<string>, ...],
-  "missing": [<string>, ...],
-  "followUpQuestion": <string>,
-  "overallFeedback": <string>
-}
+Follow the evaluation procedure and output format defined in the skill below:
 
-Evaluation dimensions:
-- completeness (0-100): What percentage of key concepts from the research did the learner cover? Count covered concepts against total key concepts.
-- accuracy (0-100): Were the learner's statements technically correct? Deduct for factual errors, overgeneralizations, or misleading claims.
-- depth: Classify overall depth as one of:
-  "surface" — Recites definitions or bullet points without elaboration
-  "moderate" — Explains how and why, not just what
-  "deep" — Demonstrates genuine understanding through examples, analogies, trade-off analysis, or connections to other topics
-- coveredWell: List 2-5 concepts the learner explained accurately and thoroughly. Be specific.
-- partiallyCorrect: List concepts the learner addressed but got partially wrong or missed important nuance. Briefly note what was missing.
-- missing: List 2-5 key concepts from the research that the learner did not mention at all.
-- followUpQuestion: Craft one targeted Socratic question probing their weakest area. Invite deeper thinking, not just fact recall.
-- overallFeedback: A 2-3 sentence summary of where they stand and what to focus on next. Be specific and actionable.
-
-Coaching principles:
-- Do not penalize for informal language or unconventional structure. Judge understanding, not polish.
-- A learner who uses their own examples or analogies (even imperfect ones) demonstrates deeper understanding than one who parrots the source material.`
+${scoreExplanationSkill}`
 
   const userPrompt = `Topic: ${topicTitle}
 
