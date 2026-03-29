@@ -1,0 +1,310 @@
+{
+  "version": "1.0",
+  "title": "AEM DevOps Engineer Expert Certification (AD0-E124)",
+  "generatedAt": "2026-03-29T15:26:00.000Z",
+  "generatedBy": "study-agent-harness",
+  "topics": [
+    "aem-configuration_osgi_factory-configs",
+    "aem-configuration_sling_models",
+    "aem-configuration_troubleshooting_logging",
+    "aem-configuration_osgi_run-modes",
+    "aem-configuration_sling_resource-resolver",
+    "aem-configuration_osgi_config-admin",
+    "aem-configuration_troubleshooting_common-issues",
+    "cloud-manager-operations_environments_variables",
+    "cloud-manager-operations_environments_provisioning",
+    "cloud-manager-operations_programs_types",
+    "cloud-manager-operations_api_authentication",
+    "cloud-manager-operations_environments_networking",
+    "cloud-manager-operations_migration_content-transfer",
+    "cloud-manager-operations_migration_code-refactoring",
+    "cloud-manager-operations_migration_assessment",
+    "cloud-manager-operations_programs_solutions",
+    "cloud-manager-operations_api_endpoints",
+    "web-proxy-infrastructure_aemaacs-dispatcher_local-validation",
+    "web-proxy-infrastructure_caching_ttl-configuration",
+    "web-proxy-infrastructure_dispatcher-config_filters",
+    "web-proxy-infrastructure_caching_invalidation",
+    "web-proxy-infrastructure_dispatcher-config_farm-files",
+    "web-proxy-infrastructure_aemaacs-dispatcher_immutable-config",
+    "web-proxy-infrastructure_caching_troubleshooting",
+    "web-proxy-infrastructure_dispatcher-config_rewrite-rules",
+    "build-deployments_maven_archetype",
+    "build-deployments_pipelines_code-quality",
+    "build-deployments_pipelines_deploy-phase",
+    "build-deployments_pipelines_types",
+    "build-deployments_pipelines_build-phase",
+    "build-deployments_frontend_pipeline-config",
+    "build-deployments_maven_cloud-manager-requirements",
+    "monitoring-quality_performance-monitoring_health-checks",
+    "monitoring-quality_performance-monitoring_new-relic",
+    "monitoring-quality_performance-monitoring_jmx-monitoring",
+    "build-deployments_maven_profiles",
+    "build-deployments_frontend_module-structure",
+    "build-deployments_maven_plugins",
+    "build-deployments_content-packages_mutable-immutable",
+    "build-deployments_content-packages_structure",
+    "build-deployments_content-packages_dependencies",
+    "monitoring-quality_log-analysis_splunk-integration",
+    "monitoring-quality_log-analysis_cloud-manager-logs",
+    "monitoring-quality_log-analysis_log-types",
+    "monitoring-quality_scaling_autoscaling",
+    "admin-console_support_ticket-submission",
+    "admin-console_identity_ims-integration",
+    "admin-console_support_system-status",
+    "monitoring-quality_scaling_cdn-configuration",
+    "admin-console_identity_federated-sso",
+    "admin-console_identity_ldap-integration",
+    "admin-console_identity_user-group-sync"
+  ],
+  "topicTree": {
+    "examTitle": "AEM DevOps Engineer Expert Certification (AD0-E124)",
+    "sourceDocument": "/Users/jackjin/dev/jack-dev-server-configs/local/study-harness-v2026-03-v1/input/aem-devops-expert/manifest.yaml",
+    "generatedAt": "2026-03-28T00:00:00.000Z",
+    "totalLeafTopics": 44,
+    "topics": [
+      {
+        "id": "aem-configuration",
+        "title": "Configure Adobe Experience Manager",
+        "description": "Fundamental AEM settings configuration, troubleshooting AEM issues, OSGi configuration. Exam weight: 18%.",
+        "depth": 0,
+        "estimatedComplexity": "high",
+        "subtopics": [
+          {
+            "id": "aem-configuration.osgi",
+            "title": "OSGi Configuration Management",
+            "depth": 1,
+            "subtopics": [
+              {"id": "aem-configuration.osgi.factory-configs", "title": "OSGi Factory Configurations", "depth": 2, "subtopics": []},
+              {"id": "aem-configuration.osgi.run-modes", "title": "Run Modes and Configuration Resolution", "depth": 2, "subtopics": []},
+              {"id": "aem-configuration.osgi.config-admin", "title": "Configuration Admin Service", "depth": 2, "subtopics": []}
+            ]
+          },
+          {
+            "id": "aem-configuration.sling",
+            "title": "Sling Framework Configuration",
+            "depth": 1,
+            "subtopics": [
+              {"id": "aem-configuration.sling.models", "title": "Sling Models Configuration", "depth": 2, "subtopics": []},
+              {"id": "aem-configuration.sling.resource-resolver", "title": "Resource Resolver Configuration", "depth": 2, "subtopics": []}
+            ]
+          },
+          {
+            "id": "aem-configuration.troubleshooting",
+            "title": "AEM Troubleshooting",
+            "depth": 1,
+            "subtopics": [
+              {"id": "aem-configuration.troubleshooting.logging", "title": "Logging Configuration and Analysis", "depth": 2, "subtopics": []},
+              {"id": "aem-configuration.troubleshooting.common-issues", "title": "Common AEM Issues and Resolutions", "depth": 2, "subtopics": []}
+            ]
+          }
+        ]
+      },
+      {
+        "id": "cloud-manager-operations",
+        "title": "Operate Cloud Manager and Cloud Manager API",
+        "description": "Cloud Manager environment settings, program and environment provisioning, AEMaaCS migration strategies, Adobe I/O integration. Exam weight: 20%.",
+        "depth": 0,
+        "estimatedComplexity": "high",
+        "subtopics": [
+          {
+            "id": "cloud-manager-operations.environments",
+            "title": "Cloud Manager Environment Management",
+            "depth": 1,
+            "subtopics": [
+              {"id": "cloud-manager-operations.environments.provisioning", "title": "Environment Provisioning", "depth": 2, "subtopics": []},
+              {"id": "cloud-manager-operations.environments.variables", "title": "Environment Variables Configuration", "depth": 2, "subtopics": []},
+              {"id": "cloud-manager-operations.environments.networking", "title": "Advanced Networking Configuration", "depth": 2, "subtopics": []}
+            ]
+          },
+          {
+            "id": "cloud-manager-operations.programs",
+            "title": "Program Management",
+            "depth": 1,
+            "subtopics": [
+              {"id": "cloud-manager-operations.programs.types", "title": "Program Types and Lifecycle", "depth": 2, "subtopics": []},
+              {"id": "cloud-manager-operations.programs.solutions", "title": "Solution Configuration", "depth": 2, "subtopics": []}
+            ]
+          },
+          {
+            "id": "cloud-manager-operations.api",
+            "title": "Cloud Manager API and Adobe I/O",
+            "depth": 1,
+            "subtopics": [
+              {"id": "cloud-manager-operations.api.authentication", "title": "Adobe I/O Authentication Setup", "depth": 2, "subtopics": []},
+              {"id": "cloud-manager-operations.api.endpoints", "title": "Cloud Manager API Endpoints", "depth": 2, "subtopics": []}
+            ]
+          },
+          {
+            "id": "cloud-manager-operations.migration",
+            "title": "AEM as a Cloud Service Migration",
+            "depth": 1,
+            "subtopics": [
+              {"id": "cloud-manager-operations.migration.assessment", "title": "Migration Assessment Tools", "depth": 2, "subtopics": []},
+              {"id": "cloud-manager-operations.migration.content-transfer", "title": "Content Transfer Tool", "depth": 2, "subtopics": []},
+              {"id": "cloud-manager-operations.migration.code-refactoring", "title": "Code Refactoring for AEMaaCS", "depth": 2, "subtopics": []}
+            ]
+          }
+        ]
+      },
+      {
+        "id": "web-proxy-infrastructure",
+        "title": "Configure the Web Proxy Infrastructure",
+        "description": "Dispatcher configuration management, caching troubleshooting, TTL and invalidation strategies. Exam weight: 12%.",
+        "depth": 0,
+        "estimatedComplexity": "high",
+        "subtopics": [
+          {
+            "id": "web-proxy-infrastructure.dispatcher-config",
+            "title": "Dispatcher Configuration",
+            "depth": 1,
+            "subtopics": [
+              {"id": "web-proxy-infrastructure.dispatcher-config.farm-files", "title": "Dispatcher Farm Configuration", "depth": 2, "subtopics": []},
+              {"id": "web-proxy-infrastructure.dispatcher-config.filters", "title": "Dispatcher Filters and Rules", "depth": 2, "subtopics": []},
+              {"id": "web-proxy-infrastructure.dispatcher-config.rewrite-rules", "title": "URL Rewrite Rules", "depth": 2, "subtopics": []}
+            ]
+          },
+          {
+            "id": "web-proxy-infrastructure.caching",
+            "title": "Dispatcher Caching",
+            "depth": 1,
+            "subtopics": [
+              {"id": "web-proxy-infrastructure.caching.ttl-configuration", "title": "TTL and Cache Headers", "depth": 2, "subtopics": []},
+              {"id": "web-proxy-infrastructure.caching.invalidation", "title": "Cache Invalidation Strategies", "depth": 2, "subtopics": []},
+              {"id": "web-proxy-infrastructure.caching.troubleshooting", "title": "Cache Troubleshooting", "depth": 2, "subtopics": []}
+            ]
+          },
+          {
+            "id": "web-proxy-infrastructure.aemaacs-dispatcher",
+            "title": "Dispatcher in AEM as a Cloud Service",
+            "depth": 1,
+            "subtopics": [
+              {"id": "web-proxy-infrastructure.aemaacs-dispatcher.immutable-config", "title": "Immutable Dispatcher Configuration", "depth": 2, "subtopics": []},
+              {"id": "web-proxy-infrastructure.aemaacs-dispatcher.local-validation", "title": "Local Dispatcher Validation", "depth": 2, "subtopics": []}
+            ]
+          }
+        ]
+      },
+      {
+        "id": "build-deployments",
+        "title": "Build and Deployments",
+        "description": "Cloud Manager deployment management, pipeline analysis, content package management, Maven project configuration. Exam weight: 28%.",
+        "depth": 0,
+        "estimatedComplexity": "high",
+        "subtopics": [
+          {
+            "id": "build-deployments.pipelines",
+            "title": "Cloud Manager Pipelines",
+            "depth": 1,
+            "subtopics": [
+              {"id": "build-deployments.pipelines.types", "title": "Pipeline Types and Configuration", "depth": 2, "subtopics": []},
+              {"id": "build-deployments.pipelines.code-quality", "title": "Code Quality Gates", "depth": 2, "subtopics": []},
+              {"id": "build-deployments.pipelines.build-phase", "title": "Build Phase Analysis", "depth": 2, "subtopics": []},
+              {"id": "build-deployments.pipelines.deploy-phase", "title": "Deployment Phase and Strategies", "depth": 2, "subtopics": []}
+            ]
+          },
+          {
+            "id": "build-deployments.content-packages",
+            "title": "Content Package Management",
+            "depth": 1,
+            "subtopics": [
+              {"id": "build-deployments.content-packages.structure", "title": "Package Structure and Filters", "depth": 2, "subtopics": []},
+              {"id": "build-deployments.content-packages.mutable-immutable", "title": "Mutable vs Immutable Content", "depth": 2, "subtopics": []},
+              {"id": "build-deployments.content-packages.dependencies", "title": "Package Dependencies and Ordering", "depth": 2, "subtopics": []}
+            ]
+          },
+          {
+            "id": "build-deployments.maven",
+            "title": "Maven Project Configuration",
+            "depth": 1,
+            "subtopics": [
+              {"id": "build-deployments.maven.archetype", "title": "AEM Project Archetype", "depth": 2, "subtopics": []},
+              {"id": "build-deployments.maven.profiles", "title": "Maven Profiles for Environments", "depth": 2, "subtopics": []},
+              {"id": "build-deployments.maven.plugins", "title": "AEM Maven Plugins", "depth": 2, "subtopics": []},
+              {"id": "build-deployments.maven.cloud-manager-requirements", "title": "Cloud Manager Maven Requirements", "depth": 2, "subtopics": []}
+            ]
+          },
+          {
+            "id": "build-deployments.frontend",
+            "title": "Frontend Pipeline",
+            "depth": 1,
+            "subtopics": [
+              {"id": "build-deployments.frontend.module-structure", "title": "Frontend Module Structure", "depth": 2, "subtopics": []},
+              {"id": "build-deployments.frontend.pipeline-config", "title": "Frontend Pipeline Configuration", "depth": 2, "subtopics": []}
+            ]
+          }
+        ]
+      },
+      {
+        "id": "monitoring-quality",
+        "title": "Monitor and Report on Quality Metrics",
+        "description": "Performance metrics collection, New Relic integration, log analysis, health checks, infrastructure scaling. Exam weight: 14%.",
+        "depth": 0,
+        "estimatedComplexity": "high",
+        "subtopics": [
+          {
+            "id": "monitoring-quality.performance-monitoring",
+            "title": "Performance Monitoring",
+            "depth": 1,
+            "subtopics": [
+              {"id": "monitoring-quality.performance-monitoring.new-relic", "title": "New Relic Integration", "depth": 2, "subtopics": []},
+              {"id": "monitoring-quality.performance-monitoring.health-checks", "title": "AEM Health Checks", "depth": 2, "subtopics": []},
+              {"id": "monitoring-quality.performance-monitoring.jmx-monitoring", "title": "JMX and MBean Monitoring", "depth": 2, "subtopics": []}
+            ]
+          },
+          {
+            "id": "monitoring-quality.log-analysis",
+            "title": "Log Analysis and Management",
+            "depth": 1,
+            "subtopics": [
+              {"id": "monitoring-quality.log-analysis.log-types", "title": "AEM Log Types and Locations", "depth": 2, "subtopics": []},
+              {"id": "monitoring-quality.log-analysis.cloud-manager-logs", "title": "Accessing Logs via Cloud Manager", "depth": 2, "subtopics": []},
+              {"id": "monitoring-quality.log-analysis.splunk-integration", "title": "Log Forwarding and Splunk Integration", "depth": 2, "subtopics": []}
+            ]
+          },
+          {
+            "id": "monitoring-quality.scaling",
+            "title": "Infrastructure Scaling",
+            "depth": 1,
+            "subtopics": [
+              {"id": "monitoring-quality.scaling.autoscaling", "title": "Autoscaling Behavior", "depth": 2, "subtopics": []},
+              {"id": "monitoring-quality.scaling.cdn-configuration", "title": "CDN and Load Balancing", "depth": 2, "subtopics": []}
+            ]
+          }
+        ]
+      },
+      {
+        "id": "admin-console",
+        "title": "Operate the Admin Console",
+        "description": "Support request submission, federated SSO configuration, AEM user and group sync with IMS, SAML, LDAP. Exam weight: 8%.",
+        "depth": 0,
+        "estimatedComplexity": "medium",
+        "subtopics": [
+          {
+            "id": "admin-console.support",
+            "title": "Admin Console Support Operations",
+            "depth": 1,
+            "subtopics": [
+              {"id": "admin-console.support.ticket-submission", "title": "Support Ticket Submission", "depth": 2, "subtopics": []},
+              {"id": "admin-console.support.system-status", "title": "System Status and Notifications", "depth": 2, "subtopics": []}
+            ]
+          },
+          {
+            "id": "admin-console.identity",
+            "title": "Identity and Access Management",
+            "depth": 1,
+            "subtopics": [
+              {"id": "admin-console.identity.ims-integration", "title": "Adobe IMS Integration", "depth": 2, "subtopics": []},
+              {"id": "admin-console.identity.federated-sso", "title": "Federated SSO Configuration", "depth": 2, "subtopics": []},
+              {"id": "admin-console.identity.user-group-sync", "title": "User and Group Synchronization", "depth": 2, "subtopics": []},
+              {"id": "admin-console.identity.ldap-integration", "title": "LDAP Integration (On-Premise)", "depth": 2, "subtopics": []}
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "quizPath": "quizzes.json",
+  "researchDir": "research/",
+  "podcastEpisodes": []
+}

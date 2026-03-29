@@ -1,0 +1,1863 @@
+{
+  "generatedAt": "2026-03-29T15:24:58.329Z",
+  "totalQuestions": 48,
+  "difficultyDistribution": {
+    "easy": 11,
+    "medium": 22,
+    "hard": 15
+  },
+  "questions": [
+    {
+      "id": "q-001",
+      "topic": "IMS Integration — Product Profiles",
+      "difficulty": "easy",
+      "scenario": "A team has just provisioned a new AEM as a Cloud Service development environment via Cloud Manager. The system administrator then needs to grant a content author access to the AEM Author tier of that environment. The author already has an Enterprise ID in the Adobe Admin Console and is a member of an IMS user group called 'editorial-team'.",
+      "question": "What is the minimum step required to allow this content author to log into the AEM Author environment?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Add the 'editorial-team' IMS user group to the auto-created AEM product profile in Admin Console.",
+          "isCorrect": false
+        },
+        {
+          "label": "B",
+          "text": "Add the individual user to either the 'AEM Users' or 'AEM Administrators' product profile in Admin Console.",
+          "isCorrect": true
+        },
+        {
+          "label": "C",
+          "text": "Create a local AEM account for the author in the AEM repository at /home/users and assign the contributor group.",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "Add the user to a Cloud Manager Developer role so they can access all AEM environments.",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "B is correct because in AEM as a Cloud Service, IMS product profiles are the gatekeepers for AEM service access. A user must be individually added to either 'AEM Users' or 'AEM Administrators' to receive a login-enabling IMS token for that environment [per ims-integration [3][4]]. A is incorrect because AEMaaCS does not support assigning IMS user groups directly to product profiles — only individual users can be added to profiles, and behavior when groups are assigned is documented as undefined [per user-group-sync [5] and ims-integration [3]]. C is incorrect because AEMaaCS authentication is IMS-only for Author; local AEM accounts do not participate in the IMS authentication flow. Creating a local account would not let the user authenticate via the IMS login redirect. D is incorrect because Cloud Manager roles (Business Owner, Developer, Deployment Manager) control pipeline and environment management access only. They are completely separate from AEM service access and do not grant the ability to log into AEM Author [per ims-integration [4]].",
+      "sourceRefs": [
+        "admin-console.identity.ims-integration:3",
+        "admin-console.identity.ims-integration:4",
+        "admin-console.identity.user-group-sync:5"
+      ],
+      "references": [
+        "admin-console.identity.ims-integration",
+        "admin-console.identity.user-group-sync"
+      ]
+    },
+    {
+      "id": "q-002",
+      "topic": "User and Group Synchronization — Sync Timing and Debounce",
+      "difficulty": "easy",
+      "scenario": "A content author reports that after being added to a new IMS user group called 'campaign-editors' in the Adobe Admin Console, their AEM Author permissions have not changed. The administrator confirms the group was added 5 minutes ago and the author logged in again 3 minutes ago. The author is not seeing the new group-based permissions.",
+      "question": "What is the most likely explanation for why the author's AEM permissions have not been updated?",
+      "options": [
+        {
+          "label": "A",
+          "text": "The sync from IMS to AEM is asynchronous and can take up to 24 hours to propagate across all environments.",
+          "isCorrect": false
+        },
+        {
+          "label": "B",
+          "text": "The author must be removed from the IMS group and re-added to trigger a fresh sync event.",
+          "isCorrect": false
+        },
+        {
+          "label": "C",
+          "text": "The Oak Default Sync Handler has a ~10-minute debounce; because the author logged in again within that window, IMS changes were not re-synced.",
+          "isCorrect": true
+        },
+        {
+          "label": "D",
+          "text": "IMS groups can only be synced to AEM by a system administrator using the JMX syncAllExternalUsers() method.",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "C is correct because the IMS-to-AEM sync is login-triggered, but the Oak Default Sync Handler includes a debounce of approximately 10 minutes. If a user logs in again within that window after a prior login, the sync is skipped — the handler considers the user's data still valid. The author logged in 3 minutes after the group was added, which is within the debounce window, so the new group membership was not picked up [per user-group-sync [2][3]]. A is incorrect because the sync delay is not 24 hours — it is triggered on login and normally takes effect immediately after the debounce window expires. B is incorrect because removing and re-adding a user to a group does not bypass the debounce; the fix is to wait for the debounce window to expire, then log in again (or use the JMX console to force a refresh). D is incorrect because while the JMX syncAllExternalUsers() method does exist for administrative bulk sync, it is not required for normal operation — IMS sync happens automatically on login once the debounce window has passed [per ldap-integration [1], user-group-sync [3]].",
+      "sourceRefs": [
+        "admin-console.identity.user-group-sync:2",
+        "admin-console.identity.user-group-sync:3"
+      ],
+      "references": [
+        "admin-console.identity.user-group-sync"
+      ]
+    },
+    {
+      "id": "q-003",
+      "topic": "User and Group Synchronization — Permission Assignment Pattern",
+      "difficulty": "medium",
+      "scenario": "A DevOps engineer is designing the permission model for a new AEM as a Cloud Service implementation. The organization has three environments (Dev, Stage, Prod) and uses Adobe Admin Console with IMS. The team wants editors to have write access to /content/brand on all environments. The engineer proposes assigning ACLs directly to the synced IMS group 'brand-editors' in AEM to keep configuration simple.",
+      "question": "Why is this approach problematic, and what is the recommended alternative?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Assigning ACLs to synced IMS groups is unsupported; instead, configure ACLs via LDAP group membership attributes in the LDAP Identity Provider OSGi configuration.",
+          "isCorrect": false
+        },
+        {
+          "label": "B",
+          "text": "Synced IMS groups are organizational units shared across Adobe Experience Cloud; assigning AEM-specific ACLs to them makes the group AEM-environment-aware and breaks reusability. The recommended approach is to add the IMS group as a member of an AEM-native group, and assign ACLs to that AEM-native group.",
+          "isCorrect": true
+        },
+        {
+          "label": "C",
+          "text": "ACLs cannot be assigned in AEM at all in AEMaaCS; all permissions must be defined in repoinit scripts deployed via Cloud Manager packages.",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "IMS group names are auto-generated with environment suffixes (e.g., brand-editors_dev), so a single ACL assignment to 'brand-editors' would not apply to all environments.",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "B is correct because IMS user groups are intended to be environment-agnostic and reusable across all Adobe Experience Cloud products. If you assign AEM-specific ACLs directly to a synced IMS group, that group becomes tightly coupled to AEM's permission model and can no longer be shared cleanly across products. Additionally, when an IMS group is renamed in Admin Console, the old AEM group (with ACLs) becomes orphaned silently [per user-group-sync [5]]. The recommended pattern is: IMS group (synced as AEM group) → added as member of AEM-native group → AEM-native group holds ACLs [per user-group-sync [5][1] and ims-integration [3]]. A is incorrect because LDAP is not supported in AEMaaCS — the question describes an AEMaaCS scenario where IMS is the authentication layer. LDAP-based OSGi configuration is irrelevant here. C is incorrect because while repoinit is the recommended way to deploy ACLs as code across environments, AEM-native groups and their ACLs can also be managed through the AEM security model. The statement that ACLs cannot be assigned in AEM at all is false. D is incorrect because product profile names include environment suffixes (e.g., AEM Users_programID_envID), but IMS user group names do not — they are the same group name across the org.",
+      "sourceRefs": [
+        "admin-console.identity.user-group-sync:5",
+        "admin-console.identity.user-group-sync:1",
+        "admin-console.identity.ims-integration:3"
+      ],
+      "references": [
+        "admin-console.identity.user-group-sync",
+        "admin-console.identity.ims-integration",
+        "cloud-manager.environments.repoinit"
+      ]
+    },
+    {
+      "id": "q-004",
+      "topic": "Federated SSO — Configuration and Identity Types",
+      "difficulty": "medium",
+      "scenario": "An enterprise organization wants to enable Single Sign-On for their AEM as a Cloud Service Author environment. Users currently authenticate with their corporate Azure Active Directory credentials. The security team requires that Adobe never store user passwords and that authentication must remain fully controlled by the corporate IdP.",
+      "question": "Which identity type must be used in the Adobe Admin Console to meet these requirements, and what protocol does it rely on?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Enterprise ID, which is organization-owned but authenticated by Adobe using SAML 2.0 tokens issued by Azure AD.",
+          "isCorrect": false
+        },
+        {
+          "label": "B",
+          "text": "Adobe ID, which allows users to log in with their existing Adobe credentials without requiring org-side infrastructure.",
+          "isCorrect": false
+        },
+        {
+          "label": "C",
+          "text": "Federated ID, which delegates authentication to the corporate IdP via SAML 2.0 so Adobe never stores passwords.",
+          "isCorrect": true
+        },
+        {
+          "label": "D",
+          "text": "Enterprise ID with OIDC integration, which routes users through Azure AD but keeps password storage at Adobe's discretion.",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "C is correct because Federated ID is the only Adobe identity type that supports SSO and delegates authentication entirely to the organization's IdP via SAML 2.0. Adobe acts only as the service provider — it never receives or stores user passwords. The corporate IdP (Azure AD in this case) authenticates the user and issues a signed SAML assertion that Adobe validates [per federated-sso [1][2][3]]. A is incorrect because Enterprise ID means Adobe hosts authentication — Adobe stores the credentials, which directly violates the security team's requirement. Enterprise ID does not support SSO. B is incorrect because Adobe ID is a personal identity type managed by individual users with no org control, no SSO support, and is not supported for AEM Author access in AEMaaCS [per ims-integration [5]]. D is incorrect because 'Enterprise ID with OIDC integration' is not a real Adobe identity configuration type. Enterprise ID always uses Adobe-hosted authentication, and the description is contradictory — if Adobe stores passwords 'at Adobe's discretion,' that does not meet the stated requirement.",
+      "sourceRefs": [
+        "admin-console.identity.federated-sso:1",
+        "admin-console.identity.federated-sso:2",
+        "admin-console.identity.federated-sso:3"
+      ],
+      "references": [
+        "admin-console.identity.federated-sso",
+        "admin-console.identity.ims-integration"
+      ]
+    },
+    {
+      "id": "q-005",
+      "topic": "Federated SSO — SAML Troubleshooting",
+      "difficulty": "medium",
+      "scenario": "A company recently configured a Federated ID SAML 2.0 integration between the Adobe Admin Console and their Okta identity provider. The initial test logins succeeded. However, after running a time synchronization audit, the Okta server's clock was found to have drifted by 6 minutes. Users are now receiving 'current time is before the time-range specified' authentication errors when logging in.",
+      "question": "What is the correct remediation for this SAML authentication failure?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Regenerate the SAML certificate in the Adobe Admin Console under Settings > Identity, and upload the new certificate to Okta.",
+          "isCorrect": false
+        },
+        {
+          "label": "B",
+          "text": "Switch the directory from Federated ID to Enterprise ID to eliminate the SAML time dependency.",
+          "isCorrect": false
+        },
+        {
+          "label": "C",
+          "text": "Synchronize the Okta server's system clock (e.g., ntpdate or w32tm /resync) and optionally increase the NotBeforeSkew tolerance in the SAML assertion to 2 minutes.",
+          "isCorrect": true
+        },
+        {
+          "label": "D",
+          "text": "Disable SP-initiated login and enable IdP-initiated login via RelayState to bypass the time validation step in the SAML exchange.",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "C is correct because the error 'current time is before the time-range specified' is a SAML clock skew error. SAML assertions contain a validity time window (NotBefore / NotOnOrAfter). When the IdP server clock drifts ahead, assertions arrive at Adobe with a NotBefore value in the future from Adobe's perspective, causing rejection. The fix is to resync the IdP server's clock using ntpdate (Unix) or w32tm /resync (Windows). Increasing NotBeforeSkew tolerance to 2 minutes provides additional buffer [per federated-sso [7]]. A is incorrect because certificate regeneration addresses expired or mismatched X.509 signing certificates, not clock skew. The SAML certificate error would produce a different error message (e.g., 'signature validation failure'), not a time-range error. B is incorrect because switching to Enterprise ID would remove SSO capability entirely — Enterprise ID uses Adobe-hosted authentication, not SAML. This would be a drastic and disruptive change that doesn't address the root cause. D is incorrect because IdP-initiated vs. SP-initiated login is about the starting point of the authentication flow, not about the SAML assertion's time validation. Both flows validate the assertion's time window — switching login mode would not bypass the clock skew check.",
+      "sourceRefs": [
+        "admin-console.identity.federated-sso:7",
+        "admin-console.identity.federated-sso:8"
+      ],
+      "references": [
+        "admin-console.identity.federated-sso"
+      ]
+    },
+    {
+      "id": "q-006",
+      "topic": "System Status and Notifications — Notification Profiles",
+      "difficulty": "medium",
+      "scenario": "A large enterprise runs AEM as a Cloud Service across three programs (Brand Website, Intranet, E-Commerce). The operations team wants to receive email alerts for AEM service incidents. Their administrator creates two product profiles in the Adobe Admin Console under Cloud Manager and names them 'AEM Incident Alerts - Cloud' and 'AEM Proactive Alerts - Cloud', then assigns the operations team members to those profiles. However, no notifications are received after a subsequent service incident.",
+      "question": "What mistake did the administrator make that caused notification delivery to fail?",
+      "options": [
+        {
+          "label": "A",
+          "text": "The notification profiles were created under Cloud Manager instead of under the AEM as a Cloud Service product in Admin Console.",
+          "isCorrect": false
+        },
+        {
+          "label": "B",
+          "text": "The product profile names are incorrect; the exact names must be 'Incident Notification - Cloud Service' and 'Proactive Notification - Cloud Service' for AEM notifications to route correctly.",
+          "isCorrect": true
+        },
+        {
+          "label": "C",
+          "text": "Incident notifications cannot be delivered by email; they are only surfaced in the Actions Center at experience.adobe.com.",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "The operations team members must subscribe individually at status.adobe.com in addition to being added to the notification profiles.",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "B is correct because AEM as a Cloud Service notification delivery depends on product profiles with specific, exact names in Admin Console: 'Incident Notification - Cloud Service' and 'Proactive Notification - Cloud Service'. Any deviation from these exact strings — including different prefixes, suffixes, or capitalization — breaks notification routing. The administrator used custom names that do not match the expected strings [per system-status [3]]. A is incorrect because the product profiles for AEM notifications are indeed created under Cloud Manager in Admin Console — that part of the administrator's approach was correct. The issue is solely the naming. C is incorrect because AEM incident notifications are delivered by email to users in the notification profiles. The Actions Center at experience.adobe.com is a separate, complementary in-product notification hub — both channels work, but email requires the correctly named profiles. D is incorrect because the Admin Console notification profile system and the status.adobe.com proactive subscription system are two separate mechanisms. Notification profile members receive AEM-specific operational alerts automatically — they do not need to additionally subscribe at status.adobe.com [per system-status [3]].",
+      "sourceRefs": [
+        "admin-console.support.system-status:3"
+      ],
+      "references": [
+        "admin-console.support.system-status"
+      ]
+    },
+    {
+      "id": "q-007",
+      "topic": "IMS Integration — Cross-Domain: Identity Chain and Permissions",
+      "difficulty": "hard",
+      "scenario": "A DevOps engineer is onboarding a new team of 20 content editors to an AEM as a Cloud Service Author environment. The editors use Federated IDs authenticated via the company's Okta IdP. After being added to the 'content-editors' IMS group in Admin Console and logging in successfully, the editors can access the AEM Author login page and reach the welcome screen but receive 'Access Denied' errors when attempting to edit any content under /content/brand. The team has no active Cloud Manager role assignments. The engineer checks AEM and confirms the 'content-editors' IMS group has been synced as an AEM group. No ACLs are visible on the synced 'content-editors' AEM group.",
+      "question": "Which combination of actions will correctly resolve the access issue?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Assign write ACLs directly to the synced 'content-editors' AEM group at /content/brand using the AEM User Admin console.",
+          "isCorrect": false
+        },
+        {
+          "label": "B",
+          "text": "Add each editor individually to the 'AEM Administrators' product profile in Admin Console so they receive full access that bypasses ACL checks.",
+          "isCorrect": false
+        },
+        {
+          "label": "C",
+          "text": "Create an AEM-native group with write ACLs at /content/brand via repoinit, add the synced 'content-editors' IMS group as a member of that AEM-native group, and deploy via Cloud Manager.",
+          "isCorrect": true
+        },
+        {
+          "label": "D",
+          "text": "Configure the Oak Default Sync Handler's user.autoMembership property to include the 'content-editors' group so permissions are applied automatically at sync time.",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "C is correct because this follows the recommended layered permission pattern for AEMaaCS. The fact that editors can log in and reach the welcome screen confirms the IMS product profile assignment and Federated ID authentication are working correctly. The access denied error is a permissions issue, not an authentication issue. The correct resolution is: (1) create an AEM-native group (not IMS-derived) that holds the ACLs for /content/brand — best practice is deploying these via repoinit scripts through a Cloud Manager pipeline for consistency across environments [per user-group-sync [8] and synthesis Theme 3]; (2) add the synced 'content-editors' IMS group as a member of that AEM-native group. Permissions propagate through group membership without touching the IMS group's structure [per user-group-sync [5][1]]. A is incorrect because assigning ACLs directly to a synced IMS group is the anti-pattern explicitly warned against. IMS groups are organizational units shared across Adobe products; attaching AEM-specific permissions directly to them creates coupling that breaks when groups are renamed, and the ACLs would silently become orphaned [per user-group-sync [5]]. B is incorrect because granting admin access to content editors is a security violation of the principle of least privilege, and it would give editors the ability to delete, publish, and administer all content — far beyond the intended scope. The AEM Administrators profile grants full repository admin rights. D is incorrect because user.autoMembership in the Oak Default Sync Handler adds all synced users to a specified AEM group automatically at sync time. This is a global setting that applies to all synced users, not a targeted way to grant content-specific permissions. It also does not create ACLs — it only adds users to an existing AEM group, which still needs ACLs defined separately.",
+      "sourceRefs": [
+        "admin-console.identity.user-group-sync:5",
+        "admin-console.identity.user-group-sync:1",
+        "admin-console.identity.user-group-sync:8"
+      ],
+      "references": [
+        "admin-console.identity.user-group-sync",
+        "admin-console.identity.ims-integration",
+        "admin-console.identity.federated-sso",
+        "cloud-manager.environments.repoinit"
+      ]
+    },
+    {
+      "id": "q-008",
+      "topic": "LDAP Integration vs. IMS — Deployment Model Selection",
+      "difficulty": "hard",
+      "scenario": "A company is running AEM 6.5 on-premise with an Active Directory-based LDAP integration for author authentication. They are planning a migration to AEM as a Cloud Service and want to maintain Active Directory as the authoritative identity source. A junior engineer suggests configuring the Apache Jackrabbit Oak LDAP Identity Provider OSGi bundle on the new AEMaaCS Author environment, using LDAPS on port 636 to the existing AD domain controller. Another engineer proposes using the Adobe User Sync Tool (UST) to sync AD users into the Admin Console, then federating via SAML 2.0 with Azure AD Federated IDs.",
+      "question": "Which approach is correct for the AEMaaCS migration, and why does the alternative fail?",
+      "options": [
+        {
+          "label": "A",
+          "text": "The LDAP OSGi approach is correct for AEMaaCS because the Apache Jackrabbit Oak LDAP Identity Provider is available in the AEMaaCS OSGi container and can be configured via Cloud Manager config pipeline.",
+          "isCorrect": false
+        },
+        {
+          "label": "B",
+          "text": "Both approaches are valid in AEMaaCS; the LDAP approach is simpler while the UST + Federated ID approach is recommended for large organizations.",
+          "isCorrect": false
+        },
+        {
+          "label": "C",
+          "text": "The UST + Federated ID (Azure AD SAML) approach is correct. AEMaaCS mandates Adobe IMS as its authentication layer and does not support direct LDAP connectivity; the LDAP OSGi approach would fail because that authentication path is not available in AEMaaCS.",
+          "isCorrect": true
+        },
+        {
+          "label": "D",
+          "text": "Neither approach is correct; AEMaaCS requires all users to be manually provisioned with Enterprise IDs directly in the Adobe Admin Console before they can access the AEM Author tier.",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "C is correct because AEM as a Cloud Service mandates Adobe IMS as its authentication layer. The LDAP-based OSGi bundle (Apache Jackrabbit Oak LDAP Identity Provider) is an on-premise-only capability available in AEM 6.x; it is not supported in AEMaaCS [per ldap-integration [3]]. The correct migration path for organizations with Active Directory is to use the Adobe User Sync Tool to synchronize directory users and groups into the Adobe Admin Console (one-way: AD → Admin Console via UMAPI), and then configure Federated ID with a SAML 2.0 or Azure AD connection to maintain SSO via the corporate IdP. With Azure AD specifically, Adobe offers a purpose-built connector [per federated-sso [2] and ims-integration [1]]. Once users are in Admin Console with Federated IDs, they authenticate through IMS using their existing AD credentials — Active Directory remains the authoritative identity source, but via SAML federation rather than direct LDAP. A is incorrect because AEMaaCS restricts which OSGi configurations are permitted. LDAP authentication is not supported, and attempting to deploy the LDAP Identity Provider configuration via Cloud Manager would have no effect on the IMS-enforced authentication path. B is incorrect because the two approaches are not equivalent in AEMaaCS — the LDAP approach is explicitly unsupported and would not work, regardless of organization size. D is incorrect because manual Enterprise ID provisioning is only one of several options, and Enterprise ID uses Adobe-hosted authentication (no SSO), which would require users to set separate Adobe passwords rather than using their AD credentials — contradicting the requirement to maintain AD as the identity source. Federated ID is the correct type for SSO with a corporate IdP.",
+      "sourceRefs": [
+        "admin-console.identity.ldap-integration:3",
+        "admin-console.identity.federated-sso:2",
+        "admin-console.identity.ims-integration:1"
+      ],
+      "references": [
+        "admin-console.identity.ldap-integration",
+        "admin-console.identity.federated-sso",
+        "admin-console.identity.ims-integration",
+        "admin-console.identity.user-group-sync"
+      ]
+    },
+    {
+      "id": "q-009",
+      "topic": "OSGi Run-Mode Configuration Resolution",
+      "difficulty": "medium",
+      "scenario": "A development team has an OSGi configuration for a custom caching service (PID: `com.mysite.cache.CacheService`) that needs different TTL values on author versus production. They create two configuration files: `config.author/com.mysite.cache.CacheService.cfg.json` with 5 properties including TTL, and `config.author.prod/com.mysite.cache.CacheService.cfg.json` with only the TTL property set. On the production author instance, the team discovers that 4 of the 5 properties are missing — only TTL is applied.",
+      "question": "Why are the 4 properties from `config.author` absent on the production author instance, and what is the correct fix?",
+      "options": [
+        {
+          "label": "A",
+          "text": "The `config.author` folder has lower priority than `config.author.prod`, so AEM merges both, but the merge is incomplete due to a Cloud Manager deployment bug. The fix is to re-run the full-stack pipeline.",
+          "isCorrect": false
+        },
+        {
+          "label": "B",
+          "text": "OSGi configuration resolution is PID-level, not property-level. `config.author.prod` matches two run modes and wins entirely, replacing all properties from `config.author`. The fix is to duplicate all 5 properties into `config.author.prod`.",
+          "isCorrect": true
+        },
+        {
+          "label": "C",
+          "text": "The `config.author` and `config.author.prod` folders have conflicting configurations for the same PID. OSGi chooses the file with the smaller footprint (fewer properties) as a safety measure. The fix is to add a `sling:priority` flag.",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "On AEM as a Cloud Service, run-mode-specific folders other than `config` and `config.author` are ignored. The `config.author.prod` folder has no effect and the properties are being dropped by Cloud Manager validation.",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "B is correct because OSGi configuration resolution operates at the PID level with no property merging [2][3]. When the instance runs with both `author` and `prod` run modes active, `config.author.prod` matches 2 run modes while `config.author` matches only 1. The more-specific folder wins entirely — it does not inherit or merge properties from less-specific folders. The only fix is to include all required properties in the most-specific folder. A is incorrect because AEM does not merge partial properties; the behavior is designed, not a bug. C is incorrect because there is no 'smaller footprint' safety rule — specificity (number of matching run modes) is the only criterion. D is incorrect because AEMaaCS fully supports combined run-mode folders like `config.author.prod`; they are explicitly listed in the supported configuration hierarchy [4].",
+      "sourceRefs": [
+        "aem-configuration.osgi.run-modes:2",
+        "aem-configuration.osgi.run-modes:3",
+        "aem-configuration.osgi.run-modes:4"
+      ],
+      "references": [
+        "aem-configuration.osgi.run-modes"
+      ]
+    },
+    {
+      "id": "q-010",
+      "topic": "OSGi Factory Configurations",
+      "difficulty": "easy",
+      "scenario": "A team is deploying an AEM as a Cloud Service project. Their repository contains a factory configuration file named `com.adobe.granite.cors.impl.CORSPolicyImpl-partners.cfg.json` that was originally written for AEM 6.5. The Cloud Manager pipeline completes successfully but CORS headers are not being applied for the partner domain.",
+      "question": "What is the most likely cause of the CORS configuration not being applied, and what change should the team make?",
+      "options": [
+        {
+          "label": "A",
+          "text": "The `.cfg.json` extension is not supported for factory configurations on AEM as a Cloud Service. The file should be renamed to use the `.config` extension.",
+          "isCorrect": false
+        },
+        {
+          "label": "B",
+          "text": "The CORS component on AEM as a Cloud Service does not support factory configurations. A singleton configuration with PID `com.adobe.granite.cors.impl.CORSPolicyImpl.cfg.json` should be used instead.",
+          "isCorrect": false
+        },
+        {
+          "label": "C",
+          "text": "The dash separator (`-`) in the filename is the legacy factory configuration separator. On AEM as a Cloud Service, this can cause the configuration to fail to bind. The file should be renamed using the tilde separator: `com.adobe.granite.cors.impl.CORSPolicyImpl~partners.cfg.json`.",
+          "isCorrect": true
+        },
+        {
+          "label": "D",
+          "text": "Factory configuration files must be placed in `config.author` folders on AEM as a Cloud Service. Placing them in the root `config` folder means they are silently ignored on both author and publish.",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "C is correct because the tilde separator (`~`) replaced the dash separator (`-`) as the preferred factory configuration separator since Apache Sling Configuration Installer Factory 1.2.0 [2]. While both separators still function on AEM 6.5, the dash separator can cause issues in AEM as a Cloud Service deployments. The correct format is `<factoryPID>~<subname>.cfg.json`. A is incorrect because `.cfg.json` is the required format for AEM as a Cloud Service — it is the only format fully supported [1][4]. B is incorrect because factory configurations are fully supported for CORS on AEMaaCS; the `CORSPolicyImpl` is specifically designed as a factory to allow multiple CORS policies. D is incorrect because the root `config` folder applies to all run modes and environments, which is valid; factory configs do not have special folder placement requirements beyond matching the run-mode logic.",
+      "sourceRefs": [
+        "aem-configuration.osgi.factory-configs:2",
+        "aem-configuration.osgi.factory-configs:1",
+        "aem-configuration.osgi.factory-configs:4"
+      ],
+      "references": [
+        "aem-configuration.osgi.factory-configs"
+      ]
+    },
+    {
+      "id": "q-011",
+      "topic": "Sling Models — Adaptables and Injector Annotations",
+      "difficulty": "medium",
+      "scenario": "A developer writes a Sling Model to back a content component. The model is annotated with `@Model(adaptables = Resource.class)` and uses `@Inject` to inject a required JCR property and an OSGi service. During load testing, the operations team reports that component rendering is 30% slower than expected. Code review reveals no obvious algorithmic issues, and the model is correct functionally.",
+      "question": "Which change to the Sling Model would most directly address the performance concern without breaking functionality?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Change `adaptables = Resource.class` to `adaptables = SlingHttpServletRequest.class` so the model can cache state across the HTTP request lifecycle.",
+          "isCorrect": false
+        },
+        {
+          "label": "B",
+          "text": "Replace `@Inject` with injector-specific annotations: `@ValueMapValue` for the JCR property and `@OSGiService` for the OSGi service.",
+          "isCorrect": true
+        },
+        {
+          "label": "C",
+          "text": "Add `cache = true` to the `@Model` annotation to cache the adapted model instance on the resource object, preventing repeated adaptation.",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "Add a `@PostConstruct` method that pre-computes and stores all derived properties, reducing per-call computation overhead.",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "B is correct because `@Inject` iterates all injectors in service-ranking order for every injection point, checking each injector until one returns a non-null value. This has measurable performance costs at scale [1][2]. Using injector-specific annotations (`@ValueMapValue`, `@OSGiService`, etc.) tells the framework to invoke only the targeted injector, eliminating the iteration overhead. The Sling documentation explicitly discourages `@Inject` for this reason. A is incorrect because switching to `SlingHttpServletRequest` adaptable would reduce reusability (the model cannot be used outside request contexts) and is unrelated to the injection performance issue. Additionally, this could cause the 'complex injection scenarios' warned about in the documentation [1]. C is incorrect because `cache = true` only prevents re-adaptation of the same resource within a single request; it does not reduce the per-injection iteration cost that causes the slowdown. D is incorrect because `@PostConstruct` is already the recommended pattern for derived data and would not address the root cause of the injection overhead.",
+      "sourceRefs": [
+        "aem-configuration.sling.models:1",
+        "aem-configuration.sling.models:2"
+      ],
+      "references": [
+        "aem-configuration.sling.models"
+      ]
+    },
+    {
+      "id": "q-012",
+      "topic": "Sling Resource Resolver — URL Mapping Precedence",
+      "difficulty": "hard",
+      "scenario": "A content team has configured a vanity path `sling:vanityPath = \"/sale\"` on the page `/content/mysite/en/campaigns/summer-sale`. The marketing team later creates an entry in `/etc/map.publish` with a `sling:internalRedirect` that also maps incoming requests for `/sale` to a different page. After deploying both changes, the `/sale` URL resolves to the `/etc/map.publish` target, not the page with the vanity path. The team wants the `sling:vanityPath` to win.",
+      "question": "Which configuration change will make the `sling:vanityPath` take precedence over the `/etc/map` entry?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Delete the `/etc/map.publish` entry and recreate it with a lower `sling:priority` integer value so vanity paths are evaluated first.",
+          "isCorrect": false
+        },
+        {
+          "label": "B",
+          "text": "Add a `sling:vanityOrder` property with a high integer value to the `/content/mysite/en/campaigns/summer-sale` node to boost its priority above `/etc/map` entries.",
+          "isCorrect": false
+        },
+        {
+          "label": "C",
+          "text": "Set the OSGi property `resource.resolver.vanity.precedence = true` in the `org.apache.sling.jcr.resource.internal.JcrResourceResolverFactoryImpl` configuration.",
+          "isCorrect": true
+        },
+        {
+          "label": "D",
+          "text": "Move the `/etc/map.publish` entry from `/etc/map.publish/http/` to `/etc/map.publish/https/` so it only applies to HTTPS requests, allowing the vanity path to handle HTTP.",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "C is correct because by default `resource.resolver.vanity.precedence` is `false`, meaning `/etc/map` entries take precedence over `sling:vanityPath` properties [3][4]. Setting this property to `true` in the Resource Resolver Factory OSGi configuration reverses the precedence so vanity paths are evaluated before `/etc/map` entries. This is documented as a critical exam scenario precisely because the default behavior (map entries winning) is counterintuitive to many AEM developers. A is incorrect because `/etc/map` entries do not have a `sling:priority` property that controls precedence against vanity paths; the precedence is controlled by the OSGi configuration flag. B is incorrect because `sling:vanityOrder` controls which of two competing `sling:vanityPath` entries on different nodes wins for the same path [1]; it does not affect the ordering between vanity paths and `/etc/map` entries. D is incorrect because moving the `/etc/map` entry to the `https/` folder only changes which protocol the mapping applies to — it does not change the fundamental precedence relationship between map entries and vanity paths.",
+      "sourceRefs": [
+        "aem-configuration.sling.resource-resolver:3",
+        "aem-configuration.sling.resource-resolver:4",
+        "aem-configuration.sling.resource-resolver:1"
+      ],
+      "references": [
+        "aem-configuration.sling.resource-resolver"
+      ]
+    },
+    {
+      "id": "q-013",
+      "topic": "OSGi Configuration Admin — ConfigurationPolicy and Bundle States",
+      "difficulty": "medium",
+      "scenario": "After a new deployment to an AEM as a Cloud Service dev environment, a content team reports that a custom recommendation service is not executing. An engineer checks the OSGi Components console and finds the `com.mysite.recommendations.RecommendationServiceImpl` component in `No Config` state. The engineer also notices the bundle itself is in `Resolved` state, not `Active`.",
+      "question": "What is the correct interpretation of these states, and what is the recommended first action?",
+      "options": [
+        {
+          "label": "A",
+          "text": "The bundle in `Resolved` state has unsatisfied Java import-package dependencies. The engineer should check the Maven pom.xml for missing compile-scope dependencies and rebuild the bundle.",
+          "isCorrect": false
+        },
+        {
+          "label": "B",
+          "text": "The `No Config` component state means the component has `configurationPolicy = REQUIRE` but no matching `.cfg.json` file was deployed. The engineer should create the configuration file and deploy it to the correct run-mode folder.",
+          "isCorrect": true
+        },
+        {
+          "label": "C",
+          "text": "Both states indicate OSGi framework startup ordering issues. The engineer should restart the `org.apache.felix.scr` bundle from the Felix Web Console to force component re-registration.",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "`No Config` is an error state caused by an incorrect `@Designate` annotation. The `ocd` parameter must reference the `@ObjectClassDefinition` interface by its fully qualified class name, not a reference.",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "B is correct because `No Config` is a well-defined OSGi component state meaning the component's `configurationPolicy = REQUIRE` but no matching OSGi configuration object exists for its PID [6]. This is working as designed — the component refuses to activate without configuration. The bundle being in `Resolved` state is a consequence: a bundle only reaches `Active` when all its DS components can be activated; a component stuck in `No Config` prevents the bundle from becoming fully active [5][6]. The fix is to create a `<PID>.cfg.json` file in the appropriate run-mode folder. A is incorrect because `Installed` state (not `Resolved`) indicates unresolved import-package dependencies. `Resolved` means class-level dependencies are satisfied; the bundle is ready but not yet started because of the `No Config` component [5][6]. C is incorrect because restarting framework bundles is a last-resort step and would not supply the missing configuration. D is incorrect because `No Config` is a runtime configuration delivery issue, not a compile-time annotation error; incorrect `@Designate` usage typically manifests as a PID mismatch, not `No Config`.",
+      "sourceRefs": [
+        "aem-configuration.troubleshooting.common-issues:6",
+        "aem-configuration.troubleshooting.common-issues:5"
+      ],
+      "references": [
+        "aem-configuration.osgi.config-admin",
+        "aem-configuration.troubleshooting.common-issues"
+      ]
+    },
+    {
+      "id": "q-014",
+      "topic": "OSGi Run Modes — AEMaaCS Restrictions",
+      "difficulty": "easy",
+      "scenario": "An AEM developer who has worked primarily on AEM 6.5 on-premise is migrating a project to AEM as a Cloud Service. Their existing project structure includes OSGi configuration folders: `config.author.qa`, `config.publish.uat`, and `config.author.emea`. They deploy the project through Cloud Manager and report that QA and UAT environment-specific configurations are not being applied.",
+      "question": "Why are these configurations not being applied, and what is the recommended AEM as a Cloud Service approach?",
+      "options": [
+        {
+          "label": "A",
+          "text": "AEM as a Cloud Service requires that all run-mode folders be placed under `/libs` instead of `/apps`. The developer should move all config folders from `/apps` to `/libs`.",
+          "isCorrect": false
+        },
+        {
+          "label": "B",
+          "text": "Custom run modes such as `qa`, `uat`, and `emea` are not supported in AEM as a Cloud Service. These folders are silently ignored. Environment-specific differences beyond the predefined run modes must use `$[env:VAR_NAME]` and `$[secret:VAR_NAME]` placeholders in `.cfg.json` files.",
+          "isCorrect": true
+        },
+        {
+          "label": "C",
+          "text": "AEM as a Cloud Service only supports run modes for the `prod` environment tier. `qa` and `uat` must be configured as additional `dev` environments using Cloud Manager environment variables.",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "Run-mode folder names in AEM as a Cloud Service must use lowercase and cannot exceed 8 characters. `config.author.emea` exceeds this limit and is silently rejected.",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "B is correct because AEM as a Cloud Service enforces a fixed, predefined set of run modes: `author`, `publish`, `dev`, `stage`, `prod`, and their combinations (e.g., `config.author.dev`, `config.publish.prod`) [4]. Custom run modes like `qa`, `uat`, and `emea` that were common in AEM 6.x are silently ignored in AEMaaCS deployments — no error is thrown, the folders are simply skipped. Teams migrating from AEM 6.x must refactor their config structure to use only predefined run modes and leverage Cloud Manager environment variables (`$[env:VAR_NAME]`) for further environment differentiation. A is incorrect because all project-specific OSGi configurations must reside under `/apps`, not `/libs`. `/libs` contains Adobe-provided OOTB configurations which project code should overlay. C is incorrect because AEMaaCS supports `dev`, `stage`, and `prod` environment tiers; the limitation is about custom run mode names, not about environment count. D is incorrect because there is no character length limit on run-mode folder names; the constraint is solely about which run mode names are recognized.",
+      "sourceRefs": [
+        "aem-configuration.osgi.run-modes:4"
+      ],
+      "references": [
+        "aem-configuration.osgi.run-modes"
+      ]
+    },
+    {
+      "id": "q-015",
+      "topic": "Sling Models — @Exporter and resourceType Requirement",
+      "difficulty": "hard",
+      "scenario": "A developer is building a Content Services endpoint for a mobile app. They annotate a Sling Model with `@Model(adaptables = SlingHttpServletRequest.class, defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL)` and add `@Exporter(name = \"jackson\", extensions = \"json\")`. After deployment, accessing `/content/mysite/en/home/jcr:content.model.json` returns a 404 error. The OSGi Components console shows the model class is `Active`. The developer's colleague suggests using `ModelFactory` instead, but the developer wants the auto-registered servlet approach to work.",
+      "question": "What is the most likely cause of the 404, and what single annotation change will fix it?",
+      "options": [
+        {
+          "label": "A",
+          "text": "The `@Exporter` annotation requires the `selector` attribute to be explicitly set to `\"model\"`. Without it, the default selector is empty and the URL pattern does not match.",
+          "isCorrect": false
+        },
+        {
+          "label": "B",
+          "text": "The Sling Model Exporter requires the bundle's `Sling-Model-Packages` manifest header or the bnd `ModelsScannerPlugin` to include the model's package. Missing this registration causes the exporter servlet to not be created.",
+          "isCorrect": false
+        },
+        {
+          "label": "C",
+          "text": "The `@Model` annotation is missing the `resourceType` attribute. Without `resourceType`, the `@Exporter` servlet cannot be registered because it has no resource type to bind to. Adding `resourceType = \"mysite/components/content/home\"` (matching the component) will fix the issue.",
+          "isCorrect": true
+        },
+        {
+          "label": "D",
+          "text": "The `adaptables = SlingHttpServletRequest.class` is incompatible with `@Exporter`. All exported models must use `Resource.class` as the adaptable.",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "C is correct because `@Exporter` servlet auto-registration requires `resourceType` to be set on the `@Model` annotation [3][6]. Without `resourceType`, the Sling Models framework does not know which component resource type to bind the servlet to, so no servlet is registered — resulting in a 404. This is documented as a silent failure: no error is thrown, there is simply no servlet. Adding `resourceType` matching the component's resource type resolves the issue. A is incorrect because the default selector for `@Exporter` IS `\"model\"` [3][6] — the URL pattern `.model.json` works without explicitly setting `selector`. Omitting the `selector` attribute is not the cause of the 404. B is incorrect because while bundle registration is required for model discovery, the scenario states the component is `Active` in the OSGi console, confirming the model was registered successfully. The issue is specific to the exporter servlet binding. D is incorrect because `@Exporter` works with both `Resource.class` and `SlingHttpServletRequest.class` adaptables. The `@Exporter` documentation example in the research uses `SlingHttpServletRequest.class` explicitly [3].",
+      "sourceRefs": [
+        "aem-configuration.sling.models:3",
+        "aem-configuration.sling.models:6"
+      ],
+      "references": [
+        "aem-configuration.sling.models"
+      ]
+    },
+    {
+      "id": "q-016",
+      "topic": "OSGi Configuration — Cross-Domain: ConfigAdmin, Run Modes, and Service Users",
+      "difficulty": "hard",
+      "scenario": "A DevOps engineer is debugging a production AEM as a Cloud Service issue. A custom content aggregation service (PID: `com.mysite.aggregation.ContentAggregatorImpl`) is active in author dev but in `No Config` state on author production. The service reads `/content` nodes via a service user. The engineer finds that the `.cfg.json` file exists in `config.author.prod` and was deployed successfully according to Cloud Manager logs. Another engineer suggests the issue is with the factory PID separator, but the service uses a singleton configuration, not factory. A third engineer notices the configuration file uses `$[env:API_KEY]` for a sensitive property.",
+      "question": "Which of the following is the most likely reason the configuration is not being applied on author production despite the file being deployed?",
+      "options": [
+        {
+          "label": "A",
+          "text": "The `$[env:API_KEY]` placeholder syntax is invalid. Secrets must use `$[secret:API_KEY]` syntax. The Configuration Admin service rejects the entire `.cfg.json` file when it encounters an unrecognized placeholder prefix.",
+          "isCorrect": false
+        },
+        {
+          "label": "B",
+          "text": "The PID in the `.cfg.json` filename does not match the OSGi component's PID. If the `@ObjectClassDefinition` interface is defined in a separate file from the implementing class, the default PID becomes the interface's fully qualified name, not the implementation class name. The config file should be named after the interface class, or the component should use `configurationPid` in the `@Component` annotation.",
+          "isCorrect": true
+        },
+        {
+          "label": "C",
+          "text": "AEM as a Cloud Service does not support the `config.author.prod` folder for singleton configurations. Only factory configurations can use combined run-mode folders; singleton configurations must use `config.author` or `config.prod` separately.",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "The service user configured for `ContentAggregatorImpl` does not have read access to `/content` in the production environment. The `No Config` state is AEM's way of reporting an ACL failure on the configuration node.",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "B is correct because when `@ObjectClassDefinition` is defined on a separate interface class rather than on the implementation class, the default PID becomes the interface's fully qualified class name [6]. If the `.cfg.json` file is named after the implementation class (`com.mysite.aggregation.ContentAggregatorImpl.cfg.json`) but the PID should match the interface (e.g., `com.mysite.aggregation.ContentAggregatorConfig.cfg.json`), OSGi silently ignores the mismatched file. The component stays in `No Config` because no matching configuration is delivered. The fix is either to name the config file after the interface, or to add `configurationPid = \"com.mysite.aggregation.ContentAggregatorImpl\"` to the `@Component` annotation to explicitly bind the PID [6]. A is incorrect because `$[env:API_KEY]` is valid syntax for environment variable placeholders in AEM as a Cloud Service `.cfg.json` files [1][2]; using `$[secret:...]` is the convention for sensitive values but `$[env:...]` is not rejected. B is correct, and the issue here is about PID mismatch. C is incorrect because combined run-mode folders like `config.author.prod` are fully supported for both singleton and factory configurations in AEMaaCS [4]. D is incorrect because `No Config` is definitively a configuration delivery state indicating no matching OSGi configuration object exists for the component — it is not related to service user ACLs or repository access.",
+      "sourceRefs": [
+        "aem-configuration.osgi.factory-configs:6",
+        "aem-configuration.osgi.config-admin:2",
+        "aem-configuration.osgi.run-modes:4"
+      ],
+      "references": [
+        "aem-configuration.osgi.factory-configs",
+        "aem-configuration.osgi.config-admin",
+        "aem-configuration.osgi.run-modes",
+        "aem-configuration.troubleshooting.common-issues"
+      ]
+    },
+    {
+      "id": "q-017",
+      "topic": "Mutable vs. Immutable Content Split",
+      "difficulty": "easy",
+      "scenario": "A developer migrating an AEM 6.5 project to AEMaaCS has packaged OSGi component HTL templates and authored page content together in a single package. During the first Cloud Manager pipeline run, the developer notices that the authored content appears in the repository but the component templates do not render correctly.",
+      "question": "What is the most likely cause of the missing component templates, and what is the correct fix?",
+      "options": [
+        {
+          "label": "A",
+          "text": "The package was installed out of order; redeploy it by triggering a second pipeline run.",
+          "isCorrect": false
+        },
+        {
+          "label": "B",
+          "text": "Cloud Manager detected a MIXED package type and silently dropped the immutable /apps content, installing only the mutable content portion.",
+          "isCorrect": true
+        },
+        {
+          "label": "C",
+          "text": "The OSGi bundles failed to resolve because the package was too large; split the package into smaller chunks.",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "The deployment required a full-text reindex; wait for the reindexing job to complete.",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "B is correct. AEMaaCS enforces a strict separation between immutable content (under /apps) and mutable content (under /content, /conf). When a single package contains paths from both regions, Cloud Manager classifies it as MIXED type. Per the official documentation [1], Cloud Manager installs only the mutable portion and logs a warning — the immutable /apps content is silently dropped. This is the defining gotcha for developers migrating AEM 6.5 all-in-one packages. The fix is to split the package into ui.apps (packageType=application) for HTL templates and ui.content (packageType=content) for authored page content. A is incorrect because redeploying the same MIXED package will produce the same result; the problem is structural, not ordering. C is incorrect because the symptom does not match a bundle resolution failure, and package size is not the limiting factor described. D is incorrect because reindexing affects search queries, not HTL template rendering.",
+      "sourceRefs": [
+        "build-deployments.content-packages.mutable-immutable:1",
+        "build-deployments.content-packages.mutable-immutable:4"
+      ],
+      "references": [
+        "build-deployments.content-packages.mutable-immutable",
+        "build-deployments.content-packages.structure"
+      ]
+    },
+    {
+      "id": "q-018",
+      "topic": "Package Structure and Filters",
+      "difficulty": "easy",
+      "scenario": "An AEM developer is configuring the filter.xml for a content package. The package must include all pages under /content/mysite/en except those under /content/mysite/en/temp. The developer writes the following filter rule: <filter root=\"/content/mysite/en\"><include pattern=\"/content/mysite/en/.*\"/><exclude pattern=\"/content/mysite/en/temp(/.*)?\" /></filter>",
+      "question": "What will be the actual behavior of this filter at install time?",
+      "options": [
+        {
+          "label": "A",
+          "text": "All pages under /content/mysite/en will be included except those under /content/mysite/en/temp, as intended.",
+          "isCorrect": false
+        },
+        {
+          "label": "B",
+          "text": "All pages under /content/mysite/en/temp will be included because the exclude rule is placed after the include and last-match-wins semantics apply.",
+          "isCorrect": false
+        },
+        {
+          "label": "C",
+          "text": "No pages will be packaged because the first rule is an include, making the default for non-matching paths 'excluded', which causes the root node itself to be excluded.",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "The temp subtree will be included and all other /content/mysite/en paths will also be included, because with a leading include rule the default is exclude, but the final exclude rule on temp applies last and overrides — making temp included.",
+          "isCorrect": true
+        }
+      ],
+      "rationale": "D is correct. FileVault filter evaluation uses last-match-wins semantics [1][2]. When the first child element is an <include>, the implicit default for paths that match no rule is 'excluded'. The path /content/mysite/en/temp/page matches both the include pattern (first) and the exclude pattern (second). Because the exclude is the last matching rule, the temp path ends up excluded — which is actually what the developer intended. However, the common exam trap is understanding WHY it works: the developer wrote include first (setting default=excluded for non-matching paths) and exclude second — so for the temp subtree the last-match is exclude (correct behavior), but this logic is counter-intuitive. The correct way to achieve reliable exclusion of temp is to put the exclude first: <exclude pattern=\".../temp(/.*)?\" /><include pattern=\".../.*\" /> — in that case, last-match for temp is include, which is wrong. This question tests the core last-match-wins principle. A describes the intended effect without explaining the rule evaluation correctly. B is wrong because with last-match-wins, the exclude placed last means temp IS excluded, not included. C is wrong because the include pattern matches all paths under the root, so paths are not absent.",
+      "sourceRefs": [
+        "build-deployments.content-packages.structure:1",
+        "build-deployments.content-packages.structure:2"
+      ],
+      "references": [
+        "build-deployments.content-packages.structure"
+      ]
+    },
+    {
+      "id": "q-019",
+      "topic": "Package Dependencies (embeddeds vs subPackages)",
+      "difficulty": "medium",
+      "scenario": "A team is updating their existing AEM 6.5 project to run on AEMaaCS. Their current all package uses <subPackages> in pom.xml to include ui.apps and ui.content. After updating the project, Cloud Manager validation fails with errors related to package installation path targeting. A senior engineer says the team must switch the embedding approach.",
+      "question": "Which change is required, and why does it resolve the validation failure?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Replace <subPackages> with <embeddeds> and provide explicit <target> paths under /apps/<app>-packages/; this enforces the install path structure required by AEMaaCS for run-mode-scoped deployment.",
+          "isCorrect": true
+        },
+        {
+          "label": "B",
+          "text": "Replace <subPackages> with <dependencies> in the container package's pom.xml; this registers packages with AEM Package Manager in the correct order.",
+          "isCorrect": false
+        },
+        {
+          "label": "C",
+          "text": "Add cloudManagerTarget=none to the all container's properties; Cloud Manager requires the container package to opt out of direct deployment.",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "Change the packageType of ui.apps from application to container so it can embed sub-packages alongside the all package.",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "A is correct. In AEMaaCS, the <subPackages> configuration derives the install path from the artifact's own vault metadata, which bypasses the explicit /apps/<app>-packages/ folder structure required for correct service-level targeting [1][4]. The <embeddeds> configuration requires an explicit <target> path (e.g., /apps/my-app-packages/content/install), placing sub-packages in a predictable side-car location that Cloud Manager knows how to process. This is the AEMaaCS-mandated approach per the official project structure documentation. B is incorrect because <dependencies> declares install-order dependencies between packages, not how they are embedded; container packages are also explicitly prohibited from declaring dependencies in AEMaaCS [1]. C is incorrect because the all container must NOT have cloudManagerTarget=none — it is the only package that should be deployed by Cloud Manager. All other packages (ui.apps, ui.content) must set cloudManagerTarget=none [1]. D is incorrect because ui.apps must be packageType=application; changing it to container would invalidate its purpose (it holds JCR nodes under /apps) and violate the package type rules.",
+      "sourceRefs": [
+        "build-deployments.content-packages.dependencies:1",
+        "build-deployments.content-packages.dependencies:4"
+      ],
+      "references": [
+        "build-deployments.content-packages.dependencies",
+        "build-deployments.content-packages.structure"
+      ]
+    },
+    {
+      "id": "q-020",
+      "topic": "Code Quality Gates",
+      "difficulty": "medium",
+      "scenario": "A Cloud Manager full-stack production pipeline run has just completed the Code Scanning phase. The SonarQube analysis found: one minor security vulnerability (Security Rating = B), two major reliability bugs (Reliability Rating = C), and test coverage at 42%. The Deployment Manager wants to decide whether to proceed to the Deploy to Stage step.",
+      "question": "Which combination of findings accurately describes what will block the pipeline vs. what requires a manual override decision?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Security Rating B and Reliability Rating C are both Critical failures that immediately terminate the pipeline with no override possible.",
+          "isCorrect": false
+        },
+        {
+          "label": "B",
+          "text": "Security Rating B passes (B or better is acceptable). Reliability Rating C and Coverage at 42% are both Important failures — the pipeline pauses and the Deployment Manager can choose to override both.",
+          "isCorrect": true
+        },
+        {
+          "label": "C",
+          "text": "Security Rating B is a Critical failure (immediately terminates). Reliability Rating C and Coverage 42% are Important failures that the Deployment Manager can override.",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "Coverage at 42% is a Critical failure that immediately terminates the pipeline. Reliability Rating C is an Important failure that requires manual override.",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "B is correct. The Security Rating threshold is: a rating BELOW B causes a Critical failure [1][4]. Security Rating B (at least 1 minor vulnerability) exactly meets the minimum acceptable threshold — it passes. Reliability Rating below C is an Important failure; a rating of C (at least 1 major bug) triggers an Important gate, which the pipeline pauses for. Coverage below 50% is also an Important failure, not a Critical one [1]. Both Important failures can be overridden by the Deployment Manager, Project Manager, or Business Owner in a standard production pipeline. A is incorrect because Security Rating B is the threshold — it is the boundary, not below it; and Reliability C is Important, not Critical. C is incorrect because Security Rating B passes (below B = below C/D/E triggers Critical; B itself passes). D is incorrect because the coverage threshold of 50% is Important severity, not Critical — missing it does not immediately terminate the pipeline.",
+      "sourceRefs": [
+        "build-deployments.pipelines.code-quality:1",
+        "build-deployments.pipelines.code-quality:4"
+      ],
+      "references": [
+        "build-deployments.pipelines.code-quality",
+        "build-deployments.pipelines.types"
+      ]
+    },
+    {
+      "id": "q-021",
+      "topic": "Rolling Deployment and Backward Compatibility",
+      "difficulty": "medium",
+      "scenario": "A development team is planning a release that renames a Sling resource type used by existing authored pages. The new resource type has a new HTL template, and the old one will be removed. The architect warns that deploying this change in a single release to AEMaaCS will cause rendering errors for existing pages during the deployment window.",
+      "question": "What is the correct deployment strategy to avoid rendering failures during the switchover window?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Deploy the change during a maintenance window when no authors or visitors are active, then perform a full cache purge immediately after deployment.",
+          "isCorrect": false
+        },
+        {
+          "label": "B",
+          "text": "Use the Emergency Mode pipeline to bypass testing phases, which deploys faster and reduces the overlap window between old and new code.",
+          "isCorrect": false
+        },
+        {
+          "label": "C",
+          "text": "Spread the change across two releases: Release 1 adds the new resource type alongside the old one (backward compatible). Release 2 removes the old resource type after the old code is fully retired.",
+          "isCorrect": true
+        },
+        {
+          "label": "D",
+          "text": "Place the resource type change in a content package instead of an application package so it installs post-switchover and does not affect the rolling update.",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "C is correct. AEMaaCS uses a rolling deployment where old and new code run simultaneously during the switchover window [2]. If the old resource type is removed in the same release that introduces the new one, nodes that old-version pods are still serving will reference a resource type that no longer exists, causing rendering failures. The Adobe-recommended strategy is to spread breaking changes across two releases: Release 1 adds new structures alongside old ones (both old and new code can render correctly). Release 2, deployed after Release 1 is fully active, removes the old resource type. This is the multi-release strategy for backward compatibility described in the official deploying documentation [2]. A is incorrect because AEMaaCS does not have traditional maintenance windows for rolling deployments — the rolling deployment process itself runs across live nodes. A cache purge would not fix the resource type resolution error. B is incorrect because Emergency Mode bypasses testing phases but does not reduce the rolling deployment overlap window; old and new code still coexist during the rollout regardless of how testing was handled. D is incorrect because resource type definitions (HTL templates, component definitions) live under /apps (immutable); placing them in a content package would violate the mutable/immutable split and result in a MIXED package warning with the /apps content being dropped.",
+      "sourceRefs": [
+        "build-deployments.pipelines.deploy-phase:2",
+        "build-deployments.content-packages.mutable-immutable:3"
+      ],
+      "references": [
+        "build-deployments.pipelines.deploy-phase",
+        "build-deployments.content-packages.mutable-immutable"
+      ]
+    },
+    {
+      "id": "q-022",
+      "topic": "Pipeline Types and Configuration",
+      "difficulty": "hard",
+      "scenario": "An organization's AEMaaCS program has a full-stack production pipeline and a dedicated web tier config pipeline, both targeting the same production environment. The Dispatcher engineering team pushes a new set of Apache rewrite rules and triggers a new full-stack pipeline run. After the pipeline completes successfully, a QA engineer reports that the Dispatcher rewrite rules are still returning the old behavior in production.",
+      "question": "Why did the full-stack pipeline not apply the Dispatcher rewrite rules, and what is the correct way to deploy them?",
+      "options": [
+        {
+          "label": "A",
+          "text": "The Dispatcher configuration was placed in the wrong Maven module; it must be in ui.content rather than ui.apps for it to be included in the full-stack pipeline.",
+          "isCorrect": false
+        },
+        {
+          "label": "B",
+          "text": "Full-stack pipelines do not deploy Dispatcher configuration if a dedicated web tier config pipeline exists for the same environment; the team must trigger the web tier config pipeline to deploy the rewrite rules.",
+          "isCorrect": true
+        },
+        {
+          "label": "C",
+          "text": "The Dispatcher cache must be manually invalidated before new rewrite rules take effect; trigger a full CDN purge from Cloud Manager.",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "The full-stack pipeline does not deploy Dispatcher config to production until the Go-Live Approval gate is explicitly approved with 'Deploy Dispatcher' selected.",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "B is correct. This is a documented and frequently tested behavior: once a dedicated web tier config pipeline is added to an environment, the full-stack pipeline silently stops deploying Dispatcher configuration to that environment [1]. Teams that miss this behavior are often confused why Dispatcher updates are not taking effect during full-stack deployments. The correct action is to trigger the web tier config pipeline, which is specifically designed to deploy HTTPD/Dispatcher configuration independently and much faster than a full-stack run. A is incorrect because Dispatcher configuration is correctly housed in the dispatcher module under ui.dispatcher or within the all container — it is not content and does not belong in ui.content. The Maven module placement is not the issue. C is incorrect because this is a configuration deployment issue, not a caching issue. If the rewrite rules were not deployed at all, a cache purge would not change the Dispatcher's behavior. D is incorrect because there is no such 'Deploy Dispatcher' approval option in the Go-Live Approval gate; Go-Live Approval is a generic manual gate for the entire production deployment step.",
+      "sourceRefs": [
+        "build-deployments.pipelines.types:1"
+      ],
+      "references": [
+        "build-deployments.pipelines.types",
+        "build-deployments.pipelines.deploy-phase"
+      ]
+    },
+    {
+      "id": "q-023",
+      "topic": "Service Users and Repoinit",
+      "difficulty": "hard",
+      "scenario": "A development team's OSGi service bundle accesses the JCR repository using a service user named my-app-reader. The bundle activates successfully in the local AEM SDK but throws a LoginException in Cloud Manager's Deploy-to-Stage step. The repoinit script in ui.config correctly creates the service user under /home/users/system/cq:services/. The engineer checks the Cloud Manager deployment log available in the Cloud Manager UI and finds no relevant errors there.",
+      "question": "What is the most likely root cause and where should the engineer look to diagnose it?",
+      "options": [
+        {
+          "label": "A",
+          "text": "The Cloud Manager deployment log does not capture OSGi service startup errors; the engineer must download the aemerror log from the stage environment to find the repoinit or ServiceUserMapper failure.",
+          "isCorrect": true
+        },
+        {
+          "label": "B",
+          "text": "The service user was not created because repoinit scripts only run during the Build Images phase, which does not have access to a live JCR; the scripts must be moved to ui.content.",
+          "isCorrect": false
+        },
+        {
+          "label": "C",
+          "text": "LoginException is always caused by missing product profile configuration in Admin Console; the service user must be added to a product profile to gain JCR access.",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "The service user creation path /home/users/system/cq:services/ requires a full system restore to provision; redeploy using a clean environment.",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "A is correct. This question tests two distinct knowledge areas. First: the Cloud Manager UI's 'Download Log' button for the Deploy-to-Stage step provides the Cloud Manager deployment orchestration log — not the AEM application (aemerror) log [3][4]. Critical startup failures including OSGi bundle errors and repoinit failures only appear in the aemerror log. The engineer must download the aemerror log for the Author or Publish instance from Cloud Manager's environment log download interface. Second: a common cause of LoginException despite a correct repoinit path is a missing or misconfigured ServiceUserMapperImpl.amended factory config in ui.config. The service user exists, but the bundle does not have a mapping telling Sling which service user to use for which sub-service name [5]. B is incorrect because repoinit scripts do not run during Build Images; they run at AEM startup during the Deploy phase (during Phase 2 of mutable content installation). Moving them to ui.content would be wrong — repoinit belongs in ui.config (immutable code layer). C is incorrect because product profiles govern human user access via IMS/Admin Console. Service users are OSGi/Sling-level entities that are not managed through Admin Console product profiles at all. D is incorrect because /home/users/system/cq:services/ is a standard path that repoinit creates as needed; no system restore is required.",
+      "sourceRefs": [
+        "build-deployments.pipelines.deploy-phase:3",
+        "build-deployments.pipelines.deploy-phase:4",
+        "build-deployments.content-packages.mutable-immutable:5"
+      ],
+      "references": [
+        "build-deployments.pipelines.deploy-phase",
+        "build-deployments.content-packages.mutable-immutable",
+        "build-deployments.pipelines.code-quality"
+      ]
+    },
+    {
+      "id": "q-024",
+      "topic": "Code Quality Gates and Pipeline Types",
+      "difficulty": "hard",
+      "scenario": "A team has set up a dedicated Code Quality pipeline (not a deployment pipeline) on their feature branch to enforce standards before merging. The pipeline run fails because SonarQube found two Issues that raised the Reliability Rating to D. The lead developer has reviewed the findings, determined they are false positives, and wants to override the failures and proceed with the merge. The developer has Deployment Manager role in Cloud Manager.",
+      "question": "Can the Deployment Manager override these Important failures, and what action should they take if not?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Yes, the Deployment Manager can override Important failures in any pipeline type; they should click the 'Override and Continue' button in the Cloud Manager pipeline execution view.",
+          "isCorrect": false
+        },
+        {
+          "label": "B",
+          "text": "No. In a code-quality-only pipeline, Important failures cannot be overridden by any role. The developer must either fix the code or suppress the false positives using @SuppressWarnings annotations with the specific rule IDs.",
+          "isCorrect": true
+        },
+        {
+          "label": "C",
+          "text": "No. Only a Business Owner role can override Important failures in a code-quality pipeline; the Deployment Manager must escalate to the Business Owner.",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "Yes, but only if the pipeline configuration was set to 'Continue Immediately' for Important failures before execution; the Deployment Manager must reconfigure the pipeline and re-run.",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "B is correct. This question tests a critical and frequently-tested exception to the general override rule. In standard full-stack production or deployment pipelines, Important failures can be overridden by a Deployment Manager, Project Manager, or Business Owner [1]. However, in a code-quality-only pipeline (where the quality check is the final step with no downstream deployment), Important failures cannot be overridden by any role [1]. The reasoning is architectural: the override mechanism exists to allow a human to weigh quality risk against business urgency in the context of an imminent deployment. In a quality-only pipeline there is no deployment decision to make — the pipeline's sole purpose is to enforce quality, so overrides would defeat the point entirely. The correct remediation for false positives is to use @SuppressWarnings('squid:<ruleId>') annotations on the specific code with the exact SonarQube rule ID, or //NOSONAR inline comments, which suppresses only the flagged finding [1][2]. A is incorrect because the override capability does not extend to code-quality-only pipelines, regardless of role. C is incorrect because while Business Owner can override Important failures in deployment pipelines, no role can override in a code-quality-only pipeline — it is a pipeline-type restriction, not a role restriction. D is incorrect because the 'Continue Immediately' pipeline configuration also applies only to deployment pipelines, not code-quality-only pipelines; reconfiguring the pipeline would not change this behavior.",
+      "sourceRefs": [
+        "build-deployments.pipelines.code-quality:1",
+        "build-deployments.pipelines.code-quality:2"
+      ],
+      "references": [
+        "build-deployments.pipelines.code-quality",
+        "build-deployments.pipelines.types"
+      ]
+    },
+    {
+      "id": "q-025",
+      "topic": "Environment Variables Configuration",
+      "difficulty": "easy",
+      "scenario": "A development team has an OSGi service that calls a third-party payment gateway. The gateway URL is different for development, staging, and production environments. The team wants to manage this URL in Cloud Manager without checking it into source control and without requiring a redeployment when the URL changes.",
+      "question": "Which approach is correct for injecting the per-environment URL into the OSGi configuration?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Use a run-mode-specific OSGi config folder (e.g., config.dev, config.stage, config.prod) and commit the URLs directly to Git.",
+          "isCorrect": false
+        },
+        {
+          "label": "B",
+          "text": "Store the URL as a Cloud Manager environment variable and reference it in the .cfg.json file using the syntax $[env:GATEWAY_URL].",
+          "isCorrect": true
+        },
+        {
+          "label": "C",
+          "text": "Store the URL as a Cloud Manager pipeline variable and reference it in the .cfg.json file using the syntax $[env:GATEWAY_URL].",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "Store the URL in a Dispatcher environment variable using IfDefine directives so the value is available to both the Dispatcher and the OSGi layer.",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "B is correct. Cloud Manager environment-specific variables are the designed mechanism for runtime configuration that varies per environment and must not be committed to Git [1]. The placeholder syntax $[env:VARIABLE_NAME] in .cfg.json files resolves the variable at AEM startup from Cloud Manager, and changes take effect immediately without a redeployment [1][3]. A is incorrect because run-mode config folders (config.dev, config.stage, config.prod) are committed to Git and are therefore suitable only for non-secret, build-time values that are the same across all environments of a given tier — they also require a code redeployment to change [1][3]. C is incorrect because pipeline variables exist ONLY during the build phase and are not available inside the running AEM application at runtime — using a pipeline variable here would mean the OSGi component never resolves the URL [2][4]. D is incorrect for two reasons: secrets and environment variables cannot be used inside Dispatcher IfDefine directives (a documented restriction), and the Dispatcher is a separate tier from the AEM OSGi runtime, so sharing configuration between them through Dispatcher variables is not a supported pattern [1][4].",
+      "sourceRefs": [
+        "cloud-manager-operations.environments.variables:1",
+        "cloud-manager-operations.environments.variables:3",
+        "cloud-manager-operations.environments.variables:2",
+        "cloud-manager-operations.environments.variables:4"
+      ],
+      "references": [
+        "cloud-manager-operations.environments.variables"
+      ]
+    },
+    {
+      "id": "q-026",
+      "topic": "Adobe I/O Authentication Setup",
+      "difficulty": "medium",
+      "scenario": "A DevOps engineer is setting up a GitHub Actions workflow to automatically trigger Cloud Manager pipeline deployments after every merge to the main branch. The engineer creates a project in the Adobe Developer Console, adds the Cloud Manager API, and selects the 'Developer' Cloud Manager product profile for the integration. After configuring the workflow with the OAuth Server-to-Server credentials, the trigger call returns HTTP 403.",
+      "question": "What is the most likely cause of the 403 error, and what is the correct fix?",
+      "options": [
+        {
+          "label": "A",
+          "text": "The access token has expired. Implement a refresh token flow to automatically renew the token before each API call.",
+          "isCorrect": false
+        },
+        {
+          "label": "B",
+          "text": "The 'Developer' product profile does not grant permission to start pipeline executions. Assign the 'Deployment Manager' product profile to the integration instead.",
+          "isCorrect": true
+        },
+        {
+          "label": "C",
+          "text": "The engineer is missing the API Developer role in Adobe Admin Console. Granting this role will authorize the integration to call the pipeline execution endpoint.",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "The OAuth Server-to-Server grant type is not supported for triggering pipeline executions. The integration must use a JWT credential to call this endpoint.",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "B is correct. A 403 in the Cloud Manager API means the access token is valid but the technical account's product profile does not grant the required role for the endpoint. Triggering pipeline execution (PUT .../execution) requires at minimum the Deployment Manager role. The Developer profile only allows read access to pipeline data and cannot start executions [4][6]. A is incorrect because Cloud Manager OAuth Server-to-Server tokens are valid for 24 hours, and the Cloud Manager OAuth credential does NOT support refresh tokens — tokens must be fully regenerated, not refreshed [2][4]. The error is 403 (permission), not 401 (invalid/expired token). C is incorrect because the 'API Developer' role in Adobe Admin Console is a separate concept that permits a user to create projects in the Adobe Developer Console. It has no bearing on which Cloud Manager API endpoints a technical account can call once the integration already exists — that is controlled by the assigned product profile [1][4]. D is incorrect because JWT-based credentials were deprecated and fully retired as of 2025. OAuth Server-to-Server is now the only supported authentication method and is fully supported for all Cloud Manager API operations including pipeline execution [3].",
+      "sourceRefs": [
+        "cloud-manager-operations.api.authentication:4",
+        "cloud-manager-operations.api.authentication:6",
+        "cloud-manager-operations.api.authentication:1",
+        "cloud-manager-operations.api.authentication:2",
+        "cloud-manager-operations.api.authentication:3"
+      ],
+      "references": [
+        "cloud-manager-operations.api.authentication",
+        "cloud-manager-operations.api.endpoints"
+      ]
+    },
+    {
+      "id": "q-027",
+      "topic": "Environment Provisioning",
+      "difficulty": "medium",
+      "scenario": "A global retail company is configuring a new AEM as a Cloud Service production program. Their primary datacenter is in Western Europe, and they require low-latency content delivery to users in North America and Southeast Asia as well. The Solutions Architect recommends configuring additional publish regions. The Business Owner attempts to add both additional regions at the same time in the Cloud Manager UI but receives an error.",
+      "question": "Why does the operation fail, and what is the correct procedure?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Additional publish regions require an STE (Specialized Testing Environment) to be provisioned first. Provision the STE, then add the regions.",
+          "isCorrect": false
+        },
+        {
+          "label": "B",
+          "text": "Cloud Manager does not allow adding and removing publish regions in the same transaction. Since no regions are being removed here, the issue is that the maximum of 3 additional regions has already been reached.",
+          "isCorrect": false
+        },
+        {
+          "label": "C",
+          "text": "Cloud Manager does not allow adding more than one additional publish region per transaction. Each region must be added in a separate save operation.",
+          "isCorrect": true
+        },
+        {
+          "label": "D",
+          "text": "Additional publish regions are only available for AEM Assets programs. AEM Sites programs must use the CDN layer for geographic distribution.",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "C is correct. The Cloud Manager UI enforces a transaction-per-action rule for additional publish regions: you cannot add and remove regions in the same transaction, and more broadly only one region change can be persisted per save operation. Each region addition must be completed as a separate transaction [2][7]. A is incorrect because additional publish regions have no dependency on a Specialized Testing Environment. STEs serve an entirely different purpose — they provide near-production conditions for advanced testing outside the production pipeline and are licensed separately [6]. B is incorrect in its reasoning. The rule is specifically 'cannot add AND remove in the same transaction,' and the scenario is adding regions without removing, but the constraint still applies to saving multiple additions simultaneously — each must be saved individually. The maximum of 3 additional regions is a real limit but is not the cause here given the company only has a primary region so far [2][7]. D is incorrect. Additional publish regions are available for AEM Sites AND AEM Forms — but NOT for AEM Assets programs. The scenario describes a retail company (Sites) which is an eligible use case [7].",
+      "sourceRefs": [
+        "cloud-manager-operations.environments.provisioning:2",
+        "cloud-manager-operations.environments.provisioning:7"
+      ],
+      "references": [
+        "cloud-manager-operations.environments.provisioning"
+      ]
+    },
+    {
+      "id": "q-028",
+      "topic": "Cloud Manager API Endpoints",
+      "difficulty": "medium",
+      "scenario": "An operations team has built an automated release orchestration system that triggers Cloud Manager pipelines via the API, monitors execution status, and automatically approves the Go-Live step once staging validation passes. When they attempt to advance the Go-Live approval step, the API returns HTTP 412. The pipeline execution log shows the production deployment step is waiting for user approval.",
+      "question": "What is the most likely cause of the 412 response, and how should it be resolved?",
+      "options": [
+        {
+          "label": "A",
+          "text": "HTTP 412 indicates the access token has expired. The automation should regenerate a new token and retry the advance operation.",
+          "isCorrect": false
+        },
+        {
+          "label": "B",
+          "text": "The advance operation must use the HAL link relation URL extracted from the _links object of the step response, not a hardcoded path constructed from documentation.",
+          "isCorrect": true
+        },
+        {
+          "label": "C",
+          "text": "The automation needs the Business Owner product profile to advance the Go-Live approval step. The current technical account uses Deployment Manager, which lacks this authority.",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "The pipeline must first be re-executed with pipelineExecutionMode=EMERGENCY to bypass the approval gate before the advance operation will be accepted.",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "B is correct. The Cloud Manager API uses a HAL/HATEOAS architecture where action URLs are embedded in the _links object of API responses rather than being constructible from documentation paths. A 412 (Precondition Failed) is returned when attempting to advance or cancel a step using an incorrect URL or when the step is not in the expected state for that action. The correct pattern is to GET the current execution, locate the step-state object for the Go-Live approval step, extract the href from _links['https://ns.adobe.com/adobecloud/rel/pipeline/advance'], and PUT to that URL [3][5]. A is incorrect because HTTP 412 (Precondition Failed) is not related to token expiry. Token expiry produces HTTP 401 (Unauthorized). The 412 specifically signals that a precondition for the operation was not met — in Cloud Manager's context this means the step is either not in the correct state or the wrong endpoint was called [5]. C is incorrect because advancing the Go-Live step requires the Deployment Manager role, not Business Owner. Deployment Manager is the role empowered to approve production deployments. Business Owner creates programs and environments but is not specifically required for advancing pipeline steps [5]. D is incorrect because emergency mode (pipelineExecutionMode=EMERGENCY) skips security and performance testing during the pipeline run — it does not bypass the Go-Live approval gate. Furthermore, using emergency mode routinely defeats the purpose of quality gates and is inappropriate here when the staging validation has already passed [4].",
+      "sourceRefs": [
+        "cloud-manager-operations.api.endpoints:3",
+        "cloud-manager-operations.api.endpoints:5",
+        "cloud-manager-operations.api.endpoints:4"
+      ],
+      "references": [
+        "cloud-manager-operations.api.endpoints",
+        "cloud-manager-operations.api.authentication"
+      ]
+    },
+    {
+      "id": "q-029",
+      "topic": "Program Types and Lifecycle",
+      "difficulty": "medium",
+      "scenario": "A consulting firm created an AEM as a Cloud Service sandbox program six months ago for a client demo. The demo was delivered, and the sandbox has not been accessed since. A new client engagement requires reusing the same demo content. When the consultant tries to log into the sandbox program in Cloud Manager, the program no longer appears in the program list.",
+      "question": "What happened to the sandbox program, and what is the correct course of action?",
+      "options": [
+        {
+          "label": "A",
+          "text": "The sandbox has been automatically hibernated after 8 hours of inactivity. Access it via the hibernation landing page to de-hibernate it.",
+          "isCorrect": false
+        },
+        {
+          "label": "B",
+          "text": "The sandbox program has been automatically deleted after 6 continuous months of hibernation. The program and all its content are permanently gone and must be recreated.",
+          "isCorrect": true
+        },
+        {
+          "label": "C",
+          "text": "The consultant's product profile access was revoked when the original engagement ended. An Adobe Admin Console administrator must re-grant access to the sandbox.",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "Sandbox programs are automatically converted to production programs after 6 months. The program now appears under Production Programs and requires a Business Owner to manage it.",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "B is correct. Sandbox programs are automatically deleted after 6 continuous months of hibernation [4]. The sandbox entered hibernation after 8 hours of inactivity following the demo, and since no one de-hibernated it in the intervening 6 months, the program was permanently deleted. All environments, pipelines, and content are lost. The program can be recreated but the demo content cannot be recovered from the deleted program [4]. A is incorrect because while hibernation does occur after 8 hours of inactivity, the scenario describes 6 months of non-access — well past the auto-deletion threshold. The program would have been deleted, not merely hibernated. Additionally, a hibernated program still appears in the Cloud Manager program list [4]. C is incorrect because if a permission issue were the cause, the program would still be visible to other users with appropriate access. The consultant sees no program in the list at all, which is consistent with deletion rather than permission loss. D is incorrect. Sandbox programs are not converted to production programs — these are distinct program types that must be created with intent. There is no automatic promotion or conversion between sandbox and production [2][3].",
+      "sourceRefs": [
+        "cloud-manager-operations.programs.types:4",
+        "cloud-manager-operations.programs.types:2",
+        "cloud-manager-operations.programs.types:3"
+      ],
+      "references": [
+        "cloud-manager-operations.programs.types",
+        "cloud-manager-operations.environments.provisioning"
+      ]
+    },
+    {
+      "id": "q-030",
+      "topic": "Adobe I/O Authentication Setup",
+      "difficulty": "hard",
+      "scenario": "A team maintains a CI/CD automation script that uses the Cloud Manager API. The script was working correctly until June 30, 2025, after which all API calls began returning HTTP 401. The script generates tokens using a private key downloaded from the Adobe Developer Console and signing a JWT assertion. The team's Developer Console project still shows both a JWT credential and an OAuth Server-to-Server credential, as a partial migration was started but never completed.",
+      "question": "Which actions are required to restore API functionality without service interruption, in the correct order?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Rotate the JWT certificate in the Developer Console, update the script with the new certificate, and continue using JWT token generation — the June 30 deadline only applied to newly created credentials.",
+          "isCorrect": false
+        },
+        {
+          "label": "B",
+          "text": "Delete the JWT credential first, then update the automation script to use the OAuth Server-to-Server credential. Deleting JWT removes the conflict that causes 401 errors.",
+          "isCorrect": false
+        },
+        {
+          "label": "C",
+          "text": "Update the automation script to generate tokens using the OAuth Server-to-Server credential (POST to IMS token/v3 with client_id and client_secret), verify it works, then delete the JWT credential.",
+          "isCorrect": true
+        },
+        {
+          "label": "D",
+          "text": "Use the 'Generate access token' button in the Developer Console to obtain a long-lived token, hardcode it in the automation script, and schedule a calendar reminder to rotate it annually.",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "C is correct. This follows the documented three-step zero-downtime JWT migration process: (1) the OAuth credential already exists (the partial migration added it), so the next step is to update the automation code to generate tokens via POST to https://ims-na1.adobelogin.com/ims/token/v3 using client_id and client_secret with grant_type=client_credentials; (2) verify the OAuth credential works in production for 24+ hours; (3) then and only then delete the JWT credential — this is irreversible [3]. The 401s are caused by the JWT credential having stopped working on June 30, 2025. A is incorrect because the June 30, 2025 deadline applied to ALL JWT credentials, not just newly created ones. JWT credentials — regardless of when they were created — stopped working on this date. Certificate rotation cannot revive a deprecated credential type [3]. B is incorrect because deleting the JWT credential first would leave a window where the automation script still attempts JWT token generation and fails, since the script has not yet been updated. The correct procedure is to update and verify the new credential BEFORE deleting the old one to ensure zero-downtime migration [3]. D is incorrect for two reasons: (1) tokens generated via the Developer Console button are standard 24-hour access tokens, not long-lived tokens — there are no 'long-lived tokens' in Cloud Manager OAuth; and (2) Cloud Manager OAuth Server-to-Server does not support refresh tokens, meaning any token will expire in 24 hours and hardcoding it would cause daily failures [2][3].",
+      "sourceRefs": [
+        "cloud-manager-operations.api.authentication:3",
+        "cloud-manager-operations.api.authentication:2"
+      ],
+      "references": [
+        "cloud-manager-operations.api.authentication",
+        "cloud-manager-operations.api.endpoints"
+      ]
+    },
+    {
+      "id": "q-031",
+      "topic": "Environment Variables Configuration",
+      "difficulty": "hard",
+      "scenario": "A DevOps engineer is debugging an issue where an OSGi service in a newly provisioned development environment is logging connection errors to a third-party API. The OSGi config file contains the line: `\"api.endpoint\": \"$[env:THIRD_PARTY_URL]\"`. The engineer verifies in Cloud Manager that the variable THIRD_PARTY_URL is defined for the dev environment. However, the logs show the service is attempting to connect to the literal string `$[env:THIRD_PARTY_URL]` rather than the configured URL value. The engineer checks the reserved prefix list and confirms THIRD_PARTY_URL does not start with any reserved prefix.",
+      "question": "What is the most likely cause of the literal placeholder appearing at runtime instead of the resolved value?",
+      "options": [
+        {
+          "label": "A",
+          "text": "The variable was set as a pipeline variable rather than an environment variable. Pipeline variables are not available to the OSGi runtime.",
+          "isCorrect": false
+        },
+        {
+          "label": "B",
+          "text": "Secret-type variables cannot be read back in the Cloud Manager UI, so the engineer only thinks the variable is defined. The variable was never actually saved.",
+          "isCorrect": false
+        },
+        {
+          "label": "C",
+          "text": "The variable THIRD_PARTY_URL was defined after the environment was last started. The value takes effect immediately for new requests but the OSGi config placeholder does not re-resolve until the next restart.",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "The OSGi config file is using the $[env:VARIABLE_NAME] placeholder syntax but the variable was set without a default value and it was not yet propagated to the environment when the bundle resolved. The current likely cause is that the variable was added while a pipeline was actively running and the update was blocked.",
+          "isCorrect": true
+        }
+      ],
+      "rationale": "D is the most correct answer. Cloud Manager prevents adding or updating environment/pipeline variables while a pipeline is actively running — the variable management operation is blocked and may silently appear to succeed in the UI while not actually being saved [2]. If the dev environment was freshly provisioned and a non-production pipeline ran during setup, any variable set during that window would be blocked. The literal placeholder `$[env:VARIABLE_NAME]` appears at runtime specifically when the variable is not defined for the environment AND no default value is specified in the OSGi config — the system outputs the literal placeholder string rather than null or an empty string [3]. Option A is plausible but the scenario states the engineer confirmed the variable is defined as an environment variable (visible in the Environments > Configuration tab), not a pipeline variable, making this an incorrect fit. Pipeline variables are set per-pipeline and are not visible in the Environments configuration UI at all [2][4]. Option B is plausible — secrets cannot be read back after creation [1] — but the scenario does not indicate this is a secret-type variable. The engineer viewing the variable in Cloud Manager implies it is a plain (non-secret) environment variable, which IS visible in the UI after creation. Option C is incorrect. Cloud Manager environment variable changes take effect immediately — no restart is required [1]. The OSGi config placeholder resolves at startup but environment variable changes do not require a pod restart to propagate in AEMaaCS. The correct diagnosis points to the variable not having been persisted in the first place due to the pipeline lock.",
+      "sourceRefs": [
+        "cloud-manager-operations.environments.variables:1",
+        "cloud-manager-operations.environments.variables:2",
+        "cloud-manager-operations.environments.variables:3",
+        "cloud-manager-operations.environments.variables:4"
+      ],
+      "references": [
+        "cloud-manager-operations.environments.variables",
+        "cloud-manager-operations.api.endpoints"
+      ]
+    },
+    {
+      "id": "q-032",
+      "topic": "Cloud Manager API Endpoints and Environment Provisioning",
+      "difficulty": "hard",
+      "scenario": "A platform engineering team is building a self-service portal that allows project teams to provision new AEM development environments on demand. The portal calls the Cloud Manager API using an OAuth Server-to-Server credential. When creating environments, the API call to create a new development environment succeeds, but when the team tries to set environment-specific variables on the freshly created environment via PATCH /api/program/{programId}/environment/{environmentId}/variables, the call returns HTTP 403. The technical account is assigned the Deployment Manager product profile. The portal then attempts to trigger a non-production pipeline on the new environment, and that call also returns 403.",
+      "question": "Which single root cause most likely explains both 403 failures?",
+      "options": [
+        {
+          "label": "A",
+          "text": "The Deployment Manager profile only grants access to production environments. Managing development environment variables and non-production pipelines requires the Developer product profile.",
+          "isCorrect": false
+        },
+        {
+          "label": "B",
+          "text": "The access token was generated before the new environment was created. Environment-scoped API operations require a fresh token that was issued after the environment ID was registered in IMS.",
+          "isCorrect": false
+        },
+        {
+          "label": "C",
+          "text": "The x-gw-ims-org-id header contains the Cloud Manager program ID instead of the IMS Organization ID from the Adobe Developer Console. This causes all environment-scoped and pipeline-scoped calls to fail with 403.",
+          "isCorrect": true
+        },
+        {
+          "label": "D",
+          "text": "Creating an environment requires the Business Owner role, and since the technical account is only Deployment Manager, the environment was created under a different program scope that the token cannot access.",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "C is correct. A well-documented implementation mistake is confusing the x-gw-ims-org-id header value (the IMS Organization ID from the Adobe Developer Console credentials screen, a constant GUID-format string that identifies the customer's Adobe organization) with the Cloud Manager program ID (a numeric integer visible in Cloud Manager URLs). The IMS Org ID never changes across programs or environments within an organization. Using the program ID as the x-gw-ims-org-id value means the token appears valid (401 would not occur) but the authorization check against the actual organization fails, producing 403 on every endpoint that requires organization-level scope validation — which includes both environment variable management and pipeline execution [1][8]. This would consistently affect all environment-scoped and pipeline-scoped calls after the simpler environment creation call, which succeeds using the HAL link from the root programs response before the org-scoped check is applied. A is incorrect. The Deployment Manager role is the appropriate role for both setting environment variables and triggering pipeline executions. It is not restricted to production environments — Deployment Manager covers both production and non-production operations including environment variable management [5][6]. B is incorrect. OAuth access tokens for the Cloud Manager API are scoped to the organization and the assigned product profiles — they are not scoped to specific environment IDs. A token does not need to be regenerated after an environment is created; any valid token for the correct organization and role can operate on any environment within that program [2]. D is incorrect. While it is true that creating environments requires the Business Owner role [2], the scenario states the environment creation call succeeds — so either the technical account has Business Owner rights or a different account performed the creation. The question asks about the 403 on variable management and pipeline triggering, which is a separate issue from environment creation.",
+      "sourceRefs": [
+        "cloud-manager-operations.api.endpoints:1",
+        "cloud-manager-operations.api.endpoints:8",
+        "cloud-manager-operations.api.endpoints:5",
+        "cloud-manager-operations.api.authentication:2"
+      ],
+      "references": [
+        "cloud-manager-operations.api.endpoints",
+        "cloud-manager-operations.api.authentication",
+        "cloud-manager-operations.environments.provisioning"
+      ]
+    },
+    {
+      "id": "q-033",
+      "topic": "Cloud Manager Log Access",
+      "difficulty": "easy",
+      "scenario": "A developer is debugging a Java NullPointerException that was reported by QA on the Stage Publish tier in AEM as a Cloud Service. The error occurred in the last 30 minutes. The developer wants to see the live log stream as QA reproduces the issue without waiting for a file download.",
+      "question": "Which tool and command should the developer use to view logs in real time?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Use the Cloud Manager web UI, navigate to the Environments card, and select 'Download Logs' for the Publish service.",
+          "isCorrect": false
+        },
+        {
+          "label": "B",
+          "text": "SSH into the Publish container and run `tail -f /crx-quickstart/logs/error.log`.",
+          "isCorrect": false
+        },
+        {
+          "label": "C",
+          "text": "Run `aio cloudmanager:tail-log <ENV_ID> publish aemerror` using the Adobe I/O CLI.",
+          "isCorrect": true
+        },
+        {
+          "label": "D",
+          "text": "Open the AEM Web Console at `/system/console/slinglog` and enable real-time log streaming.",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "C is correct because real-time log streaming (tailing) in AEMaaCS is only available via the Adobe I/O CLI with the Cloud Manager plugin, using the `aio cloudmanager:tail-log` command [2]. This streams `aemerror` (the Java application error log) from the specified service in real time. A is incorrect because the Cloud Manager UI supports only file downloads — not live streaming. B is incorrect because AEMaaCS runs containerized pods that customers cannot SSH into; direct file system access is not available in cloud environments. D is incorrect because the Sling Log Support console is available only on local SDK instances, not in AEMaaCS cloud environments, and does not provide real-time streaming to the developer's terminal.",
+      "sourceRefs": [
+        "monitoring-quality.log-analysis.cloud-manager-logs:1",
+        "monitoring-quality.log-analysis.cloud-manager-logs:2"
+      ],
+      "references": [
+        "monitoring-quality.log-analysis.cloud-manager-logs",
+        "monitoring-quality.log-analysis.log-types"
+      ]
+    },
+    {
+      "id": "q-034",
+      "topic": "Log Types Reference",
+      "difficulty": "easy",
+      "scenario": "An AEM DevOps engineer is investigating a reported issue where certain page URLs appear not to be cached by the Dispatcher on the Publish tier. They want to confirm whether the Dispatcher is rejecting cache writes for those URLs and identify the reason.",
+      "question": "Which log file should the engineer examine first?",
+      "options": [
+        {
+          "label": "A",
+          "text": "The `aemaccess` log on the Publish service, which records all HTTP requests reaching AEM.",
+          "isCorrect": false
+        },
+        {
+          "label": "B",
+          "text": "The `aemdispatcher` log on the Dispatcher service, which records cache include/exclude decisions.",
+          "isCorrect": true
+        },
+        {
+          "label": "C",
+          "text": "The `aemerror` log on the Publish service, which captures all Java application-level messages.",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "The `httpdaccess` log on the Author service, which shows all inbound HTTP requests.",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "B is correct because the `aemdispatcher` log is specifically the Dispatcher module log and is the primary source for debugging cache behavior — it records which URLs are cached and which are excluded and why [2]. A is incorrect because `aemaccess` only shows requests that reached the AEM application layer; requests served from the Dispatcher cache never appear in `aemaccess`, so it would not reveal Dispatcher-level cache decisions. C is incorrect because `aemerror` captures Java application exceptions, not Dispatcher cache logic. D is incorrect on two counts: Dispatcher logs exist only on the Publish tier, not Author, and `httpdaccess` is the Apache HTTPD access log — useful for request counting but not for Dispatcher cache include/exclude decisions.",
+      "sourceRefs": [
+        "monitoring-quality.log-analysis.log-types:2",
+        "monitoring-quality.log-analysis.log-types:1"
+      ],
+      "references": [
+        "monitoring-quality.log-analysis.log-types",
+        "monitoring-quality.log-analysis.cloud-manager-logs"
+      ]
+    },
+    {
+      "id": "q-035",
+      "topic": "Log Forwarding via Cloud Manager",
+      "difficulty": "medium",
+      "scenario": "An enterprise organization running AEM as a Cloud Service must retain all AEM application and Dispatcher logs for 90 days to meet compliance requirements. Cloud Manager retains logs for only 7 days. The team wants to forward logs to their existing Splunk HEC (HTTP Event Collector) endpoint. A security requirement mandates that the Splunk authentication token must never be stored in plaintext in the Git repository.",
+      "question": "What is the correct approach to configure log forwarding while satisfying the token security requirement?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Store the Splunk token in a `.env` file in the root of the repository and reference it in `logForwarding.yaml` using standard YAML environment variable syntax.",
+          "isCorrect": false
+        },
+        {
+          "label": "B",
+          "text": "Create a Cloud Manager Secret Environment Variable for the token and reference it in `logForwarding.yaml` using `${{VARIABLE_NAME}}` syntax, then deploy via a targeted Config pipeline.",
+          "isCorrect": true
+        },
+        {
+          "label": "C",
+          "text": "Request Adobe Support to configure Splunk forwarding at the infrastructure level so that no YAML configuration in the repository is needed.",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "Base64-encode the Splunk token and store it directly in `logForwarding.yaml` under the `token` field.",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "B is correct because AEMaaCS log forwarding uses `logForwarding.yaml` deployed via a Cloud Manager Config pipeline, and secrets such as Splunk HEC tokens must be stored as Cloud Manager Secret Environment Variables and referenced using `${{VARIABLE_NAME}}` syntax [3]. The Secret variable type is never exposed in logs or UI and satisfies the requirement of not storing tokens in plaintext in Git. A is incorrect because `.env` files are a local development pattern; Cloud Manager pipelines do not read `.env` files from the repository, and any file committed to Git containing a token violates the plaintext storage requirement. C is incorrect because self-service log forwarding via `logForwarding.yaml` was introduced specifically to remove the requirement for Adobe Support involvement; organizations can configure it themselves through the Config pipeline. D is incorrect because Base64 encoding is not encryption — it is trivially reversible and does not protect the token; storing it in the YAML file committed to Git is functionally equivalent to plaintext.",
+      "sourceRefs": [
+        "monitoring-quality.log-analysis.cloud-manager-logs:3"
+      ],
+      "references": [
+        "monitoring-quality.log-analysis.cloud-manager-logs",
+        "monitoring-quality.scaling.cdn-configuration"
+      ]
+    },
+    {
+      "id": "q-036",
+      "topic": "CDN Configuration",
+      "difficulty": "medium",
+      "scenario": "A retail company is running AEM as a Cloud Service and already has a contract with Akamai for CDN services. Their Akamai configuration handles geo-based routing and WAF rules that their security team has already approved. They want to continue using Akamai as their primary CDN while also taking advantage of Adobe's AEMaaCS delivery. The engineering lead asks whether they can replace Adobe's built-in Fastly CDN with Akamai.",
+      "question": "Which statement accurately describes the correct architecture for this requirement?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Customers can replace Adobe's Fastly CDN with their own CDN by disabling the Adobe CDN in Cloud Manager and pointing their DNS directly to the Dispatcher tier.",
+          "isCorrect": false
+        },
+        {
+          "label": "B",
+          "text": "Akamai can be placed in front of Adobe's Fastly CDN (BYOCDN), but the customer CDN must pass the `X-AEM-Edge-Key` header to authenticate requests to Adobe's CDN. Adobe's Fastly CDN cannot be removed.",
+          "isCorrect": true
+        },
+        {
+          "label": "C",
+          "text": "Customers can configure Adobe's Fastly CDN to delegate all routing decisions to Akamai by setting an origin selector in `cdn.yaml` that points to the Akamai ingress domain.",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "BYOCDN is supported only for the Author tier; the Publish tier must continue to use Adobe's Fastly CDN exclusively.",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "B is correct because Adobe's Fastly CDN is always present and cannot be removed or bypassed in AEMaaCS [1]. Customers who want to use their own CDN (BYOCDN) place it in front of Fastly — they do not replace it. The customer CDN must forward three critical headers: `Host`, `X-Forwarded-Host`, and `X-AEM-Edge-Key`, where the `X-AEM-Edge-Key` is a shared secret configured in `cdn.yaml` that authenticates the customer CDN to Adobe's Fastly layer [5]. A is incorrect because there is no option in Cloud Manager to disable the Adobe CDN; it is a mandatory architectural layer. C is incorrect because origin selectors in `cdn.yaml` route requests from Adobe's CDN to non-AEM backends (like a WordPress blog), not to another CDN — and `.adobeaemcloud.com` domains cannot be used as origins to prevent loops. D has the tiers backwards: BYOCDN is supported for the Publish and Preview tiers but is NOT supported in front of the Author tier, which is the opposite of what option D states.",
+      "sourceRefs": [
+        "monitoring-quality.scaling.cdn-configuration:1",
+        "monitoring-quality.scaling.cdn-configuration:5"
+      ],
+      "references": [
+        "monitoring-quality.scaling.cdn-configuration",
+        "cloud-manager.pipelines.config-pipeline"
+      ]
+    },
+    {
+      "id": "q-037",
+      "topic": "New Relic Integration",
+      "difficulty": "medium",
+      "scenario": "A performance engineering team has just activated the New Relic sub-account for their AEM as a Cloud Service production program. The Business Owner clicked 'Activate New Relic' in Cloud Manager. Two days later, the team notices that no APM data has appeared in the New Relic dashboard. The sub-account shows users were added and no one has received an error message.",
+      "question": "What is the most likely cause of missing APM data, and what action corrects it?",
+      "options": [
+        {
+          "label": "A",
+          "text": "The New Relic sub-account requires up to 72 hours for Adobe to provision the APM agent; no additional action is needed.",
+          "isCorrect": false
+        },
+        {
+          "label": "B",
+          "text": "Users added to the New Relic sub-account have not activated their accounts via the password-reset email; the APM agent will not transmit data until at least one user logs in.",
+          "isCorrect": false
+        },
+        {
+          "label": "C",
+          "text": "A Cloud Manager pipeline for the production environment has not been run to successful completion after activation; running a pipeline pushes the activation configuration into the environment and starts the APM agent.",
+          "isCorrect": true
+        },
+        {
+          "label": "D",
+          "text": "The New Relic sub-account was shut down due to inactivity; the Business Owner must re-activate it and wait 24 hours.",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "C is correct because activating New Relic in the Cloud Manager UI is only the first step. A pipeline run to successful completion is required to push the activation configuration into the target environment and actually start the New Relic APM agent [1]. This is a common failure mode: teams click 'Activate' and wait for data that never arrives because the agent was never deployed. A is incorrect because there is no 72-hour provisioning delay documented for New Relic in AEMaaCS; the issue is a missing pipeline run, not a backend provisioning delay. B is incorrect because user account activation affects whether users can log in to the New Relic UI — it does not affect whether the APM agent on the AEM JVM collects and transmits data. D is incorrect because the 30-day inactivity shutdown would apply to a sub-account that was previously active and then went unused; this account has never had data flowing, so inactivity shutdown is not the cause.",
+      "sourceRefs": [
+        "monitoring-quality.performance-monitoring.new-relic:1"
+      ],
+      "references": [
+        "monitoring-quality.observability.new-relic",
+        "cloud-manager.environments.environment-types"
+      ]
+    },
+    {
+      "id": "q-038",
+      "topic": "Autoscaling",
+      "difficulty": "medium",
+      "scenario": "An AEM as a Cloud Service customer is planning a high-traffic marketing event and asks the DevOps engineer to pre-configure the Publish tier to scale out to at least 10 pods before the event begins. They also want to ensure that pods are not scaled down during the event window. The team has access to Cloud Manager with a Business Owner role.",
+      "question": "Which action should the DevOps engineer take?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Log in to Cloud Manager, navigate to the Environments card, and configure a minimum pod count of 10 for the Publish tier using the scaling settings UI.",
+          "isCorrect": false
+        },
+        {
+          "label": "B",
+          "text": "Submit an Adobe Support ticket requesting that the orchestration engine be configured to maintain a minimum of 10 publish pods during the event window.",
+          "isCorrect": false
+        },
+        {
+          "label": "C",
+          "text": "Use a Cloud Manager pipeline to deploy a Publish tier configuration YAML specifying the target pod count and scale-lock duration.",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "No action is required from the customer; AEMaaCS autoscaling is fully Adobe-managed and Adobe's orchestration engine will scale the Publish tier automatically in response to traffic increases.",
+          "isCorrect": true
+        }
+      ],
+      "rationale": "D is correct because AEMaaCS autoscaling is 100% Adobe-managed — customers cannot configure scaling rules, minimum pod counts, scale-lock windows, or thresholds for any tier in any environment [3]. The orchestration engine continuously monitors service load and scales horizontally (pod count) and vertically (resource allocation) automatically. A is incorrect because no such scaling settings UI exists in Cloud Manager for customers; scaling controls are internal to Adobe's orchestration infrastructure. B is incorrect because while Adobe Support can be engaged, pre-configuring autoscaling thresholds is not a supported request — the orchestration engine is not customer-configurable even via support. C is incorrect because Cloud Manager Config pipelines deploy YAML files for CDN rules, log forwarding, and similar configurations; they do not include any mechanism for customers to set pod count or scaling policies. For event preparedness, the correct approach is to trust Adobe's auto-scaling and optionally perform load testing to confirm behavior.",
+      "sourceRefs": [
+        "monitoring-quality.scaling.autoscaling:3",
+        "monitoring-quality.scaling.autoscaling:1"
+      ],
+      "references": [
+        "monitoring-quality.scaling.autoscaling",
+        "cloud-manager.environments.environment-types"
+      ]
+    },
+    {
+      "id": "q-039",
+      "topic": "Audit Log and Log Forwarding Limitations",
+      "difficulty": "hard",
+      "scenario": "A financial services company using AEM as a Cloud Service must satisfy a compliance audit requiring a 2-year retention of all repository change events (page edits, asset deletions, replication events) as well as user permission changes. The compliance team assumes all this data can be captured via the `logForwarding.yaml` mechanism and forwarded to their SIEM. A junior engineer has been asked to implement this forwarding.",
+      "question": "Which statement correctly describes the limitations the engineer will encounter, and what approach addresses the compliance requirement?",
+      "options": [
+        {
+          "label": "A",
+          "text": "The `aemaccess` log captures all repository changes and user permission events, and can be forwarded to any supported SIEM destination via `logForwarding.yaml` to satisfy both requirements.",
+          "isCorrect": false
+        },
+        {
+          "label": "B",
+          "text": "The AEM audit log at `/var/audit` is a JCR node store and cannot be forwarded via `logForwarding.yaml`; additionally, it does not capture ACL or user management changes. Satisfying both requirements needs the audit log forwarded via a separate mechanism (Adobe I/O Events) combined with an external Identity Provider audit trail for permission changes.",
+          "isCorrect": true
+        },
+        {
+          "label": "C",
+          "text": "All audit data including user permission changes is automatically included in the `aemerror` log stream and will be forwarded once `logForwarding.yaml` is deployed with the correct destination.",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "The `logForwarding.yaml` mechanism supports forwarding the JCR audit log to Splunk by setting `audit: enabled: true` under the data section; user permission events must be separately enabled in OSGi configuration.",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "B is correct because there are two distinct limitations at play. First, the AEM audit log in AEMaaCS is not a flat file — it is a JCR node store at `/var/audit` and therefore cannot be forwarded to Splunk or any other external system via the standard `logForwarding.yaml` mechanism [5]. Second, even if it were accessible, the audit log does not track ACL changes or user/group management events by default — those require an external Identity Provider's audit trail [5]. For the full compliance picture, repository change events can be streamed via Adobe I/O Events (a separate mechanism outside `logForwarding.yaml`), while permission change auditing must come from the federated IdP (e.g., Azure AD audit logs). A is incorrect because `aemaccess` is an HTTP access log recording request/response pairs — it has no knowledge of JCR node-level operations or user management events. C is incorrect because `aemerror` captures Java application exceptions and log statements; audit events written to JCR nodes are not output to `aemerror`. D is incorrect because no `audit: enabled: true` flag exists in `logForwarding.yaml`; the schema supports AEM, Dispatcher, and CDN logs but not JCR audit data.",
+      "sourceRefs": [
+        "monitoring-quality.log-analysis.log-types:5",
+        "monitoring-quality.log-analysis.log-types:1"
+      ],
+      "references": [
+        "monitoring-quality.log-analysis.log-types",
+        "monitoring-quality.log-analysis.cloud-manager-logs",
+        "admin-console.identity.user-group-sync"
+      ]
+    },
+    {
+      "id": "q-040",
+      "topic": "CDN Cache Headers and New Relic Alerting",
+      "difficulty": "hard",
+      "scenario": "An AEM as a Cloud Service team is investigating a cache efficiency problem. CDN log analysis shows the cache hit ratio for HTML pages is approximately 35%, far below Adobe's recommended 90%+ threshold. An APM trace in New Relic shows HTML page response times are averaging 1.2 seconds. The team sets up a New Relic alert policy to trigger when cache hit ratio drops below 80% so they can respond proactively next time. Additionally, a content editor notices that after publishing a page, the CDN continues to serve the stale version for up to an hour — they want to force immediate content refresh at the CDN edge after every publish event.",
+      "question": "Which combination of actions correctly addresses all three concerns — improving cache hit ratio, enabling proactive alerting, and forcing immediate CDN refresh on publish?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Add `Vary: User-Agent` response headers to maximize cache personalization, create a New Relic alert policy in the AEMaaCS sub-account, and configure a Dispatcher Flush agent to invalidate CDN entries on replication.",
+          "isCorrect": false
+        },
+        {
+          "label": "B",
+          "text": "Strip marketing query parameters (`utm_*`) via CDN rules in `cdn.yaml` to normalize cache keys, create a New Relic alert policy in the AEMaaCS sub-account, and use a surrogate-key CDN PURGE call triggered by a replication post-processor to invalidate affected pages.",
+          "isCorrect": false
+        },
+        {
+          "label": "C",
+          "text": "Strip marketing query parameters via CDN rules in `cdn.yaml`, set distinct CDN and browser TTLs using `Surrogate-Control` and `Cache-Control` headers on the Dispatcher vhost, accept that New Relic alerting is not available in the AEMaaCS-bundled tier and use an external alerting tool, and trigger a CDN PURGE API call with `X-AEM-Purge-Key` after publish to immediately invalidate stale content.",
+          "isCorrect": true
+        },
+        {
+          "label": "D",
+          "text": "Configure autoscaling to add more Publish pods to reduce origin response time, accept that CDN TTLs cannot be changed without a full-stack deployment, and use the New Relic built-in dashboard to manually review cache metrics daily.",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "C is correct because it accurately addresses all three concerns without contradiction. For cache hit ratio: marketing query parameters like `utm_*` and `gclid` create unique cache keys per URL variant, dramatically reducing hit ratio; stripping them in `cdn.yaml` normalizes the cache key [8]. Setting `Surrogate-Control: max-age=<longer>` on the Dispatcher vhost lets the CDN cache HTML longer than the browser does, improving edge hit ratio without stale browser-side content [6]. For alerting: the AEMaaCS-bundled New Relic sub-account explicitly does NOT support alert policies — alerting is excluded from the read-only tier [1][2]. The correct answer acknowledges this limitation and routes to an external tool. For CDN invalidation: the CDN PURGE API with `X-AEM-Purge-Key` is the mechanism for programmatically invalidating CDN-cached resources immediately after publish [7]. A is incorrect on two grounds: `Vary: User-Agent` dramatically worsens cache hit ratio (creates unique cache entries per browser user-agent string) and New Relic alerting is not available in the AEMaaCS sub-account. B is partially correct (query param stripping and PURGE API are valid) but is wrong about New Relic alert policies — they cannot be created in the AEMaaCS-bundled sub-account. D is incorrect because autoscaling is Adobe-managed and customer-unconfigurable, CDN TTLs can be changed via Config pipeline without a full-stack deployment, and manual daily review is not proactive alerting.",
+      "sourceRefs": [
+        "monitoring-quality.scaling.cdn-configuration:8",
+        "monitoring-quality.scaling.cdn-configuration:6",
+        "monitoring-quality.scaling.cdn-configuration:7",
+        "monitoring-quality.performance-monitoring.new-relic:1",
+        "monitoring-quality.performance-monitoring.new-relic:2"
+      ],
+      "references": [
+        "monitoring-quality.scaling.cdn-configuration",
+        "monitoring-quality.observability.new-relic",
+        "monitoring-quality.scaling.autoscaling",
+        "cloud-manager.pipelines.config-pipeline"
+      ]
+    },
+    {
+      "id": "q-041",
+      "topic": "Dispatcher Filter Rules",
+      "difficulty": "easy",
+      "scenario": "A developer is reviewing the /filter section of a publish farm and finds the following two rules in sequence: rule /0050 { /type \"deny\" /url \"/content/internal/*\" } followed by rule /0060 { /type \"allow\" /url \"/content/*\" }. A request arrives for /content/internal/employees.html.",
+      "question": "What response will the Dispatcher return for this request?",
+      "options": [
+        {
+          "label": "A",
+          "text": "404 Not Found, because the deny rule at /0050 matches the request first.",
+          "isCorrect": false
+        },
+        {
+          "label": "B",
+          "text": "The request is allowed and forwarded to the publish tier, because rule /0060 is the last matching rule.",
+          "isCorrect": true
+        },
+        {
+          "label": "C",
+          "text": "404 Not Found, because the /content/internal/* pattern is more specific than /content/* and always takes precedence.",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "The request is blocked and returns a 403 Forbidden response.",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "B is correct because AEM Dispatcher uses last-match-wins semantics for filter evaluation [1] — all matching rules are evaluated in sequence and the last one that matches determines the outcome. Both rules match /content/internal/employees.html, but /0060 (allow) is evaluated after /0050 (deny), so the final decision is allow. A is incorrect because Dispatcher does NOT use first-match-wins logic like Apache mod_rewrite; it continues evaluating all rules after the first match. C is incorrect because specificity is not a factor — rule ordering and last-match-wins is the only evaluation mechanism. D is incorrect because Dispatcher returns 404 for denied requests, not 403; and in this case the request is actually allowed by the final matching rule.",
+      "sourceRefs": [
+        "web-proxy-infrastructure.dispatcher-config.filters:1",
+        "web-proxy-infrastructure.dispatcher-config.farm-files:1"
+      ],
+      "references": [
+        "web-proxy-infrastructure.dispatcher-config.filters",
+        "web-proxy-infrastructure.dispatcher-config.farm-files"
+      ]
+    },
+    {
+      "id": "q-042",
+      "topic": "Dispatcher Cache Invalidation",
+      "difficulty": "easy",
+      "scenario": "A content editor publishes a page at /content/mysite/en/about.html. The Dispatcher has statfileslevel set to 2 and the docroot is /var/www/html. The Dispatcher cache contains pages from several different language paths: /content/mysite/en/, /content/mysite/fr/, and /content/mysite/de/.",
+      "question": "Which cached files will be marked as stale following this activation?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Only /content/mysite/en/about.html is invalidated; other paths are unaffected.",
+          "isCorrect": false
+        },
+        {
+          "label": "B",
+          "text": "All files in /content/mysite/ across all language paths are invalidated because the .stat file at /content/mysite/ is touched.",
+          "isCorrect": false
+        },
+        {
+          "label": "C",
+          "text": "All files under /content/mysite/en/ are invalidated; /fr/ and /de/ caches remain valid.",
+          "isCorrect": true
+        },
+        {
+          "label": "D",
+          "text": "The entire Dispatcher cache is invalidated because any activation triggers a full cache flush.",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "C is correct because statfileslevel 2 creates .stat files at docroot (level 0), /content (level 1), and /content/mysite (level 2) — but the activation of a page under /content/mysite/en/ touches only the .stat file at /content/mysite/en/ and above [1][3]. Any cached file older than the touched .stat files in its directory path is considered stale. Since /fr/ and /de/ have their own .stat files at level 3 (below the touched level 2 .stat file), they are unaffected. A is incorrect because statfileslevel invalidates all files in the same directory subtree relative to the stat file, not just the single activated file. B is incorrect because statfileslevel 2 isolates invalidation at the /content/mysite/<lang>/ level — one language's update does not cascade to sibling language directories. D is incorrect because a statfileslevel 0 configuration would cause full cache invalidation; statfileslevel 2 is specifically designed to prevent this.",
+      "sourceRefs": [
+        "web-proxy-infrastructure.caching.invalidation:1",
+        "web-proxy-infrastructure.caching.invalidation:3",
+        "web-proxy-infrastructure.dispatcher-config.farm-files:1"
+      ],
+      "references": [
+        "web-proxy-infrastructure.caching.invalidation",
+        "web-proxy-infrastructure.dispatcher-config.farm-files"
+      ]
+    },
+    {
+      "id": "q-043",
+      "topic": "Dispatcher Filter Configuration",
+      "difficulty": "medium",
+      "scenario": "During a security audit of an AEMaaCS publish Dispatcher configuration, a reviewer finds the following filter rule as the only allow rule for content paths: /0020 { /type \"allow\" /url \"/content/app/*\" }. The company's web application uses Sling selectors heavily (e.g., /content/app/page.model.json) and also uses URL suffixes for pagination. The security team reports that the current filter configuration is a potential DoS vector.",
+      "question": "What is the most secure way to address the security concern while maintaining application functionality?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Add a deny rule for known dangerous selectors like .infinity.json after the allow rule to block specific attack vectors.",
+          "isCorrect": false
+        },
+        {
+          "label": "B",
+          "text": "Replace the broad allow rule with a precise rule that specifies allowed selectors and extensions explicitly, and add default-deny rules for all selectors and suffixes.",
+          "isCorrect": true
+        },
+        {
+          "label": "C",
+          "text": "Switch from /url to /glob matching since /glob provides tighter control over the entire request line.",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "Enable the WAF rules in cdn.yaml to block malicious selector patterns at the CDN layer instead of at the Dispatcher.",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "B is correct because the recommended approach per Adobe's Dispatcher Optimizer Tool (DOT) guidelines [3] is to add default-deny rules for all Sling selectors (/selectors \"*\" /type \"deny\") and all Sling suffixes (/suffix \"*\" /type \"deny\"), then explicitly allowlist only the selectors and suffixes the application needs (DOTRules:Disp-6 and Disp-7). This prevents attackers from crafting arbitrary selector/suffix combinations that bypass cache and overwhelm the publish tier. A is incorrect because a denylist of known dangerous patterns (blacklisting) will always be incomplete — new attack vectors are constantly discovered. The recommended approach is an allowlist. C is incorrect because /glob is deprecated since Dispatcher 4.2.0 [1] and provides coarser, less secure matching than the granular URL-component properties. Switching to /glob would make the configuration less secure, not more. D is incorrect because WAF rules at the CDN layer provide a complementary defense-in-depth layer, but the root cause — an overly permissive Dispatcher filter — must be fixed at the Dispatcher layer. Dispatcher is the first line of defense for the publish tier and should not rely solely on CDN-layer filtering.",
+      "sourceRefs": [
+        "web-proxy-infrastructure.dispatcher-config.filters:1",
+        "web-proxy-infrastructure.dispatcher-config.filters:2",
+        "web-proxy-infrastructure.dispatcher-config.filters:3"
+      ],
+      "references": [
+        "web-proxy-infrastructure.dispatcher-config.filters",
+        "web-proxy-infrastructure.dispatcher-config.farm-files"
+      ]
+    },
+    {
+      "id": "q-044",
+      "topic": "Dispatcher Cache Invalidation — Flush Agent Placement",
+      "difficulty": "medium",
+      "scenario": "A team is experiencing intermittent cache issues on their AEM 6.5 on-premise environment. After a content editor activates a page, users sometimes see the old cached version from the Dispatcher for several seconds and then occasionally see the old version get cached again permanently. The current setup has a Dispatcher Flush Agent configured on the Author instance. The Dispatcher cache is correctly invalidated, but re-fetches from the Publish tier occasionally return stale data.",
+      "question": "What is the root cause of this behavior, and what is the correct remediation?",
+      "options": [
+        {
+          "label": "A",
+          "text": "The /gracePeriod is set too low. Increase it to at least 30 seconds to give Publish time to receive and index the content.",
+          "isCorrect": false
+        },
+        {
+          "label": "B",
+          "text": "The Author-side Flush Agent creates a race condition where the Dispatcher cache is invalidated before replication to Publish completes. Move the Flush Agent to the Publish instance.",
+          "isCorrect": true
+        },
+        {
+          "label": "C",
+          "text": "The /statfileslevel is too low. Increasing it will ensure all related pages are invalidated, preventing the stale version from being re-served.",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "Set /serveStaleOnError \"1\" in the farm configuration so the Dispatcher serves the cached copy when Publish returns an error during re-validation.",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "B is correct because when a Flush Agent runs on Author, the invalidation request reaches the Dispatcher immediately after (or even before) replication to Publish has completed [2][3]. The Dispatcher then re-fetches the page from Publish, which may still be serving the old version, and permanently caches that stale version. Moving the Flush Agent to the Publish instance ensures the flush only fires after the new content is fully available on Publish — this is Adobe's recommended pattern [2]. A is incorrect because /gracePeriod controls how long an already-stale file can continue to be served during burst activations. It does not affect the replication-flush timing window and increasing it would make the problem worse, not better. C is incorrect because the issue is not about which pages are invalidated, but about a timing race where the Dispatcher fetches from a not-yet-updated Publish instance. statfileslevel tuning addresses invalidation scope, not sequencing. D is incorrect because /serveStaleOnError is designed for origin unavailability (5xx errors), not for the race condition where the origin returns a successful but stale response. It would not prevent the stale content from being permanently re-cached.",
+      "sourceRefs": [
+        "web-proxy-infrastructure.caching.invalidation:2",
+        "web-proxy-infrastructure.caching.invalidation:3"
+      ],
+      "references": [
+        "web-proxy-infrastructure.caching.invalidation",
+        "web-proxy-infrastructure.dispatcher-config.farm-files"
+      ]
+    },
+    {
+      "id": "q-045",
+      "topic": "AEMaaCS Immutable Dispatcher Configuration",
+      "difficulty": "medium",
+      "scenario": "A DevOps engineer on an AEMaaCS project needs to customize the default cache rules for a new microsite. After reviewing the directory structure, they notice `conf.dispatcher.d/cache/default_rules.any` and `conf.dispatcher.d/cache/rules.any` both exist. They modify `default_rules.any` to add the new caching rules and push to Cloud Manager. The pipeline fails at the Build Images step.",
+      "question": "Why did the pipeline fail, and what is the correct approach?",
+      "options": [
+        {
+          "label": "A",
+          "text": "The farm file must be updated to reference `default_rules.any` explicitly before `rules.any` using a $include directive. The include order was missing.",
+          "isCorrect": false
+        },
+        {
+          "label": "B",
+          "text": "`default_rules.any` is an immutable file. Phase 3 of Cloud Manager's validation detects the modification and fails the build. Customizations must be made in `rules.any`, the mutable counterpart.",
+          "isCorrect": true
+        },
+        {
+          "label": "C",
+          "text": "AEMaaCS does not support custom cache rules. Cache behavior must be controlled through Cache-Control headers from AEM Publish instead of Dispatcher configuration.",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "The project is using legacy mode. Migrate to flexible mode by adding `opt-in/USE_SOURCES_DIRECTLY`, which will allow modifications to `default_rules.any`.",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "B is correct because `default_rules.any` is one of the immutable (Adobe-managed) files in the Dispatcher configuration [1][3]. Cloud Manager's Build Images step runs a three-phase validation; Phase 3 is an immutability check that detects any modifications to these files and fails the pipeline. The engineer should place custom cache rules in `rules.any` (the mutable counterpart) and ensure the farm file includes both files in the correct order: defaults first, then overrides. A is incorrect because the question describes a build failure, which is a Phase 3 immutability check failure, not a missing include directive. The $include order is a valid concern but not the root cause here. C is incorrect because Dispatcher absolutely supports custom cache rules via the mutable `rules.any` file. AEMaaCS does not remove caching flexibility — it enforces it through the mutable/immutable file boundary. D is incorrect because the mutable/immutable distinction exists in both flexible mode and legacy mode. Migrating to flexible mode does not make immutable files editable — it only removes file count and size restrictions for mutable files. Modifying `default_rules.any` will still fail Phase 3 validation in flexible mode.",
+      "sourceRefs": [
+        "web-proxy-infrastructure.aemaacs-dispatcher.immutable-config:1",
+        "web-proxy-infrastructure.aemaacs-dispatcher.immutable-config:3",
+        "web-proxy-infrastructure.aemaacs-dispatcher.immutable-config:4"
+      ],
+      "references": [
+        "web-proxy-infrastructure.aemaacs-dispatcher.immutable-config",
+        "web-proxy-infrastructure.aemaacs-dispatcher.local-validation"
+      ]
+    },
+    {
+      "id": "q-046",
+      "topic": "Cache-Control vs Surrogate-Control Headers",
+      "difficulty": "medium",
+      "scenario": "An AEMaaCS team wants HTML pages to be cached at the Adobe-managed CDN for 12 hours but only cached in browsers for 5 minutes. They configure a vhost LocationMatch directive that sets `Cache-Control: max-age=43200` and also sets `Surrogate-Control: max-age=300`. After deploying, they observe browsers are caching pages for 12 hours and the CDN is only caching pages for 5 minutes — the opposite of their intention.",
+      "question": "What is the correct configuration to achieve a 12-hour CDN TTL and a 5-minute browser TTL?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Set `Cache-Control: max-age=300` and `Surrogate-Control: max-age=43200`. The CDN uses Surrogate-Control when present, leaving Cache-Control for browsers.",
+          "isCorrect": true
+        },
+        {
+          "label": "B",
+          "text": "Set `Cache-Control: max-age=300, s-maxage=43200`. The s-maxage directive overrides max-age for shared caches (CDNs) while browsers use max-age.",
+          "isCorrect": false
+        },
+        {
+          "label": "C",
+          "text": "Set `Cache-Control: max-age=43200` only. The CDN will honor the max-age and browsers will be told to revalidate every 5 minutes via the Age header.",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "Remove Surrogate-Control and set `Cache-Control: max-age=300` with `Vary: Surrogate-Capability` to differentiate CDN and browser caching.",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "A is correct because when both `Cache-Control` and `Surrogate-Control` are present, the Adobe-managed CDN (Fastly) prioritizes `Surrogate-Control` for its own TTL and strips it before passing the response to the browser [1][2]. This means the browser only sees `Cache-Control: max-age=300` (5 minutes) while the CDN uses `Surrogate-Control: max-age=43200` (12 hours). The team had the values swapped — they set `Cache-Control: max-age=43200` (which browsers use) and `Surrogate-Control: max-age=300` (which the CDN uses), producing the opposite of the desired behavior. B is incorrect because while `s-maxage` is a valid standard mechanism to set CDN-only TTL, when `Surrogate-Control` is also present, the Adobe CDN prefers `Surrogate-Control` over `s-maxage` [1][3]. Since the scenario is AEMaaCS with Adobe's managed CDN, `Surrogate-Control` is the recommended approach. Using only `s-maxage` would work in this context if Surrogate-Control were absent, but the explanation of browser vs CDN header behavior is what makes A the canonical answer. C is incorrect because there is no mechanism by which the `Age` header instructs browsers to revalidate on a shorter cycle than `max-age`. `Age` indicates how long the cached response has already been held — it does not set a browser-side revalidation interval. D is incorrect because `Vary: Surrogate-Capability` is an ESI-related header used in Varnish/Fastly ESI setups, not a mechanism for separating browser and CDN TTLs.",
+      "sourceRefs": [
+        "web-proxy-infrastructure.caching.ttl-configuration:1",
+        "web-proxy-infrastructure.caching.ttl-configuration:2"
+      ],
+      "references": [
+        "web-proxy-infrastructure.caching.ttl-configuration",
+        "monitoring-quality.scaling.cdn-configuration"
+      ]
+    },
+    {
+      "id": "q-047",
+      "topic": "Dispatcher Local Validation and Immutable Files — Cross-Domain",
+      "difficulty": "hard",
+      "scenario": "An AEMaaCS DevOps engineer runs `./bin/validate.sh ./src` locally after making Dispatcher changes. All three phases pass. They commit and push to Cloud Manager. The Full-Stack Pipeline fails at the Build Images step with error: 'Immutability check failed: default_filters.any has been modified.' The engineer is confused because Phase 3 passed locally. Upon investigation, they find their local Dispatcher SDK version is 2021.1.3470, while Cloud Manager is using SDK version 2021.11.6126.",
+      "question": "What is the most likely explanation for the Phase 3 discrepancy, and what is the correct remediation?",
+      "options": [
+        {
+          "label": "A",
+          "text": "The Cloud Manager build runs a stricter version of Phase 3 that cannot be replicated locally. Submit a support ticket to Adobe to relax the immutability check for this project.",
+          "isCorrect": false
+        },
+        {
+          "label": "B",
+          "text": "The local SDK has an older baseline for `default_filters.any`. Phase 3 passed locally because the local checksum matched the old baseline. Cloud Manager uses the newer SDK baseline and detects the divergence. Run `bin/update_maven.sh` to sync local immutable files and checksums, review the changes, then recommit.",
+          "isCorrect": true
+        },
+        {
+          "label": "C",
+          "text": "The engineer should add `opt-in/USE_SOURCES_DIRECTLY` to activate flexible mode, which removes the Phase 3 immutability check from both local and Cloud Manager validation.",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "The engineer should copy `default_filters.any` from the Cloud Manager-downloaded SDK version into the project to replace the locally modified copy, bypassing the checksum mismatch.",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "B is correct. The root cause is a version mismatch between the local Dispatcher SDK and the one Cloud Manager uses [4][5]. The local `pom.xml` contains checksums corresponding to the older SDK baseline (2021.1.3470), so `validate.sh` compares the current `default_filters.any` against the old expected checksum — and it passes. Cloud Manager uses the newer SDK baseline (2021.11.6126) in which `default_filters.any` has been updated with new content; the engineer's copy no longer matches this newer expected checksum, so Phase 3 fails. The correct fix is `bin/update_maven.sh src/dispatcher` [4][5], which refreshes the local immutable files to the current SDK baseline and updates `pom.xml` checksums, then a careful review to ensure custom filter rules in `filters.any` still complement the updated defaults. A is incorrect because Phase 3 is deliberately designed to be identical between local and Cloud Manager validation — the SDK download replicates the exact Cloud Manager environment. A support ticket to relax immutability checks would be denied; the check is a security and correctness requirement. C is incorrect because flexible mode does not remove the Phase 3 immutability check. Flexible mode only removes file-count and file-size restrictions for mutable customizable files. Immutable files remain immutable in both modes [2][4]. D is incorrect because manually copying the file would create a new version mismatch — the copied file would match Cloud Manager's baseline content, but the `pom.xml` checksums in the project still expect the older version, so the build would still fail on checksum verification. The correct tool is `update_maven.sh`, which handles both the file sync and the `pom.xml` checksum update atomically.",
+      "sourceRefs": [
+        "web-proxy-infrastructure.aemaacs-dispatcher.local-validation:1",
+        "web-proxy-infrastructure.aemaacs-dispatcher.local-validation:2",
+        "web-proxy-infrastructure.aemaacs-dispatcher.immutable-config:4",
+        "web-proxy-infrastructure.aemaacs-dispatcher.immutable-config:5"
+      ],
+      "references": [
+        "web-proxy-infrastructure.aemaacs-dispatcher.local-validation",
+        "web-proxy-infrastructure.aemaacs-dispatcher.immutable-config",
+        "cloud-manager.pipelines.full-stack-pipeline"
+      ]
+    },
+    {
+      "id": "q-048",
+      "topic": "Multi-Layer Cache Invalidation Strategy",
+      "difficulty": "hard",
+      "scenario": "An AEMaaCS team runs a high-traffic news website. Their Dispatcher uses `enableTTL \"1\"` with Dispatcher version 4.2.9, and all HTML pages are served with `Cache-Control: max-age=3600`. The team also has a Dispatcher Flush Agent on the Publish instance. After deploying a critical breaking-news page update, editors observe that: (1) the newly activated page shows fresh content, (2) but 15 related sidebar pages that reference the updated page's title still show the old title. The editors triggered a manual flush of the updated page only, using `CQ-Action-Scope: ResourceOnly` in the flush request.",
+      "question": "What combination of factors explains why the sidebar pages show stale data, and what change should the team make to their invalidation architecture?",
+      "options": [
+        {
+          "label": "A",
+          "text": "The ResourceOnly flush bypassed .stat file updates, leaving the sidebar pages' cached files unaffected. Remove the ResourceOnly header so the flush touches the .stat file hierarchy, invalidating related pages.",
+          "isCorrect": false
+        },
+        {
+          "label": "B",
+          "text": "Dispatcher version 4.2.9 with enableTTL causes the Dispatcher to ignore .stat-based flush invalidation entirely for TTL-governed files. Since the TTL hasn't expired and .stat invalidation is bypassed, sibling pages remain stale until their 1-hour TTL expires. Upgrade Dispatcher to 4.3.5+ where both TTL and stat-file invalidation are respected.",
+          "isCorrect": true
+        },
+        {
+          "label": "C",
+          "text": "The Publish-side Flush Agent fires before CDN purge completes. The CDN is still serving cached sidebar pages from its edge. Add a CDN hard purge via the PURGE API after each flush to clear the CDN cache.",
+          "isCorrect": false
+        },
+        {
+          "label": "D",
+          "text": "The /statfileslevel is set too high, which prevents the .stat file from being touched at the correct directory depth for the sidebar pages. Lower statfileslevel to 0 to ensure all content is invalidated.",
+          "isCorrect": false
+        }
+      ],
+      "rationale": "B is correct and requires understanding the interaction between two concepts. First, Dispatcher versions before 4.3.5 with `enableTTL` enabled cause the Dispatcher to use ONLY TTL expiry for cache validation — it completely ignores `.stat`-file-based flush invalidation for TTL-governed files [4][5]. This means the Publish-side Flush Agent sends the invalidation signal, the .stat files are touched, but the Dispatcher ignores them because TTL governs the files and the TTL (1 hour) has not expired. Second, the `CQ-Action-Scope: ResourceOnly` flush correctly targeted only the activated page — it would not have invalidated the sidebar pages even if stat-file invalidation were working, since ResourceOnly explicitly bypasses .stat file updates [1][2]. Both factors compound: even if the team removes ResourceOnly (addressing the second factor), the 4.2.9 + enableTTL combination means stat-file invalidation is still ignored. The complete fix is upgrading to Dispatcher 4.3.5+, which respects both mechanisms. A is incorrect in its diagnosis of the root cause. While it is true that ResourceOnly flushes bypass .stat file updates and thus sidebar pages would not be invalidated by the flush, this is only half the story. The deeper issue is the Dispatcher 4.2.9 + enableTTL combination, which means even a full (non-ResourceOnly) flush would not invalidate the TTL-governed sidebar pages. Removing ResourceOnly alone would not solve the problem on Dispatcher 4.2.9. C is incorrect because the scenario describes a Dispatcher-layer caching problem specifically — the editors observe stale sidebar content even on subsequent requests, which indicates the Dispatcher is serving from its own cache, not the CDN. CDN layer issues would also manifest as stale content, but the root cause here is the Dispatcher 4.2.9 + enableTTL behavior. D is incorrect because lowering statfileslevel to 0 would cause the entire cache to be invalidated on every activation (a serious performance regression on a high-traffic news site) and would not address the fundamental issue that Dispatcher 4.2.9 + enableTTL ignores stat-file invalidation entirely for TTL-governed files.",
+      "sourceRefs": [
+        "web-proxy-infrastructure.caching.invalidation:1",
+        "web-proxy-infrastructure.caching.invalidation:2",
+        "web-proxy-infrastructure.caching.ttl-configuration:4",
+        "web-proxy-infrastructure.caching.invalidation:4"
+      ],
+      "references": [
+        "web-proxy-infrastructure.caching.invalidation",
+        "web-proxy-infrastructure.caching.ttl-configuration",
+        "monitoring-quality.scaling.cdn-configuration"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,649 @@
+{
+  "examTitle": "AEM DevOps Engineer Expert Certification (AD0-E124)",
+  "sourceDocument": "/Users/jackjin/dev/jack-dev-server-configs/local/study-harness-v2026-03-v1/input/aem-devops-expert/manifest.yaml",
+  "generatedAt": "2026-03-28T00:00:00.000Z",
+  "totalLeafTopics": 44,
+  "topics": [
+    {
+      "id": "aem-configuration",
+      "title": "Configure Adobe Experience Manager",
+      "description": "Fundamental AEM settings configuration, troubleshooting AEM issues, OSGi configuration. Exam weight: 18%.",
+      "depth": 0,
+      "estimatedComplexity": "high",
+      "subtopics": [
+        {
+          "id": "aem-configuration.osgi",
+          "title": "OSGi Configuration Management",
+          "description": "Understanding OSGi framework configuration in AEM, including factory configs, run modes, and the Felix console.",
+          "depth": 1,
+          "estimatedComplexity": "high",
+          "subtopics": [
+            {
+              "id": "aem-configuration.osgi.factory-configs",
+              "title": "OSGi Factory Configurations",
+              "description": "Creating and managing factory configurations for multi-instance services. Includes naming conventions, PID patterns, and configuration targeting.",
+              "depth": 2,
+              "estimatedComplexity": "medium",
+              "subtopics": []
+            },
+            {
+              "id": "aem-configuration.osgi.run-modes",
+              "title": "Run Modes and Configuration Resolution",
+              "description": "Configuring run modes (author, publish, dev, stage, prod) and understanding configuration resolution order. Includes install folder hierarchy.",
+              "depth": 2,
+              "estimatedComplexity": "high",
+              "subtopics": []
+            },
+            {
+              "id": "aem-configuration.osgi.config-admin",
+              "title": "Configuration Admin Service",
+              "description": "Using the OSGi Configuration Admin service for programmatic configuration management. Includes ConfigurationAdmin API and ManagedService patterns.",
+              "depth": 2,
+              "estimatedComplexity": "medium",
+              "subtopics": []
+            }
+          ]
+        },
+        {
+          "id": "aem-configuration.sling",
+          "title": "Sling Framework Configuration",
+          "description": "Configuring Sling Models, resource resolution, and servlet mapping in AEM.",
+          "depth": 1,
+          "estimatedComplexity": "high",
+          "subtopics": [
+            {
+              "id": "aem-configuration.sling.models",
+              "title": "Sling Models Configuration",
+              "description": "Implementing and configuring Sling Models for component backing. Includes @Model annotations, injectors, and adaptables.",
+              "depth": 2,
+              "estimatedComplexity": "high",
+              "subtopics": []
+            },
+            {
+              "id": "aem-configuration.sling.resource-resolver",
+              "title": "Resource Resolver Configuration",
+              "description": "Configuring resource resolver mappings, vanity URLs, and resource resolution order. Includes sling:mapping and resolver factory settings.",
+              "depth": 2,
+              "estimatedComplexity": "medium",
+              "subtopics": []
+            }
+          ]
+        },
+        {
+          "id": "aem-configuration.troubleshooting",
+          "title": "AEM Troubleshooting",
+          "description": "Diagnosing and resolving common AEM configuration and runtime issues.",
+          "depth": 1,
+          "estimatedComplexity": "high",
+          "subtopics": [
+            {
+              "id": "aem-configuration.troubleshooting.logging",
+              "title": "Logging Configuration and Analysis",
+              "description": "Configuring Sling logging levels, log rotation, and analyzing error.log, request.log, and access.log for troubleshooting.",
+              "depth": 2,
+              "estimatedComplexity": "medium",
+              "subtopics": []
+            },
+            {
+              "id": "aem-configuration.troubleshooting.common-issues",
+              "title": "Common AEM Issues and Resolutions",
+              "description": "Identifying and resolving common issues: repository inconsistencies, bundle failures, service unavailability, and memory issues.",
+              "depth": 2,
+              "estimatedComplexity": "high",
+              "subtopics": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cloud-manager-operations",
+      "title": "Operate Cloud Manager and Cloud Manager API",
+      "description": "Cloud Manager environment settings, program and environment provisioning, AEMaaCS migration strategies, Adobe I/O integration. Exam weight: 20%.",
+      "depth": 0,
+      "estimatedComplexity": "high",
+      "subtopics": [
+        {
+          "id": "cloud-manager-operations.environments",
+          "title": "Cloud Manager Environment Management",
+          "description": "Managing environments through Cloud Manager UI, including creation, configuration, and lifecycle management.",
+          "depth": 1,
+          "estimatedComplexity": "medium",
+          "subtopics": [
+            {
+              "id": "cloud-manager-operations.environments.provisioning",
+              "title": "Environment Provisioning",
+              "description": "Creating and provisioning dev, stage, and production environments. Includes environment types, regions, and resource allocation.",
+              "depth": 2,
+              "estimatedComplexity": "medium",
+              "subtopics": []
+            },
+            {
+              "id": "cloud-manager-operations.environments.variables",
+              "title": "Environment Variables Configuration",
+              "description": "Managing environment-specific variables and secrets in Cloud Manager. Includes OSGi env vars, Cloud Manager variables, and secret handling.",
+              "depth": 2,
+              "estimatedComplexity": "medium",
+              "subtopics": []
+            },
+            {
+              "id": "cloud-manager-operations.environments.networking",
+              "title": "Advanced Networking Configuration",
+              "description": "Configuring VPN, dedicated egress IP, and flexible port egress for AEM as a Cloud Service environments.",
+              "depth": 2,
+              "estimatedComplexity": "high",
+              "subtopics": []
+            }
+          ]
+        },
+        {
+          "id": "cloud-manager-operations.programs",
+          "title": "Program Management",
+          "description": "Creating and managing Cloud Manager programs, including sandbox and production programs.",
+          "depth": 1,
+          "estimatedComplexity": "medium",
+          "subtopics": [
+            {
+              "id": "cloud-manager-operations.programs.types",
+              "title": "Program Types and Lifecycle",
+              "description": "Understanding sandbox vs production programs, program creation, hibernation policies, and deletion procedures.",
+              "depth": 2,
+              "estimatedComplexity": "low",
+              "subtopics": []
+            },
+            {
+              "id": "cloud-manager-operations.programs.solutions",
+              "title": "Solution Configuration",
+              "description": "Enabling AEM Sites, Assets, Forms, and Screens solutions within programs. Includes add-on provisioning.",
+              "depth": 2,
+              "estimatedComplexity": "low",
+              "subtopics": []
+            }
+          ]
+        },
+        {
+          "id": "cloud-manager-operations.api",
+          "title": "Cloud Manager API and Adobe I/O",
+          "description": "Programmatic access to Cloud Manager via REST APIs and Adobe I/O integration.",
+          "depth": 1,
+          "estimatedComplexity": "high",
+          "subtopics": [
+            {
+              "id": "cloud-manager-operations.api.authentication",
+              "title": "Adobe I/O Authentication Setup",
+              "description": "Configuring Adobe I/O projects for Cloud Manager API access. Includes JWT authentication, service accounts, and OAuth setup.",
+              "depth": 2,
+              "estimatedComplexity": "high",
+              "subtopics": []
+            },
+            {
+              "id": "cloud-manager-operations.api.endpoints",
+              "title": "Cloud Manager API Endpoints",
+              "description": "Using Cloud Manager REST APIs for pipelines, environments, and deployments. Includes common API operations and response handling.",
+              "depth": 2,
+              "estimatedComplexity": "medium",
+              "subtopics": []
+            }
+          ]
+        },
+        {
+          "id": "cloud-manager-operations.migration",
+          "title": "AEM as a Cloud Service Migration",
+          "description": "Strategies and tools for migrating from AEM 6.x to AEM as a Cloud Service.",
+          "depth": 1,
+          "estimatedComplexity": "high",
+          "subtopics": [
+            {
+              "id": "cloud-manager-operations.migration.assessment",
+              "title": "Migration Assessment Tools",
+              "description": "Using Best Practices Analyzer, Cloud Acceleration Manager, and Repository Modernizer for migration readiness assessment.",
+              "depth": 2,
+              "estimatedComplexity": "medium",
+              "subtopics": []
+            },
+            {
+              "id": "cloud-manager-operations.migration.content-transfer",
+              "title": "Content Transfer Tool",
+              "description": "Planning and executing content migration using Content Transfer Tool. Includes extraction, ingestion, and validation phases.",
+              "depth": 2,
+              "estimatedComplexity": "high",
+              "subtopics": []
+            },
+            {
+              "id": "cloud-manager-operations.migration.code-refactoring",
+              "title": "Code Refactoring for AEMaaCS",
+              "description": "Refactoring custom code for cloud compatibility. Includes removing deprecated APIs, mutable vs immutable content, and index management.",
+              "depth": 2,
+              "estimatedComplexity": "high",
+              "subtopics": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "web-proxy-infrastructure",
+      "title": "Configure the Web Proxy Infrastructure",
+      "description": "Dispatcher configuration management, caching troubleshooting, TTL and invalidation strategies. Exam weight: 12%.",
+      "depth": 0,
+      "estimatedComplexity": "high",
+      "subtopics": [
+        {
+          "id": "web-proxy-infrastructure.dispatcher-config",
+          "title": "Dispatcher Configuration",
+          "description": "Configuring Dispatcher files including dispatcher.any, farm files, filters, and rules.",
+          "depth": 1,
+          "estimatedComplexity": "high",
+          "subtopics": [
+            {
+              "id": "web-proxy-infrastructure.dispatcher-config.farm-files",
+              "title": "Dispatcher Farm Configuration",
+              "description": "Configuring farm files including renders, filters, cache rules, and virtual hosts. Includes multi-farm setups.",
+              "depth": 2,
+              "estimatedComplexity": "high",
+              "subtopics": []
+            },
+            {
+              "id": "web-proxy-infrastructure.dispatcher-config.filters",
+              "title": "Dispatcher Filters and Rules",
+              "description": "Creating filter rules for request blocking and allowing. Includes glob patterns, deny/allow precedence, and security filters.",
+              "depth": 2,
+              "estimatedComplexity": "medium",
+              "subtopics": []
+            },
+            {
+              "id": "web-proxy-infrastructure.dispatcher-config.rewrite-rules",
+              "title": "URL Rewrite Rules",
+              "description": "Configuring Apache mod_rewrite rules for URL manipulation. Includes rewrites for vanity URLs, canonicalization, and redirects.",
+              "depth": 2,
+              "estimatedComplexity": "medium",
+              "subtopics": []
+            }
+          ]
+        },
+        {
+          "id": "web-proxy-infrastructure.caching",
+          "title": "Dispatcher Caching",
+          "description": "Understanding and optimizing Dispatcher cache behavior for performance.",
+          "depth": 1,
+          "estimatedComplexity": "high",
+          "subtopics": [
+            {
+              "id": "web-proxy-infrastructure.caching.ttl-configuration",
+              "title": "TTL and Cache Headers",
+              "description": "Configuring cache TTL via Dispatcher, AEM, and CDN. Includes Cache-Control headers, Surrogate-Control, and stale-while-revalidate.",
+              "depth": 2,
+              "estimatedComplexity": "medium",
+              "subtopics": []
+            },
+            {
+              "id": "web-proxy-infrastructure.caching.invalidation",
+              "title": "Cache Invalidation Strategies",
+              "description": "Implementing cache invalidation via flush agents, stat files, and auto-invalidation. Includes graceful invalidation patterns.",
+              "depth": 2,
+              "estimatedComplexity": "high",
+              "subtopics": []
+            },
+            {
+              "id": "web-proxy-infrastructure.caching.troubleshooting",
+              "title": "Cache Troubleshooting",
+              "description": "Diagnosing cache misses, debugging Dispatcher cache issues, and analyzing X-Dispatcher headers.",
+              "depth": 2,
+              "estimatedComplexity": "medium",
+              "subtopics": []
+            }
+          ]
+        },
+        {
+          "id": "web-proxy-infrastructure.aemaacs-dispatcher",
+          "title": "Dispatcher in AEM as a Cloud Service",
+          "description": "Cloud-specific Dispatcher configuration and deployment patterns.",
+          "depth": 1,
+          "estimatedComplexity": "medium",
+          "subtopics": [
+            {
+              "id": "web-proxy-infrastructure.aemaacs-dispatcher.immutable-config",
+              "title": "Immutable Dispatcher Configuration",
+              "description": "Understanding immutable vs mutable Dispatcher files in AEMaaCS. Includes configuration structure and deployment via Cloud Manager.",
+              "depth": 2,
+              "estimatedComplexity": "medium",
+              "subtopics": []
+            },
+            {
+              "id": "web-proxy-infrastructure.aemaacs-dispatcher.local-validation",
+              "title": "Local Dispatcher Validation",
+              "description": "Using Dispatcher SDK and validator tools for local testing before deployment. Includes Docker-based validation.",
+              "depth": 2,
+              "estimatedComplexity": "medium",
+              "subtopics": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "build-deployments",
+      "title": "Build and Deployments",
+      "description": "Cloud Manager deployment management, pipeline analysis, content package management, Maven project configuration. Exam weight: 28%.",
+      "depth": 0,
+      "estimatedComplexity": "high",
+      "subtopics": [
+        {
+          "id": "build-deployments.pipelines",
+          "title": "Cloud Manager Pipelines",
+          "description": "Configuring and managing CI/CD pipelines in Cloud Manager.",
+          "depth": 1,
+          "estimatedComplexity": "high",
+          "subtopics": [
+            {
+              "id": "build-deployments.pipelines.types",
+              "title": "Pipeline Types and Configuration",
+              "description": "Understanding production, non-production, and config-only pipelines. Includes pipeline triggers, scheduling, and branch configuration.",
+              "depth": 2,
+              "estimatedComplexity": "medium",
+              "subtopics": []
+            },
+            {
+              "id": "build-deployments.pipelines.code-quality",
+              "title": "Code Quality Gates",
+              "description": "Understanding SonarQube code quality checks, custom quality rules, and quality gate thresholds. Includes security scanning.",
+              "depth": 2,
+              "estimatedComplexity": "medium",
+              "subtopics": []
+            },
+            {
+              "id": "build-deployments.pipelines.build-phase",
+              "title": "Build Phase Analysis",
+              "description": "Analyzing build phase logs, troubleshooting Maven build failures, and optimizing build times.",
+              "depth": 2,
+              "estimatedComplexity": "high",
+              "subtopics": []
+            },
+            {
+              "id": "build-deployments.pipelines.deploy-phase",
+              "title": "Deployment Phase and Strategies",
+              "description": "Understanding deployment phases, rolling deployments, and deployment failure analysis. Includes rollback procedures.",
+              "depth": 2,
+              "estimatedComplexity": "high",
+              "subtopics": []
+            }
+          ]
+        },
+        {
+          "id": "build-deployments.content-packages",
+          "title": "Content Package Management",
+          "description": "Creating, managing, and deploying content packages across AEM instances.",
+          "depth": 1,
+          "estimatedComplexity": "medium",
+          "subtopics": [
+            {
+              "id": "build-deployments.content-packages.structure",
+              "title": "Package Structure and Filters",
+              "description": "Defining package filters, understanding package structure, and managing filter.xml for content packaging.",
+              "depth": 2,
+              "estimatedComplexity": "medium",
+              "subtopics": []
+            },
+            {
+              "id": "build-deployments.content-packages.mutable-immutable",
+              "title": "Mutable vs Immutable Content",
+              "description": "Understanding content mutability in AEMaaCS, separating mutable and immutable content, and repoinit scripts.",
+              "depth": 2,
+              "estimatedComplexity": "high",
+              "subtopics": []
+            },
+            {
+              "id": "build-deployments.content-packages.dependencies",
+              "title": "Package Dependencies and Ordering",
+              "description": "Managing package dependencies, install order, and package embedding strategies.",
+              "depth": 2,
+              "estimatedComplexity": "medium",
+              "subtopics": []
+            }
+          ]
+        },
+        {
+          "id": "build-deployments.maven",
+          "title": "Maven Project Configuration",
+          "description": "Configuring Maven projects for AEM development and Cloud Manager pipelines.",
+          "depth": 1,
+          "estimatedComplexity": "high",
+          "subtopics": [
+            {
+              "id": "build-deployments.maven.archetype",
+              "title": "AEM Project Archetype",
+              "description": "Using the AEM Project Archetype for project setup. Includes archetype versions, configuration options, and module structure.",
+              "depth": 2,
+              "estimatedComplexity": "medium",
+              "subtopics": []
+            },
+            {
+              "id": "build-deployments.maven.profiles",
+              "title": "Maven Profiles for Environments",
+              "description": "Configuring Maven profiles for different environments (local, dev, stage, prod). Includes profile activation and variable substitution.",
+              "depth": 2,
+              "estimatedComplexity": "medium",
+              "subtopics": []
+            },
+            {
+              "id": "build-deployments.maven.plugins",
+              "title": "AEM Maven Plugins",
+              "description": "Using filevault-package-maven-plugin, content-package-maven-plugin, and frontend-maven-plugin. Includes plugin configuration.",
+              "depth": 2,
+              "estimatedComplexity": "high",
+              "subtopics": []
+            },
+            {
+              "id": "build-deployments.maven.cloud-manager-requirements",
+              "title": "Cloud Manager Maven Requirements",
+              "description": "Ensuring Maven projects meet Cloud Manager build requirements. Includes required pom.xml settings, Java versions, and Node.js configuration.",
+              "depth": 2,
+              "estimatedComplexity": "medium",
+              "subtopics": []
+            }
+          ]
+        },
+        {
+          "id": "build-deployments.frontend",
+          "title": "Frontend Pipeline",
+          "description": "Managing frontend assets and the dedicated frontend pipeline.",
+          "depth": 1,
+          "estimatedComplexity": "medium",
+          "subtopics": [
+            {
+              "id": "build-deployments.frontend.module-structure",
+              "title": "Frontend Module Structure",
+              "description": "Organizing the ui.frontend module, webpack configuration, and clientlib generation.",
+              "depth": 2,
+              "estimatedComplexity": "medium",
+              "subtopics": []
+            },
+            {
+              "id": "build-deployments.frontend.pipeline-config",
+              "title": "Frontend Pipeline Configuration",
+              "description": "Configuring and running the dedicated frontend pipeline for rapid CSS/JS deployments without full-stack builds.",
+              "depth": 2,
+              "estimatedComplexity": "medium",
+              "subtopics": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "monitoring-quality",
+      "title": "Monitor and Report on Quality Metrics",
+      "description": "Performance metrics collection, New Relic integration, log analysis, health checks, infrastructure scaling. Exam weight: 14%.",
+      "depth": 0,
+      "estimatedComplexity": "high",
+      "subtopics": [
+        {
+          "id": "monitoring-quality.performance-monitoring",
+          "title": "Performance Monitoring",
+          "description": "Collecting and analyzing performance metrics in AEM environments.",
+          "depth": 1,
+          "estimatedComplexity": "high",
+          "subtopics": [
+            {
+              "id": "monitoring-quality.performance-monitoring.new-relic",
+              "title": "New Relic Integration",
+              "description": "Configuring New Relic APM for AEM as a Cloud Service. Includes dashboards, alerting, and transaction tracing.",
+              "depth": 2,
+              "estimatedComplexity": "high",
+              "subtopics": []
+            },
+            {
+              "id": "monitoring-quality.performance-monitoring.health-checks",
+              "title": "AEM Health Checks",
+              "description": "Using Sling Health Checks for system monitoring. Includes OOTB health checks, custom health checks, and health check tags.",
+              "depth": 2,
+              "estimatedComplexity": "medium",
+              "subtopics": []
+            },
+            {
+              "id": "monitoring-quality.performance-monitoring.jmx-monitoring",
+              "title": "JMX and MBean Monitoring",
+              "description": "Accessing JMX MBeans for runtime monitoring. Includes memory usage, thread pools, and repository statistics.",
+              "depth": 2,
+              "estimatedComplexity": "medium",
+              "subtopics": []
+            }
+          ]
+        },
+        {
+          "id": "monitoring-quality.log-analysis",
+          "title": "Log Analysis and Management",
+          "description": "Accessing, analyzing, and managing logs in AEM environments.",
+          "depth": 1,
+          "estimatedComplexity": "medium",
+          "subtopics": [
+            {
+              "id": "monitoring-quality.log-analysis.log-types",
+              "title": "AEM Log Types and Locations",
+              "description": "Understanding error.log, request.log, access.log, and audit.log. Includes log file locations in AEMaaCS.",
+              "depth": 2,
+              "estimatedComplexity": "low",
+              "subtopics": []
+            },
+            {
+              "id": "monitoring-quality.log-analysis.cloud-manager-logs",
+              "title": "Accessing Logs via Cloud Manager",
+              "description": "Downloading and streaming logs through Cloud Manager UI and API. Includes log forwarding to external systems.",
+              "depth": 2,
+              "estimatedComplexity": "medium",
+              "subtopics": []
+            },
+            {
+              "id": "monitoring-quality.log-analysis.splunk-integration",
+              "title": "Log Forwarding and Splunk Integration",
+              "description": "Configuring log forwarding to Splunk, Azure Log Analytics, or other SIEM tools from AEM as a Cloud Service.",
+              "depth": 2,
+              "estimatedComplexity": "medium",
+              "subtopics": []
+            }
+          ]
+        },
+        {
+          "id": "monitoring-quality.scaling",
+          "title": "Infrastructure Scaling",
+          "description": "Understanding and managing scaling strategies in AEM as a Cloud Service.",
+          "depth": 1,
+          "estimatedComplexity": "medium",
+          "subtopics": [
+            {
+              "id": "monitoring-quality.scaling.autoscaling",
+              "title": "Autoscaling Behavior",
+              "description": "Understanding AEMaaCS autoscaling triggers, scaling policies, and instance scaling for publish and author tiers.",
+              "depth": 2,
+              "estimatedComplexity": "medium",
+              "subtopics": []
+            },
+            {
+              "id": "monitoring-quality.scaling.cdn-configuration",
+              "title": "CDN and Load Balancing",
+              "description": "Configuring CDN (Fastly) settings, origin shields, and understanding load balancing in the AEMaaCS architecture.",
+              "depth": 2,
+              "estimatedComplexity": "medium",
+              "subtopics": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "admin-console",
+      "title": "Operate the Admin Console",
+      "description": "Support request submission, federated SSO configuration, AEM user and group sync with IMS, SAML, LDAP. Exam weight: 8%.",
+      "depth": 0,
+      "estimatedComplexity": "medium",
+      "subtopics": [
+        {
+          "id": "admin-console.support",
+          "title": "Admin Console Support Operations",
+          "description": "Using Adobe Admin Console for support and administrative tasks.",
+          "depth": 1,
+          "estimatedComplexity": "low",
+          "subtopics": [
+            {
+              "id": "admin-console.support.ticket-submission",
+              "title": "Support Ticket Submission",
+              "description": "Creating and managing support tickets through Adobe Admin Console. Includes severity levels, escalation, and case management.",
+              "depth": 2,
+              "estimatedComplexity": "low",
+              "subtopics": []
+            },
+            {
+              "id": "admin-console.support.system-status",
+              "title": "System Status and Notifications",
+              "description": "Monitoring Adobe system status, subscribing to notifications, and understanding maintenance windows.",
+              "depth": 2,
+              "estimatedComplexity": "low",
+              "subtopics": []
+            }
+          ]
+        },
+        {
+          "id": "admin-console.identity",
+          "title": "Identity and Access Management",
+          "description": "Configuring identity providers and user synchronization for AEM.",
+          "depth": 1,
+          "estimatedComplexity": "high",
+          "subtopics": [
+            {
+              "id": "admin-console.identity.ims-integration",
+              "title": "Adobe IMS Integration",
+              "description": "Understanding Adobe Identity Management System integration with AEM. Includes IMS authentication flow and user provisioning.",
+              "depth": 2,
+              "estimatedComplexity": "medium",
+              "subtopics": []
+            },
+            {
+              "id": "admin-console.identity.federated-sso",
+              "title": "Federated SSO Configuration",
+              "description": "Configuring federated identity with enterprise identity providers. Includes SAML 2.0 setup, certificate management, and attribute mapping.",
+              "depth": 2,
+              "estimatedComplexity": "high",
+              "subtopics": []
+            },
+            {
+              "id": "admin-console.identity.user-group-sync",
+              "title": "User and Group Synchronization",
+              "description": "Synchronizing users and groups between Admin Console and AEM. Includes product profiles, user groups, and permission mapping.",
+              "depth": 2,
+              "estimatedComplexity": "medium",
+              "subtopics": []
+            },
+            {
+              "id": "admin-console.identity.ldap-integration",
+              "title": "LDAP Integration (On-Premise)",
+              "description": "Configuring LDAP authentication for AEM on-premise deployments. Includes LDAP handler configuration and group sync. Note: Limited applicability in AEMaaCS.",
+              "depth": 2,
+              "estimatedComplexity": "medium",
+              "subtopics": []
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
