@@ -74,7 +74,10 @@ Evaluate the explanation against the research material and return the JSON gradi
   }
 
   const data = await response.json()
-  const rawText = data?.content?.[0]?.text || ''
+  let rawText = data?.content?.[0]?.text || ''
+
+  // Strip markdown code fences if present (Claude sometimes wraps JSON in ```json ... ```)
+  rawText = rawText.replace(/^```(?:json)?\s*\n?/i, '').replace(/\n?```\s*$/i, '').trim()
 
   let parsed
   try {
