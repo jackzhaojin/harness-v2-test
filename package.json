@@ -1,0 +1,7 @@
+{
+  "name": "harness-v2-test",
+  "type": "module",
+  "scripts": {
+    "test": "node --test"
+  }
+}

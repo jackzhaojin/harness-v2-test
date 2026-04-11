@@ -1,0 +1,17 @@
+{
+  "agentName": "spec-why",
+  "sessionId": "adopt/spec-why",
+  "timestamp": "2026-04-11T17:58:30.661Z",
+  "success": true,
+  "modelUsed": "claude-opus-4-5",
+  "artifacts": [],
+  "handoff": {
+    "agent": "spec-why",
+    "mode": "adopt",
+    "action": "generated",
+    "output": "SPEC/CONSTITUTION.md",
+    "principleCount": 4,
+    "vibeSource": "derived",
+    "handoffNotes": "Constitution established from prompt requirements. Codebase is empty/new, so principles derived from explicit smoke test constraints. Ready for WHAT agent."
+  }
+}

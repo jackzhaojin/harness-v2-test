@@ -1,0 +1,18 @@
+## Handoff
+
+```json
+{
+  "agent": "spec-when",
+  "mode": "adopt",
+  "action": "generated",
+  "output": "SPEC/TASKS.json",
+  "taskCount": 1,
+  "newTaskIds": ["1"],
+  "complexityBreakdown": {
+    "small": 1,
+    "medium": 0,
+    "large": 0
+  },
+  "handoffNotes": "1 small task covers all 3 user stories. Combined because: (1) only ~20 lines total across 3 files, (2) all stories are tightly coupled (test needs function, npm test needs package.json), (3) cannot test any component in isolation without the others. e2eRequired:false because this is a CLI/unit-test project, not a web UI — verification is via 'npm test' exit code 0. No Playwright/E2E infrastructure needed for this smoke test."
+}
+```
