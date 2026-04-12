@@ -1,4 +1,4 @@
 # Tasks
 
 - [x] Task 1: Build complete UI foundation with Playwright test infrastructure
-- [ ] Task 2: Implement full counter logic with keyboard shortcuts, visual state, and history log
+- [x] Task 2: Implement full counter logic with keyboard shortcuts, visual state, and history log
