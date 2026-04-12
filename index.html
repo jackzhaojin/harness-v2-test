@@ -384,6 +384,7 @@
             <input 
               type="checkbox" 
               ${todo.completed ? 'checked' : ''}
+              aria-checked="${todo.completed ? 'true' : 'false'}"
               aria-label="Mark ${escapeHtml(todo.text)} as ${todo.completed ? 'incomplete' : 'complete'}"
             >
             <span>${escapeHtml(todo.text)}</span>

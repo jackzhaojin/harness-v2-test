@@ -195,6 +195,32 @@ test.describe('Todo App - Core Functionality', () => {
     const list = page.locator('[aria-label="Todo items"]');
     await expect(list).toHaveAttribute('role', 'list');
   });
+
+  test('ARIA checked state updates when toggling todo', async ({ page }) => {
+    const todoText = 'ARIA test';
+    
+    // Add a todo
+    await page.fill('[aria-label="New todo text"]', todoText);
+    await page.press('[aria-label="New todo text"]', 'Enter');
+    
+    // Get checkbox
+    const checkbox = page.locator('input[type="checkbox"]').first();
+    
+    // Verify initial aria-checked state is false
+    await expect(checkbox).toHaveAttribute('aria-checked', 'false');
+    
+    // Click to complete
+    await checkbox.click();
+    
+    // Verify aria-checked is now true
+    await expect(checkbox).toHaveAttribute('aria-checked', 'true');
+    
+    // Click again to un-complete
+    await checkbox.click();
+    
+    // Verify aria-checked is false again
+    await expect(checkbox).toHaveAttribute('aria-checked', 'false');
+  });
 });
 
 test.describe('Todo App - Responsive Design', () => {
