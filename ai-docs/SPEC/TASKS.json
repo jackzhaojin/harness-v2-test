@@ -1,0 +1,103 @@
+{
+  "version": "1.0",
+  "generatedBy": "spec-when",
+  "generatedAt": "2026-04-11T20:26:46Z",
+  "tasks": [
+    {
+      "id": "1",
+      "title": "Create UI foundation and test infrastructure",
+      "description": "Build the complete HTML structure with embedded CSS, set up Playwright E2E testing framework, and implement the empty state display. This establishes the single-file architecture with semantic HTML, modern styling, and responsive design.",
+      "acceptanceCriteria": [
+        "index.html exists with proper HTML5 doctype and structure",
+        "Semantic HTML elements: header, main, form, ul, li",
+        "Input field with aria-label='New todo text' and placeholder",
+        "Add button with type='submit' and aria-label='Add todo'",
+        "Todo list container with role='list' and aria-label='Todo items'",
+        "Empty state message visible when no todos (e.g., 'No todos yet')",
+        "CSS uses custom properties for colors and spacing",
+        "Mobile-first responsive design with proper breakpoints",
+        "Clean, modern styling with generous whitespace",
+        "Visible focus indicators for keyboard navigation",
+        "Tests directory structure created: tests/e2e/",
+        "Playwright configuration file at tests/e2e/playwright.config.js",
+        "Initial E2E test file skeleton at tests/e2e/todo.spec.js"
+      ],
+      "dependencies": [],
+      "estimatedComplexity": "medium",
+      "e2eRequired": false,
+      "testingApproach": "Open index.html in browser, verify structure renders correctly, empty state visible. Run Playwright config verification.",
+      "status": "pending",
+      "subtasks": [],
+      "parentId": null
+    },
+    {
+      "id": "2",
+      "title": "Implement full CRUD operations with keyboard accessibility",
+      "description": "Build complete todo management functionality including add, complete, and delete operations with full keyboard and screen reader accessibility. Includes in-memory state management, state-driven rendering, and event delegation.",
+      "acceptanceCriteria": [
+        "Input field receives focus on page load",
+        "Add todo via button click creates new todo at top of list",
+        "Add todo via Enter key creates new todo at top of list",
+        "Empty input is blocked (button disabled or ignored)",
+        "Input field clears after successful add",
+        "Each todo displays text entered by user",
+        "Each todo has clickable checkbox on left side",
+        "Checkbox toggles completion status on click",
+        "Completed todos show strikethrough text",
+        "Completed todos use muted/gray color scheme",
+        "Checkbox shows checked state when completed",
+        "Each todo has delete button (×) on right side",
+        "Clicking delete button removes todo immediately (no confirmation)",
+        "Remaining todos reposition after deletion",
+        "Empty state reappears when last todo deleted",
+        "Tab key cycles through all interactive elements in logical order",
+        "Spacebar toggles checkbox when focused",
+        "All interactive elements have visible focus indicators",
+        "ARIA states updated for completed todos (aria-checked)",
+        "E2E test file created/updated in tests/e2e/todo.spec.ts",
+        "E2E tests cover: add, complete, un-complete, delete flows",
+        "All E2E tests pass (regression gate)"
+      ],
+      "dependencies": [
+        "1"
+      ],
+      "estimatedComplexity": "large",
+      "e2eRequired": true,
+      "testingApproach": "Manual testing: Add todos via button and Enter, toggle completion, delete todos. Tab through all elements. Run E2E suite to verify all CRUD flows work.",
+      "status": "pending",
+      "subtasks": [],
+      "parentId": null
+    },
+    {
+      "id": "3",
+      "title": "Final validation and performance optimization",
+      "description": "Verify all success metrics are met: performance targets, file size budget, zero console errors, and offline functionality. Run complete regression test suite and polish any remaining issues.",
+      "acceptanceCriteria": [
+        "App loads in under 100ms (measured in DevTools Performance tab)",
+        "Add operation completes in under 50ms",
+        "Complete toggle completes in under 50ms",
+        "Delete operation completes in under 50ms",
+        "Zero console errors on initial load",
+        "Zero console errors during all interactions",
+        "Total file size under 50KB (measured with ls -lh)",
+        "Works without internet connection (airplane mode test)",
+        "All functionality works in Chrome 60+",
+        "All functionality works in Firefox 60+",
+        "All functionality works in Safari 12+",
+        "All functionality works in Edge 79+",
+        "Color contrast meets WCAG AA standards",
+        "Screen reader announces todo additions and deletions",
+        "Final E2E regression suite passes (all 3+ test files)"
+      ],
+      "dependencies": [
+        "2"
+      ],
+      "estimatedComplexity": "small",
+      "e2eRequired": true,
+      "testingApproach": "Performance profiling in browser DevTools. File size check via command line. Cross-browser manual testing. Full E2E regression suite execution.",
+      "status": "pending",
+      "subtasks": [],
+      "parentId": null
+    }
+  ]
+}
