@@ -1,0 +1,66 @@
+File tree (depth 2)
+📄 .DS_Store
+📂 .github
+  📂 workflows
+    📄 deploy-pages.yml
+📄 .gitignore
+📂 .playwright-mcp
+  📄 console-2026-03-29T17-11-36-271Z.log
+📂 ai-docs
+  📂 SPEC
+    📄 PROGRESS_LOG.md
+📂 projects
+  📄 .DS_Store
+  📂 aem-devops-cert-v1
+    📂 .claude
+    📄 .gitignore
+    📂 ai-docs
+    📂 dist
+    📄 index.html
+    📄 manifest.json
+    📄 package-lock.json
+    📄 package.json
+    📂 playwright-report
+    📂 podcasts
+    📄 postcss.config.js
+    📂 public
+    📄 quizzes.json
+    📂 research
+    📂 sources
+    📂 src
+    📄 tailwind.config.js
+    📂 test-results
+    📂 tests
+    📄 vite.config.js
+  📂 claude-cert-v1
+    📂 .claude
+    📄 .gitignore
+    📄 .gitkeep
+    📂 ai-docs
+    📄 components.json
+    📂 dist
+    📄 eslint.config.js
+    📄 index.html
+    📄 jsconfig.json
+    📄 manifest.json
+    📄 package-lock.json
+    📄 package.json
+    📂 playwright-report
+    📂 podcasts
+    📂 public
+    📄 quizzes.json
+    📄 README.md
+    📂 research
+    📂 sources
+    📂 src
+    📂 test-results
+    📂 tests
+    📄 vite.config.js
+📄 PROMPT.md
+📄 README.md
+📂 scripts
+  📄 build-pages-site.mjs
+📂 test-results
+  📄 .last-run.json
+📂 tests
+  📂 e2e

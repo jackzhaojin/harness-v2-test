@@ -36,6 +36,8 @@ research/_combined_*.md
 
 # Playwright
 .playwright-mcp/
+playwright-report/
+test-results/
 
 # TTS model files (large binaries)
 *.onnx

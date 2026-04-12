@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Counter</title>
+    <link rel="stylesheet" href="style.css" />
+    <script src="app.js" defer></script>
+  </head>
+  <body>
+    <main class="app">
+      <section class="counter">
+        <h1 class="counter__label">Counter</h1>
+        <div id="countDisplay" class="count">0</div>
+        <div class="controls">
+          <button type="button" class="btn btn--increment">Increment</button>
+          <button type="button" class="btn btn--decrement">Decrement</button>
+          <button type="button" class="btn btn--reset">Reset</button>
+        </div>
+      </section>
+
+      <section class="history">
+        <h2 class="history__label">History</h2>
+        <ul id="historyList" class="history__list"></ul>
+      </section>
+    </main>
+  </body>
+</html>

@@ -1,0 +1,189 @@
+/* ============================================================
+   Reset
+   ============================================================ */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+}
+
+/* ============================================================
+   CSS Custom Properties
+   ============================================================ */
+:root {
+  --color-positive: #2d6a4f;
+  --color-negative: #c0392b;
+  --color-reset:    #6c757d;
+
+  --font-stack: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+
+  --bg-page:    #f4f6f8;
+  --bg-app:     #ffffff;
+  --bg-history: #f8f9fa;
+
+  --border-radius: 8px;
+  --shadow:        0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* ============================================================
+   Base
+   ============================================================ */
+body {
+  font-family: var(--font-stack);
+  background-color: var(--bg-page);
+  color: #333;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ============================================================
+   App Layout
+   ============================================================ */
+.app {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  width: 100%;
+  max-width: 480px;
+  padding: 32px 24px;
+  background-color: var(--bg-app);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+}
+
+/* ============================================================
+   Counter Section
+   ============================================================ */
+.counter {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+}
+
+.counter__label {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #888;
+}
+
+/* ============================================================
+   Count Display
+   ============================================================ */
+.count {
+  font-size: 5rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--color-positive);
+  transition: color 0.15s ease;
+  min-width: 3ch;
+  text-align: center;
+}
+
+.count--negative {
+  color: var(--color-negative);
+}
+
+/* ============================================================
+   Controls
+   ============================================================ */
+.controls {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+  width: 100%;
+}
+
+/* ============================================================
+   Buttons — Base
+   ============================================================ */
+.btn {
+  font-family: var(--font-stack);
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 10px 24px;
+  border: none;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  color: #fff;
+  transition: opacity 0.15s ease, transform 0.1s ease;
+  flex: 1 1 auto;
+  min-width: 100px;
+}
+
+.btn:hover {
+  opacity: 0.88;
+}
+
+.btn:active {
+  transform: scale(0.97);
+}
+
+/* ============================================================
+   Button Variants
+   ============================================================ */
+.btn--increment {
+  background-color: var(--color-positive);
+}
+
+.btn--decrement {
+  background-color: var(--color-negative);
+}
+
+.btn--reset {
+  background-color: var(--color-reset);
+}
+
+/* ============================================================
+   History Section
+   ============================================================ */
+.history {
+  width: 100%;
+  border-top: 1px solid #e9ecef;
+  padding-top: 20px;
+}
+
+.history__label {
+  margin: 0 0 10px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #888;
+}
+
+.history__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  background-color: var(--bg-history);
+  border-radius: var(--border-radius);
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+.history__list:empty {
+  /* no items — no visible block */
+  display: none;
+}
+
+.history__list li {
+  padding: 7px 12px;
+  font-size: 0.82rem;
+  color: #555;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.history__list li:last-child {
+  border-bottom: none;
+}
