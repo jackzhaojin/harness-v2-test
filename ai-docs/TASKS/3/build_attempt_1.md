@@ -1,0 +1,1 @@
+Kimi CLI exited with code 1 (2 JSONL messages)

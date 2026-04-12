@@ -1,0 +1,13 @@
+{
+  "agentName": "build",
+  "sessionId": "task/3/build/1",
+  "timestamp": "2026-04-12T00:45:28.846Z",
+  "success": false,
+  "modelUsed": "",
+  "vendor": "kimi",
+  "errors": [
+    "Kimi CLI exit code 1",
+    "stderr: To resume this session: kimi -r 8cc5842c-1618-4f7d-9685-3c2b0141c0ff"
+  ],
+  "handoff": null
+}

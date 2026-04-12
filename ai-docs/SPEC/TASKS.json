@@ -64,7 +64,7 @@
       "estimatedComplexity": "large",
       "e2eRequired": true,
       "testingApproach": "Manual testing: Add todos via button and Enter, toggle completion, delete todos. Tab through all elements. Run E2E suite to verify all CRUD flows work.",
-      "status": "pending",
+      "status": "complete",
       "subtasks": [],
       "parentId": null
     },

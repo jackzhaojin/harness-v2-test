@@ -59,8 +59,8 @@ test.describe('Todo App - Core Functionality', () => {
     await page.fill('[aria-label="New todo text"]', todoText);
     await page.click('button[aria-label="Add todo"]');
     
-    // Verify todo appears in list
-    await expect(page.getByText(todoText)).toBeVisible();
+    // Verify todo appears in list (use .todo-item span to avoid sr-only text)
+    await expect(page.locator('.todo-item span').filter({ hasText: todoText })).toBeVisible();
     
     // Verify empty state is hidden
     await expect(page.getByText('No todos yet')).not.toBeVisible();
@@ -73,8 +73,8 @@ test.describe('Todo App - Core Functionality', () => {
     await page.fill('[aria-label="New todo text"]', todoText);
     await page.press('[aria-label="New todo text"]', 'Enter');
     
-    // Verify todo appears
-    await expect(page.getByText(todoText)).toBeVisible();
+    // Verify todo appears (use .todo-item span to avoid sr-only text)
+    await expect(page.locator('.todo-item span').filter({ hasText: todoText })).toBeVisible();
   });
 
   test('empty input is blocked', async ({ page }) => {
@@ -152,9 +152,9 @@ test.describe('Todo App - Core Functionality', () => {
       await page.press('[aria-label="New todo text"]', 'Enter');
     }
     
-    // Verify all todos are visible
+    // Verify all todos are visible (use .todo-item span to avoid sr-only text)
     for (const text of todos) {
-      await expect(page.getByText(text)).toBeVisible();
+      await expect(page.locator('.todo-item span').filter({ hasText: text })).toBeVisible();
     }
     
     // Verify correct count
@@ -238,7 +238,7 @@ test.describe('Todo App - Responsive Design', () => {
     await page.fill('[aria-label="New todo text"]', 'Mobile todo');
     await page.click('button[aria-label="Add todo"]');
     
-    await expect(page.getByText('Mobile todo')).toBeVisible();
+    await expect(page.locator('.todo-item span').filter({ hasText: 'Mobile todo' })).toBeVisible();
   });
 
   test('renders correctly on tablet viewport', async ({ page }) => {
