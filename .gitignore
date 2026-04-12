@@ -40,3 +40,4 @@ research/_combined_*.md
 # TTS model files (large binaries)
 *.onnx
 *.bin
+tests/e2e/regression.spec.js
