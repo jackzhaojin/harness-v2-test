@@ -34,6 +34,7 @@ The Pages workflow runs `node scripts/build-pages-site.mjs`, which:
 - installs each deployable project's dependencies
 - builds each project with a Pages-safe base path
 - stages output into `site/projects/<project>/`
+- writes a copy of each app's `index.html` for every static route in its `src/App.*` (`quiz.html`, `research/index.html`), so a deep link answers 200 instead of the 404 fallback
 - generates a repo-level landing page and SPA fallback
 
 This keeps every project deployable from one repo-site artifact instead of forcing a separate Pages configuration per app.

@@ -137,11 +137,70 @@ async function buildProject(project) {
 
   const stagedProjectDir = path.join(siteRoot, 'projects', project.name)
   await fs.cp(distDir, stagedProjectDir, { recursive: true })
+  const routeFiles = await writeRouteFiles(project.dir, stagedProjectDir)
+  console.log(`${project.name}: ${routeFiles} route file(s) written`)
 
   return {
     ...project,
     basePath,
   }
+}
+
+/**
+ * The app's static routes, read from its router file: every `path="/name"` in src/App.*.
+ * Routes with a parameter or a wildcard are left to the 404 fallback.
+ */
+async function readStaticRoutes(projectDir) {
+  for (const filename of ['App.jsx', 'App.tsx', 'App.js', 'App.ts']) {
+    const routerFile = path.join(projectDir, 'src', filename)
+    if (!(await pathExists(routerFile))) {
+      continue
+    }
+
+    const source = await fs.readFile(routerFile, 'utf8')
+    const routes = [...source.matchAll(/\bpath=["']\/([A-Za-z0-9][A-Za-z0-9/_-]*)["']/g)]
+      .map((match) => match[1].replace(/\/+$/, ''))
+    return [...new Set(routes)]
+  }
+
+  return []
+}
+
+/**
+ * Writes a copy of the app's index.html for each of its routes, so GitHub Pages answers a deep
+ * link with 200. Without it only the app's root has a file: /quiz falls through to 404.html,
+ * which redirects in the browser but answers 404, and search engines file the page as not
+ * found. GitHub Pages serves /quiz from quiz.html. Where the build also has a folder of that
+ * name (research/ holds the research files), /research redirects to /research/, so the folder
+ * gets an index.html too.
+ */
+async function writeRouteFiles(projectDir, stagedProjectDir) {
+  const indexFile = path.join(stagedProjectDir, 'index.html')
+  if (!(await pathExists(indexFile))) {
+    return 0
+  }
+
+  let written = 0
+  for (const route of await readStaticRoutes(projectDir)) {
+    const routeDir = path.join(stagedProjectDir, route)
+    const targets = [`${routeDir}.html`]
+    const routeDirStat = await fs.stat(routeDir).catch(() => null)
+    if (routeDirStat?.isDirectory()) {
+      targets.push(path.join(routeDir, 'index.html'))
+    }
+
+    for (const target of targets) {
+      if (await pathExists(target)) {
+        continue
+      }
+
+      await fs.mkdir(path.dirname(target), { recursive: true })
+      await fs.copyFile(indexFile, target)
+      written += 1
+    }
+  }
+
+  return written
 }
 
 function escapeHtml(value) {
